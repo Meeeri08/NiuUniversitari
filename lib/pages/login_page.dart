@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:jobapp/components/square_tile.dart';
 import 'package:jobapp/pages/forgot_pw_page.dart';
 
 class LoginPage extends StatefulWidget {
@@ -26,6 +27,7 @@ class _LoginPageState extends State<LoginPage> {
         builder: (context) {
           return Center(child: CircularProgressIndicator());
         });
+
     await FirebaseAuth.instance
         .signInWithEmailAndPassword(
           email: _emailController.text.trim(),
@@ -59,68 +61,67 @@ class _LoginPageState extends State<LoginPage> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               //logo
-              Icon(Icons.android, size: 100),
+              Icon(Icons.lock, size: 75),
               SizedBox(
-                height: 75,
+                height: 20,
               ),
               Text(
                 'Benvingut!',
                 style: GoogleFonts.bebasNeue(
-                  fontSize: 52,
+                  fontSize: 50,
                 ),
               ),
-              SizedBox(height: 10),
+              SizedBox(height: 30),
               Text(
                 'Inicia la Sessió',
-                style: TextStyle(fontWeight: FontWeight.normal, fontSize: 20),
+                style: TextStyle(
+                    fontWeight: FontWeight.normal,
+                    fontSize: 20,
+                    color: Colors.grey[700]),
               ),
-              SizedBox(height: 15),
+              SizedBox(height: 30),
 
               //E-mail
 
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 25.0),
-                child: Container(
-                  decoration: BoxDecoration(
-                      color: Colors.grey[200],
-                      border: Border.all(color: Colors.white),
-                      borderRadius: BorderRadius.circular(12)),
-                  child: Padding(
-                    padding: const EdgeInsets.only(left: 20.0),
-                    child: TextField(
-                      controller: _emailController,
-                      decoration: InputDecoration(
-                        border: InputBorder.none,
-                        hintText: 'Correu Electrònic',
-                      ),
+                child: TextField(
+                  controller: _emailController,
+                  decoration: InputDecoration(
+                    enabledBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.white),
                     ),
+                    focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.grey.shade400)),
+                    fillColor: Colors.grey.shade200,
+                    filled: true,
+                    hintText: 'Correu Electrònic',
                   ),
                 ),
               ),
+
               SizedBox(
                 height: 10,
               ),
               //Password
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 25.0),
-                child: Container(
-                  decoration: BoxDecoration(
-                      color: Colors.grey[200],
-                      border: Border.all(color: Colors.white),
-                      borderRadius: BorderRadius.circular(12)),
-                  child: Padding(
-                    padding: const EdgeInsets.only(left: 20.0),
-                    child: TextField(
-                      controller: _passwordController,
-                      obscureText: true,
-                      decoration: InputDecoration(
-                        border: InputBorder.none,
-                        hintText: 'Contrasenya',
-                      ),
+                child: TextField(
+                  controller: _passwordController,
+                  obscureText: true,
+                  decoration: InputDecoration(
+                    enabledBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.white),
                     ),
+                    focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.grey.shade400)),
+                    fillColor: Colors.grey.shade200,
+                    filled: true,
+                    hintText: 'Contrasenya',
                   ),
                 ),
               ),
+
               SizedBox(
                 height: 10,
               ),
@@ -139,14 +140,15 @@ class _LoginPageState extends State<LoginPage> {
                       child: Text(
                         'Has oblidat la contrasenya?',
                         style: TextStyle(
-                            color: Colors.blue, fontWeight: FontWeight.bold),
+                            color: Colors.grey.shade600,
+                            fontWeight: FontWeight.bold),
                       ),
                     ),
                   ],
                 ),
               ),
               SizedBox(
-                height: 10,
+                height: 50,
               ),
               //sign in button
               Padding(
@@ -156,15 +158,15 @@ class _LoginPageState extends State<LoginPage> {
                   child: Container(
                     padding: EdgeInsets.all(20),
                     decoration: BoxDecoration(
-                      color: Colors.green[300],
-                      borderRadius: BorderRadius.circular(12),
+                      color: Colors.black,
+                      borderRadius: BorderRadius.circular(8),
                     ),
                     child: Center(
                       child: Text('Iniciar Sessió',
                           style: TextStyle(
                               color: Colors.white,
                               fontWeight: FontWeight.bold,
-                              fontSize: 18)),
+                              fontSize: 16)),
                     ),
                   ),
                 ),
@@ -173,7 +175,43 @@ class _LoginPageState extends State<LoginPage> {
                 height: 25,
               ),
 
+              SizedBox(height: 50),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                child: Row(
+                  children: [
+                    Expanded(
+                        child: Divider(
+                      thickness: 0.5,
+                      color: Colors.grey[400],
+                    )),
+                    Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                        child: Text('O continua amb',
+                            style: TextStyle(color: Colors.grey[700]))),
+                    Expanded(
+                        child: Divider(
+                      thickness: 0.5,
+                      color: Colors.grey[400],
+                    )),
+                  ],
+                ),
+              ),
+              SizedBox(height: 50),
+
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: const [
+                  //google button
+                  SquareTile(imagePath: 'lib/images/google.png'),
+                  SizedBox(width: 25),
+
+                  //apple button
+                  SquareTile(imagePath: 'lib/images/apple.png'),
+                ],
+              ),
               //registrar
+              SizedBox(height: 50),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -186,7 +224,8 @@ class _LoginPageState extends State<LoginPage> {
                     child: Text(
                       "Registra" "'t",
                       style: TextStyle(
-                          color: Colors.blue, fontWeight: FontWeight.bold),
+                          color: Colors.grey.shade600,
+                          fontWeight: FontWeight.bold),
                     ),
                   )
                 ],
