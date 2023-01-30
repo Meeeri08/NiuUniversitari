@@ -40,6 +40,8 @@ dependencies:
   firebase_auth: ^3.11.1
   google_fonts: ^3.0.1
   cloud_firestore: ^3.5.0
+  curved_navigation_bar: ^1.0.3
+  appinio_swiper: ^1.1.1
 
 dev_dependencies:
   flutter_test:

@@ -20,6 +20,9 @@ class _SettingsPageState extends State<SettingsPage> {
   String username = "";
   dynamic user = null;
 
+  bool _darkMode = false;
+  String? _language = 'English';
+
   tests() async {
     await FirebaseFirestore.instance
         .collection('users')
@@ -36,21 +39,61 @@ class _SettingsPageState extends State<SettingsPage> {
   @override
   Widget build(BuildContext context) {
     tests();
-    return Scaffold(
-        appBar: AppBar(
-          backgroundColor: Colors.deepPurple[200],
-          elevation: 0,
-          title: Text('Configuració'),
-        ),
-        body: Center(
-            child:
-                Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-          Text(user != null ? user["first name"] : ''),
-          Text(user != null ? user["last name"] : ''),
-          Text(user != null ? user["email"] : '')
-        ])));
+    return MaterialApp(
+        theme: _darkMode ? ThemeData.dark() : ThemeData.light(),
+        home: Scaffold(
+          appBar: AppBar(
+            leading: IconButton(
+              icon: Icon(Icons.arrow_back),
+              onPressed: () => Navigator.pop(context),
+            ),
+            backgroundColor: Colors.deepPurple[200],
+            elevation: 0,
+            title: Text('Configuració'),
+          ),
+          body: ListView(
+            children: <Widget>[
+              SwitchListTile(
+                title: Text('Dark mode'),
+                value: _darkMode,
+                onChanged: (value) {
+                  setState(() {
+                    _darkMode = value;
+                  });
+                },
+              ),
+              ListTile(
+                title: Text('Language'),
+                trailing: DropdownButton<String>(
+                  value: _language,
+                  items: <String>['English', 'Español', 'Français']
+                      .map<DropdownMenuItem<String>>((String value) {
+                    return DropdownMenuItem<String>(
+                      value: value,
+                      child: Text(value),
+                    );
+                  }).toList(),
+                  onChanged: (value) {
+                    setState(() {
+                      _language = value;
+                    });
+                  },
+                ),
+              ),
+            ],
+          ),
+        ));
   }
 }
+//         body: Center(
+//             child:
+//                 Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+//           Text(user != null ? user["first name"] : ''),
+//           Text(user != null ? user["last name"] : ''),
+//           Text(user != null ? user["email"] : '')
+//         ])));
+//   }
+// }
 
 //settings_ui
 /*  child: SettingsList(

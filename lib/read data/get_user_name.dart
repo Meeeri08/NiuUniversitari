@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class GetUserName extends StatelessWidget {
@@ -14,11 +13,16 @@ class GetUserName extends StatelessWidget {
         future: users.doc(documentId).get(),
         builder: ((context, snapshot) {
           if (snapshot.connectionState == ConnectionState.done) {
-            Map<String, dynamic> data =
-                snapshot.data!.data() as Map<String, dynamic>;
-            return Text('First Name: ${data['first name']}');
+            if (snapshot.hasData) {
+              Map<String, dynamic> data =
+                  snapshot.data!.data() as Map<String, dynamic>;
+              return Text('First Name: ${data['first name']}');
+            } else {
+              return Text('Error al leer datos');
+            }
+          } else {
+            return CircularProgressIndicator();
           }
-          return Text('loading...');
         }));
   }
 }
