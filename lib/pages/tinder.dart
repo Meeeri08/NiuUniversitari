@@ -45,8 +45,10 @@ class _TinderPageState extends State<Tinder> {
         backgroundColor: Color.fromARGB(236, 236, 236, 236),
         child: Column(
           children: [
-            const SizedBox(
-              height: 50,
+            Container(
+              child: const SizedBox(
+                height: 50,
+              ),
             ),
             SizedBox(
               height: MediaQuery.of(context).size.height * 0.60,

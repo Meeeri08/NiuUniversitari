@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:jobapp/pages/messages_page.dart';
 import 'package:jobapp/pages/profile_page.dart';
 import 'package:jobapp/pages/settings_page.dart';
 import 'package:jobapp/pages/tinder.dart';
@@ -62,10 +63,11 @@ class _HomePageState extends State<HomePage> {
                       size: 30,
                     ),
                     onPressed: () {
-                      Navigator.push(context,
-                          MaterialPageRoute(builder: (context) {
-                        return SettingsPage();
-                      }));
+                      Navigator.push(context, MaterialPageRoute(
+                        builder: (context) {
+                          return SettingsPage();
+                        },
+                      ));
                     },
                   ),
                 ),
@@ -92,6 +94,7 @@ class _HomePageState extends State<HomePage> {
             ),
           ),
           Tinder(),
+          Messages(),
           Profile(),
         ],
       ),
@@ -111,6 +114,10 @@ class _HomePageState extends State<HomePage> {
             ),
             Icon(
               Icons.favorite,
+              color: Colors.white,
+            ),
+            Icon(
+              Icons.message_outlined,
               color: Colors.white,
             ),
             Icon(
