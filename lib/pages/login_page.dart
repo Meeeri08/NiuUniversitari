@@ -61,10 +61,7 @@ class _LoginPageState extends State<LoginPage> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               //logo
-              Icon(Icons.lock, size: 75),
-              SizedBox(
-                height: 20,
-              ),
+
               Text(
                 'Benvingut!',
                 style: GoogleFonts.bebasNeue(

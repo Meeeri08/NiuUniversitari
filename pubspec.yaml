@@ -42,6 +42,14 @@ dependencies:
   cloud_firestore: ^3.5.0
   curved_navigation_bar: ^1.0.3
   appinio_swiper: ^1.1.1
+  flutter_launcher_icons: ^0.11.0
+  flutter_svg: ^1.1.6
+  
+flutter_icons:
+  image_path: "lib/images/icon.png"
+  android: true
+  ios: true
+  remove_alpha_ios: true
 
 dev_dependencies:
   flutter_test:

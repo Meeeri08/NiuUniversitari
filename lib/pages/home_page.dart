@@ -24,57 +24,67 @@ class _HomePageState extends State<HomePage> {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0.0,
-        leading: Container(
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(16),
-          ),
-          child: IconButton(
-            icon: Container(
-              child: Icon(
-                Icons.map_outlined,
-                color: Colors.grey[600],
-                size: 30,
-              ),
-            ),
-            onPressed: () {
-              // Navigator.push(
-              //     context,
-              //     MaterialPageRoute(
-              //       builder: (context) => MapPage(),
-              // ));
-            },
-          ),
-        ),
-        actions: <Widget>[
-          Container(
-            padding: EdgeInsets.only(right: 20),
-            child: Column(
-              children: [
-                Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  child: IconButton(
-                    icon: Icon(
-                      Icons.filter_list_rounded,
-                      color: Colors.grey[600],
-                      size: 30,
-                    ),
-                    onPressed: () {
-                      Navigator.push(context, MaterialPageRoute(
-                        builder: (context) {
-                          return SettingsPage();
+        automaticallyImplyLeading: false,
+        leadingWidth: 90,
+        leading: _currentIndex == 0
+            ? Container(
+                child: Column(
+                  children: [
+                    Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: IconButton(
+                        icon: Icon(
+                          Icons.filter_list_rounded,
+                          color: Colors.grey[600],
+                          size: 30,
+                        ),
+                        onPressed: () {
+                          Navigator.push(context, MaterialPageRoute(
+                            builder: (context) {
+                              return SettingsPage();
+                            },
+                          ));
                         },
-                      ));
-                    },
+                      ),
+                    ),
+                  ],
+                ),
+              )
+            : null,
+        actions: _currentIndex == 0
+            ? <Widget>[
+                Container(
+                  padding: EdgeInsets.only(right: 20),
+                  child: Column(
+                    children: [
+                      Container(
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        child: IconButton(
+                          icon: Icon(
+                            Icons.filter_list_rounded,
+                            color: Colors.grey[600],
+                            size: 30,
+                          ),
+                          onPressed: () {
+                            Navigator.push(context, MaterialPageRoute(
+                              builder: (context) {
+                                return SettingsPage();
+                              },
+                            ));
+                          },
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-              ],
-            ),
-          ),
-        ],
+              ]
+            : null,
       ),
       body: IndexedStack(
         index: _currentIndex,
@@ -99,7 +109,7 @@ class _HomePageState extends State<HomePage> {
         ],
       ),
       bottomNavigationBar: CurvedNavigationBar(
-          backgroundColor: Color.fromARGB(236, 236, 236, 236),
+          backgroundColor: Colors.transparent,
           color: Colors.deepPurple.shade100,
           animationDuration: Duration(milliseconds: 400),
           onTap: (index) {

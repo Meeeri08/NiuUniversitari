@@ -15,12 +15,6 @@ class _ProfileState extends State<Profile> {
 
   Widget build(BuildContext context) {
     return Center(
-        child: Scaffold(
-      backgroundColor: Color.fromARGB(236, 236, 236, 236),
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0.0,
-      ),
-    ));
+        child: Scaffold(backgroundColor: Color.fromARGB(236, 236, 236, 236)));
   }
 }
