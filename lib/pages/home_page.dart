@@ -37,7 +37,7 @@ class _HomePageState extends State<HomePage> {
                       ),
                       child: IconButton(
                         icon: Icon(
-                          Icons.filter_list_rounded,
+                          Icons.map_outlined,
                           color: Colors.grey[600],
                           size: 30,
                         ),
