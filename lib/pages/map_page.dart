@@ -1,25 +1,21 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:jobapp/pages/object_screen.dart';
 
-class SettingsPage extends StatefulWidget {
+class MapPage extends StatefulWidget {
   @override
-  _SettingsPageState createState() => _SettingsPageState();
+  _MapPageState createState() => _MapPageState();
 }
 
-class _SettingsPageState extends State<SettingsPage> {
+class _MapPageState extends State<MapPage> {
   static const _initialCameraPosition = CameraPosition(
     target: LatLng(41.38859447609031, 2.1686747276829004),
     zoom: 13,
   );
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
-
   late GoogleMapController _googleMapController;
-
-  final houseTitle = "Beautiful House";
-  final housePrice = "\$1000";
-  final houseImageUrl =
-      "https://img.staticmb.com/mbcontent//images/uploads/2022/12/Most-Beautiful-House-in-the-World.jpg";
+  Set<Marker> _markers = {};
 
   @override
   void dispose() {
@@ -36,16 +32,57 @@ class _SettingsPageState extends State<SettingsPage> {
             myLocationButtonEnabled: false,
             zoomControlsEnabled: false,
             initialCameraPosition: _initialCameraPosition,
-            onMapCreated: (controller) => _googleMapController = controller,
-            markers: {
-              Marker(
-                markerId: MarkerId("1"),
-                position: LatLng(41.411480550012854, 2.158319031193987),
-                onTap: () {
-                  showModalBottomSheet(
-                    context: context,
-                    builder: (context) {
-                      return Container(
+            onMapCreated: (controller) {
+              _googleMapController = controller;
+              _addMarkersToMap();
+            },
+            markers: _markers,
+          ),
+          SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.only(left: 16.0),
+              child: IconButton(
+                icon: Icon(Icons.arrow_back),
+                onPressed: () => Navigator.of(context).pop(),
+              ),
+            ),
+          ),
+        ],
+      ),
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: Colors.white,
+        foregroundColor: Colors.black,
+        onPressed: () => _googleMapController.animateCamera(
+          CameraUpdate.newCameraPosition(_initialCameraPosition),
+        ),
+        child: const Icon(Icons.center_focus_strong),
+      ),
+    );
+  }
+
+  void _addMarkersToMap() async {
+    final houses = await firestore.collection('houses').get();
+    final markers = houses.docs
+        .map((doc) => Marker(
+              markerId: MarkerId(doc.id),
+              position: LatLng(
+                doc['latlng'].latitude,
+                doc['latlng'].longitude,
+              ),
+              onTap: () {
+                showModalBottomSheet(
+                  context: context,
+                  builder: (context) {
+                    return GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => ObjectScreen(),
+                          ),
+                        );
+                      },
+                      child: Container(
                         height: 300,
                         child: Column(
                           children: [
@@ -53,14 +90,10 @@ class _SettingsPageState extends State<SettingsPage> {
                               alignment: Alignment.centerLeft,
                               children: [
                                 Image.network(
-                                  houseImageUrl,
+                                  doc['image_url'],
                                   width: MediaQuery.of(context).size.width,
                                   height: 150,
                                   fit: BoxFit.cover,
-                                ),
-                                IconButton(
-                                  icon: Icon(Icons.arrow_back),
-                                  onPressed: () => Navigator.of(context).pop(),
                                 ),
                               ],
                             ),
@@ -75,14 +108,14 @@ class _SettingsPageState extends State<SettingsPage> {
                                           MainAxisAlignment.spaceBetween,
                                       children: [
                                         Text(
-                                          houseTitle,
+                                          doc['title'],
                                           style: TextStyle(
                                             fontWeight: FontWeight.bold,
                                             fontSize: 16,
                                           ),
                                         ),
                                         Text(
-                                          housePrice,
+                                          doc.get('price').toString(),
                                           style: TextStyle(
                                             fontWeight: FontWeight.bold,
                                             fontSize: 16,
@@ -117,32 +150,15 @@ class _SettingsPageState extends State<SettingsPage> {
                             ),
                           ],
                         ),
-                      );
-                    },
-                  );
-                },
-              ),
-            },
-          ),
-          SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.only(left: 16.0),
-              child: IconButton(
-                icon: Icon(Icons.arrow_back),
-                onPressed: () => Navigator.of(context).pop(),
-              ),
-            ),
-          ),
-        ],
-      ),
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: Colors.white,
-        foregroundColor: Colors.black,
-        onPressed: () => _googleMapController.animateCamera(
-          CameraUpdate.newCameraPosition(_initialCameraPosition),
-        ),
-        child: const Icon(Icons.center_focus_strong),
-      ),
-    );
+                      ),
+                    );
+                  },
+                );
+              },
+            ))
+        .toSet();
+    setState(() {
+      _markers = markers;
+    });
   }
 }
