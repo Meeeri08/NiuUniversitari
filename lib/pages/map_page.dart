@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:jobapp/pages/object_screen.dart';
+import 'package:jobapp/pages/house_detail_screen.dart';
 
 class MapPage extends StatefulWidget {
   @override
@@ -78,7 +78,8 @@ class _MapPageState extends State<MapPage> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => ObjectScreen(),
+                            builder: (context) =>
+                                HouseDetailScreen(houseId: doc.id),
                           ),
                         );
                       },

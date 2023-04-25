@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:jobapp/pages/house_detail_screen.dart';
 import 'package:jobapp/pages/messages_page.dart';
 import 'package:jobapp/pages/profile_page.dart';
 import 'package:jobapp/pages/map_page.dart';
@@ -111,34 +112,42 @@ class _HomePageState extends State<HomePage> {
                   final price = house.get('price');
                   final title = house.get('title');
                   final latLng = house.get('latlng');
-                  return Card(
-                    child: InkWell(
-                      onTap: () {
-                        // Navigate to a detail screen or show a dialog with more information
-                      },
-                      child: Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: ListTile(
-                          contentPadding:
-                              const EdgeInsets.symmetric(vertical: 12.0),
-                          leading: SizedBox(
-                            width: 96,
-                            child: AspectRatio(
-                              aspectRatio: 1,
-                              child: Image.network(
-                                imageUrl,
-                                fit: BoxFit.cover,
+                  return GestureDetector(
+                    child: Card(
+                      child: InkWell(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  HouseDetailScreen(houseId: house.id),
+                            ),
+                          );
+                        },
+                        child: Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: ListTile(
+                            contentPadding:
+                                const EdgeInsets.symmetric(vertical: 12.0),
+                            leading: SizedBox(
+                              width: 96,
+                              child: AspectRatio(
+                                aspectRatio: 1,
+                                child: Image.network(
+                                  imageUrl,
+                                  fit: BoxFit.cover,
+                                ),
                               ),
                             ),
-                          ),
-                          title: Text(title),
-                          subtitle: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text('$nRooms rooms, $nBathroom bathrooms'),
-                              SizedBox(height: 4),
-                              Text('Price: $price\€'),
-                            ],
+                            title: Text(title),
+                            subtitle: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text('$nRooms rooms, $nBathroom bathrooms'),
+                                SizedBox(height: 4),
+                                Text('Price: $price\€'),
+                              ],
+                            ),
                           ),
                         ),
                       ),
