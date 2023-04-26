@@ -65,6 +65,9 @@ class _MapPageState extends State<MapPage> {
     final markers = houses.docs
         .map((doc) => Marker(
               markerId: MarkerId(doc.id),
+              icon: BitmapDescriptor.defaultMarkerWithHue(
+                  BitmapDescriptor.hueViolet),
+              anchor: Offset(0.3, 0.3),
               position: LatLng(
                 doc['latlng'].latitude,
                 doc['latlng'].longitude,

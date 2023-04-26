@@ -36,8 +36,10 @@ class _HouseDetailScreenState extends State<HouseDetailScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        extendBodyBehindAppBar: true,
         appBar: AppBar(
-          title: Text('House Detail'),
+          backgroundColor: Color(0x44000000),
+          elevation: 0,
         ),
         body: StreamBuilder<DocumentSnapshot>(
             stream: FirebaseFirestore.instance
@@ -81,6 +83,9 @@ class _HouseDetailScreenState extends State<HouseDetailScreen> {
                             Marker(
                               markerId: MarkerId(widget.houseId),
                               position: _initialLatLng ?? LatLng(0, 0),
+                              icon: BitmapDescriptor.defaultMarkerWithHue(
+                                  BitmapDescriptor.hueViolet),
+                              anchor: Offset(0.3, 0.3),
                               infoWindow: InfoWindow(title: title),
                             ),
                           },
