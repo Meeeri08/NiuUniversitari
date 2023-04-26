@@ -18,20 +18,21 @@ class _RegisterPageState extends State<RegisterPage> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmpasswordController = TextEditingController();
-  final _usernameController = TextEditingController();
   final _firstNameController = TextEditingController();
   final _secondNameController = TextEditingController();
   final _ageController = TextEditingController();
+  final _carreraController = TextEditingController();
 
   @override
   void dispose() {
     _emailController.dispose();
     _passwordController.dispose();
     _confirmpasswordController.dispose();
-    _usernameController.dispose();
     _firstNameController.dispose();
     _secondNameController.dispose();
     _ageController.dispose();
+    _carreraController.dispose();
+
     super.dispose();
   }
 
@@ -46,36 +47,31 @@ class _RegisterPageState extends State<RegisterPage> {
       //add user details
       addUserDetails(
           data.user?.uid as String,
-          _usernameController.text.trim(),
           _firstNameController.text.trim(),
           _secondNameController.text.trim(),
           _emailController.text.trim(),
+          _carreraController.text.trim(),
           int.parse(
             _ageController.text.trim(),
           ));
     }
   }
 
-  Future addUserDetails(String id, String username, String firstName,
-      String lastName, String email, int age) async {
+  Future addUserDetails(
+    String id,
+    String firstName,
+    String lastName,
+    String email,
+    String carrera,
+    int age,
+  ) async {
     await FirebaseFirestore.instance.collection("users").doc(id).set({
-      'username': username,
       'first name': firstName,
       'last name': lastName,
       'email': email,
+      'carrera': carrera,
       'age': age,
     });
-  }
-
-  Future<bool> isUsernameTaken(String username) async {
-    final QuerySnapshot<Map<String, dynamic>> result = await FirebaseFirestore
-        .instance
-        .collection('users')
-        .where('username', isEqualTo: username)
-        .limit(1)
-        .get();
-
-    return result.docs.isNotEmpty;
   }
 
   bool passwordConfirmed() {
@@ -159,30 +155,6 @@ class _RegisterPageState extends State<RegisterPage> {
                 height: 10,
               ),
 
-              //Nom d'usuari
-
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 25.0),
-                child: Container(
-                  decoration: BoxDecoration(
-                      color: Colors.grey[200],
-                      border: Border.all(color: Colors.white),
-                      borderRadius: BorderRadius.circular(12)),
-                  child: Padding(
-                    padding: const EdgeInsets.only(left: 20.0),
-                    child: TextField(
-                      controller: _usernameController,
-                      decoration: InputDecoration(
-                        border: InputBorder.none,
-                        hintText: "Nom d" "'usuari",
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              SizedBox(
-                height: 10,
-              ),
               //Edat
 
               Padding(
@@ -271,6 +243,29 @@ class _RegisterPageState extends State<RegisterPage> {
                       decoration: InputDecoration(
                         border: InputBorder.none,
                         hintText: 'Repetir Contrasenya',
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              SizedBox(
+                height: 10,
+              ), //Nom d'usuari
+
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 25.0),
+                child: Container(
+                  decoration: BoxDecoration(
+                      color: Colors.grey[200],
+                      border: Border.all(color: Colors.white),
+                      borderRadius: BorderRadius.circular(12)),
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 20.0),
+                    child: TextField(
+                      controller: _carreraController,
+                      decoration: InputDecoration(
+                        border: InputBorder.none,
+                        hintText: "Carrera",
                       ),
                     ),
                   ),

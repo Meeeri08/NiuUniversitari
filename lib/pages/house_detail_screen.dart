@@ -14,7 +14,6 @@ class HouseDetailScreen extends StatefulWidget {
 class _HouseDetailScreenState extends State<HouseDetailScreen> {
   late final LatLng _initialLatLng;
   GoogleMapController? _mapController;
-
   @override
   void initState() {
     super.initState();
@@ -60,8 +59,10 @@ class _HouseDetailScreenState extends State<HouseDetailScreen> {
               final price = house.get('price');
               final title = house.get('title');
               final latLng = house.get('latlng');
+              final description = house.get('description');
 
-              return Column(
+              return SingleChildScrollView(
+                  child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Container(
@@ -69,8 +70,8 @@ class _HouseDetailScreenState extends State<HouseDetailScreen> {
                     child: Stack(
                       children: [
                         GoogleMap(
-                          initialCameraPosition:
-                              CameraPosition(target: _initialLatLng, zoom: 15),
+                          initialCameraPosition: CameraPosition(
+                              target: _initialLatLng ?? LatLng(0, 0), zoom: 15),
                           onMapCreated: (GoogleMapController controller) {
                             if (_mapController == null) {
                               _mapController = controller;
@@ -79,7 +80,7 @@ class _HouseDetailScreenState extends State<HouseDetailScreen> {
                           markers: {
                             Marker(
                               markerId: MarkerId(widget.houseId),
-                              position: _initialLatLng,
+                              position: _initialLatLng ?? LatLng(0, 0),
                               infoWindow: InfoWindow(title: title),
                             ),
                           },
@@ -123,8 +124,70 @@ class _HouseDetailScreenState extends State<HouseDetailScreen> {
                       ],
                     ),
                   ),
+                  SizedBox(height: 16),
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          title,
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 24,
+                          ),
+                        ),
+                        SizedBox(height: 8),
+                        Row(
+                          children: [
+                            Icon(Icons.location_on),
+                            SizedBox(width: 8),
+                            Text('$latLng'),
+                          ],
+                        ),
+                        SizedBox(height: 16),
+                        Text(
+                          'Description',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18,
+                          ),
+                        ),
+                        SizedBox(height: 8),
+                        Text(
+                          description,
+                          style: TextStyle(fontSize: 16),
+                        ),
+                        SizedBox(height: 16),
+                        Text(
+                          'Details',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18,
+                          ),
+                        ),
+                        SizedBox(height: 8),
+                        Row(children: [
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Rooms',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ]),
+                      ],
+                    ),
+                  ),
                 ],
-              );
+              ));
             }));
   }
 }

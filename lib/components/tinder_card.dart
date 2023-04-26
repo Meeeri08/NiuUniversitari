@@ -5,89 +5,38 @@ import 'package:jobapp/components/tinder_candidate_model.dart';
 class TinderCard extends StatelessWidget {
   final TinderCandidateModel candidate;
 
-  const TinderCard({
-    Key? key,
-    required this.candidate,
-  }) : super(key: key);
+  const TinderCard({Key? key, required this.candidate}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
+        gradient: candidate.color,
         borderRadius: BorderRadius.circular(10),
-        color: CupertinoColors.white,
-        boxShadow: [
-          BoxShadow(
-            color: CupertinoColors.systemGrey.withOpacity(0.2),
-            spreadRadius: 3,
-            blurRadius: 7,
-            offset: const Offset(0, 3),
-          )
-        ],
       ),
-      alignment: Alignment.center,
       child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Flexible(
+          SizedBox(height: 20),
+          Text(candidate.nom ?? '',
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+          SizedBox(height: 10),
+          Text(candidate.carrera ?? ''),
+          Text(candidate.zona ?? ''),
+          Expanded(
             child: Container(
               decoration: BoxDecoration(
-                gradient: candidate.color,
-                borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(10),
-                  topRight: Radius.circular(10),
+                borderRadius: BorderRadius.circular(10),
+                image: DecorationImage(
+                  image: NetworkImage(candidate.image ?? ''),
+                  fit: BoxFit.cover,
                 ),
               ),
+              height: 400,
+              width: 400,
             ),
           ),
-          Container(
-            padding: const EdgeInsets.all(15),
-            decoration: const BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.only(
-                bottomLeft: Radius.circular(10),
-                bottomRight: Radius.circular(10),
-              ),
-            ),
-            child: Row(
-              children: [
-                Column(
-                  mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      candidate.nom!,
-                      style: const TextStyle(
-                        color: Colors.black,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 20,
-                      ),
-                    ),
-                    const SizedBox(
-                      height: 5,
-                    ),
-                    Text(
-                      candidate.carrera!,
-                      style: const TextStyle(
-                        color: Colors.grey,
-                        fontSize: 15,
-                      ),
-                    ),
-                    const SizedBox(
-                      height: 5,
-                    ),
-                    Text(
-                      candidate.zona!,
-                      style: const TextStyle(
-                        color: Colors.grey,
-                        fontSize: 15,
-                      ),
-                    )
-                  ],
-                ),
-              ],
-            ),
-          ),
+          SizedBox(height: 20),
         ],
       ),
     );

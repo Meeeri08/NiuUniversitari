@@ -4,12 +4,14 @@ class TinderCandidateModel {
   String? nom;
   String? carrera;
   String? zona;
+  String? image; // new field
   LinearGradient? color;
 
   TinderCandidateModel({
     this.nom,
     this.carrera,
     this.zona,
+    this.image, // new field
     this.color,
   });
 }
@@ -19,6 +21,8 @@ List<TinderCandidateModel> candidates = [
     nom: 'Eight, 8',
     carrera: 'Enginyeria Informàtica',
     zona: 'Sarrià',
+    image:
+        'https://img.staticmb.com/mbcontent//images/uploads/2022/12/Most-Beautiful-House-in-the-World.jpg',
     color: gradientPink,
   ),
   TinderCandidateModel(
@@ -61,7 +65,9 @@ List<TinderCandidateModel> candidates = [
     nom: 'One, 1',
     carrera: 'Enginyeria Informàtica',
     zona: 'Sarrià',
-    color: gradientRed,
+    image:
+        'https://img.staticmb.com/mbcontent//images/uploads/2022/12/Most-Beautiful-House-in-the-World.jpg',
+    color: gradientPink,
   ),
 ];
 

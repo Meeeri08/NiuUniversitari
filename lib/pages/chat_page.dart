@@ -3,19 +3,18 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-class Messages extends StatefulWidget {
+class Chat extends StatefulWidget {
   @override
-  _MessagesState createState() => _MessagesState();
+  _ChatState createState() => _ChatState();
 }
 
-class _MessagesState extends State<Messages> {
+class _ChatState extends State<Chat> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final TextEditingController _messageController = TextEditingController();
   late User _user;
 
   late Stream<QuerySnapshot> _chats;
-
   @override
   void initState() {
     super.initState();
@@ -34,8 +33,7 @@ class _MessagesState extends State<Messages> {
 
   void _getChats() async {
     _chats = _firestore
-        .collection('chats')
-        .where('participants', arrayContains: _user.uid)
+        .collectionGroup('chats')
         .orderBy('timestamp', descending: true)
         .snapshots();
   }
@@ -44,24 +42,14 @@ class _MessagesState extends State<Messages> {
     String message = _messageController.text.trim();
     if (message.isNotEmpty) {
       _messageController.clear();
-      Map<String, dynamic> messageData = {
+      await _firestore
+          .collection('users')
+          .doc(_user.uid)
+          .collection('chats')
+          .add({
         'text': message,
-        'sender': _user.uid, // Use the UID of the user who sent the message
+        'sender': _user.displayName,
         'timestamp': DateTime.now().millisecondsSinceEpoch,
-        'participants': [
-          _user.uid
-        ], // Add the user's UID to the list of participants
-      };
-      String messageId = _user.uid + '_' + messageData['timestamp'].toString();
-      await _firestore.collection('chats').doc(messageId).set(messageData);
-
-      // Update the list of messages
-      setState(() {
-        _chats = _firestore
-            .collection('chats')
-            .where('participants', arrayContains: _user.uid)
-            .orderBy('timestamp', descending: true)
-            .snapshots();
       });
     }
   }
@@ -91,7 +79,6 @@ class _MessagesState extends State<Messages> {
                   itemBuilder: (BuildContext context, int index) {
                     Map<String, dynamic> data =
                         docs[index].data() as Map<String, dynamic>;
-                    String sender = data['sender'] ?? '';
                     return ListTile(
                       title: Text(data['text']),
                       subtitle: Text(
@@ -99,7 +86,7 @@ class _MessagesState extends State<Messages> {
                             DateTime.fromMillisecondsSinceEpoch(
                                 data['timestamp'])),
                       ),
-                      trailing: Text(sender),
+                      trailing: Text(data['sender']),
                     );
                   },
                 );

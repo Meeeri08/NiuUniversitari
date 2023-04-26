@@ -1,12 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:jobapp/pages/house_detail_screen.dart';
-import 'package:jobapp/pages/messages_page.dart';
+import 'package:jobapp/pages/chat_page.dart';
 import 'package:jobapp/pages/profile_page.dart';
 import 'package:jobapp/pages/map_page.dart';
 import 'package:jobapp/pages/tinder.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
+
+import 'messages_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -16,7 +17,6 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  final user = FirebaseAuth.instance.currentUser!;
   int _currentIndex = 0;
 
   Widget build(BuildContext context) {
@@ -160,25 +160,7 @@ class _HomePageState extends State<HomePage> {
         ),
         Tinder(),
         Messages(),
-        Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text('Has iniciat sessió com a: ' + user.email!),
-                  MaterialButton(
-                      onPressed: () {
-                        FirebaseAuth.instance.signOut();
-                      },
-                      color: Colors.deepPurple[200],
-                      child: Text('Tanca la sessió'))
-                ],
-              ),
-            ),
-          ],
-        ),
+
         Profile(),
       ]),
       bottomNavigationBar: CurvedNavigationBar(
