@@ -56,7 +56,7 @@ class _LoginPageState extends State<LoginPage> {
 
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: Colors.grey[300],
+        backgroundColor: Color(0xFFF5F5F5),
         body: SafeArea(
             child: Center(
           child: Column(
@@ -65,21 +65,31 @@ class _LoginPageState extends State<LoginPage> {
               //logo
 
               Text(
-                'Benvingut!',
-                style: GoogleFonts.bebasNeue(
-                  fontSize: 50,
+                'Iniciar Sessió',
+                style: GoogleFonts.dmSans(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w500,
                 ),
               ),
-              SizedBox(height: 30),
+              SizedBox(height: 40),
               Text(
-                'Inicia la Sessió',
+                textAlign: TextAlign.left,
+                'Iniciem la Sessió',
                 style: TextStyle(
-                    fontWeight: FontWeight.normal,
-                    fontSize: 20,
-                    color: Colors.grey[700]),
+                    fontWeight: FontWeight.w700,
+                    fontSize: 36,
+                    color: Colors.black),
               ),
               SizedBox(height: 30),
 
+              Text(
+                'Benvingut, t' "'" 'hem trobat \n a faltar!',
+                style: TextStyle(
+                    fontWeight: FontWeight.normal,
+                    fontSize: 20,
+                    color: Colors.grey[500]),
+              ),
+              SizedBox(height: 10),
               //E-mail
 
               Padding(
@@ -138,8 +148,8 @@ class _LoginPageState extends State<LoginPage> {
                       },
                       child: Text(
                         'Has oblidat la contrasenya?',
-                        style: TextStyle(
-                            color: Colors.grey.shade600,
+                        style: GoogleFonts.dmSans(
+                            color: Color(0xFF1FA29E),
                             fontWeight: FontWeight.bold),
                       ),
                     ),
@@ -157,12 +167,13 @@ class _LoginPageState extends State<LoginPage> {
                   child: Container(
                     padding: EdgeInsets.all(20),
                     decoration: BoxDecoration(
-                      color: Colors.black,
+                      color: Color(0xFF1FA29E),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Center(
                       child: Text('Iniciar Sessió',
-                          style: TextStyle(
+                          style: GoogleFonts.dmSans(
+                              fontStyle: FontStyle.normal,
                               color: Colors.white,
                               fontWeight: FontWeight.bold,
                               fontSize: 16)),
@@ -223,7 +234,7 @@ class _LoginPageState extends State<LoginPage> {
                     child: Text(
                       "Registra" "'t",
                       style: TextStyle(
-                          color: Colors.grey.shade600,
+                          color: Color(0xFF1FA29E),
                           fontWeight: FontWeight.bold),
                     ),
                   )

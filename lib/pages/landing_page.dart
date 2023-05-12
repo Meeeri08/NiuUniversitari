@@ -14,16 +14,19 @@ class _LandingState extends State<Landing> {
 
   List<Widget> _pages = [
     SliderPage(
-        title: "Busca",
-        description: "aajsajs akjskaj sajskaj skaj",
+        title: "Descobreix",
+        description:
+            "Busca entre una àmplia selecció de pisos disponibles. Troba el teu pis ideal i lloga amb facilitat.",
         image: "lib/images/1.svg"),
     SliderPage(
-        title: "Troba",
-        description: "ajskajksjakjsaskajask",
+        title: "Connecta",
+        description:
+            "Connecta amb altres estudiants que també estan buscant un pis compartit.",
         image: "lib/images/2.svg"),
     SliderPage(
         title: "Lloga",
-        description: "assasasasaassa",
+        description:
+            "Troba el pis que compleixi amb les teves necessitats i desitjos, i comença a gaudir de la comoditat del teu nou llar.",
         image: "lib/images/3.svg"),
   ];
 
@@ -82,11 +85,11 @@ class _LandingState extends State<Landing> {
                   height: 70,
                   width: (_currentPage == (_pages.length - 1)) ? 200 : 75,
                   decoration: BoxDecoration(
-                      color: Colors.blue,
+                      color: Color(0xFF407BFE),
                       borderRadius: BorderRadius.circular(35)),
                   child: (_currentPage == (_pages.length - 1))
                       ? Text(
-                          "Get Started",
+                          "Comença",
                           style: TextStyle(
                             color: Colors.white,
                             fontSize: 20,
