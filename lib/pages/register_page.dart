@@ -27,6 +27,10 @@ class _RegisterPageState extends State<RegisterPage> {
   final _passwordFocusNode = FocusNode();
   final _confirmpasswordFocusNode = FocusNode();
 
+  bool _obscureText = true;
+  bool _obscureText1 = true;
+  bool? _acceptTerms = false;
+
   @override
   void dispose() {
     _emailController.dispose();
@@ -123,7 +127,7 @@ class _RegisterPageState extends State<RegisterPage> {
               SizedBox(height: 30),
 
               Padding(
-                padding: EdgeInsets.only(left: 50.0),
+                padding: EdgeInsets.only(left: 40.0),
                 child: Text(
                   "Primers Passos",
                   style: GoogleFonts.dmSans(
@@ -134,7 +138,7 @@ class _RegisterPageState extends State<RegisterPage> {
                 height: 10,
               ),
               Padding(
-                padding: EdgeInsets.only(left: 50.0),
+                padding: EdgeInsets.only(left: 40.0),
                 child: Text(
                   "És la teva primera vegada aqui? Crea un Compte",
                   style: GoogleFonts.dmSans(
@@ -148,20 +152,14 @@ class _RegisterPageState extends State<RegisterPage> {
               SizedBox(height: 15),
 
               SizedBox(
-                height: 10,
+                height: 30,
               ),
 
-              SizedBox(
-                height: 10,
-              ),
-
-              SizedBox(
-                height: 10,
-              ),
-              //E-mail
+              // E-mail
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 25.0),
+                padding: EdgeInsets.only(left: 40.0),
                 child: Container(
+                  width: 305,
                   decoration: BoxDecoration(
                     color: Color(0xFFF5F5F5),
                     borderRadius: BorderRadius.circular(12),
@@ -206,10 +204,12 @@ class _RegisterPageState extends State<RegisterPage> {
               SizedBox(
                 height: 30,
               ),
-              //Password
+              // Password
+// Password
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 25.0),
+                padding: EdgeInsets.only(left: 40.0),
                 child: Container(
+                  width: 305,
                   decoration: BoxDecoration(
                     color: Color(0xFFF5F5F5),
                     borderRadius: BorderRadius.circular(12),
@@ -219,7 +219,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     child: FormBuilderTextField(
                       name: 'contrasenya',
                       controller: _passwordController,
-                      obscureText: true,
+                      obscureText: _obscureText1,
                       decoration: InputDecoration(
                         border: OutlineInputBorder(),
                         enabledBorder: OutlineInputBorder(
@@ -239,6 +239,19 @@ class _RegisterPageState extends State<RegisterPage> {
                           color: Colors.grey,
                         ),
                         floatingLabelBehavior: FloatingLabelBehavior.always,
+                        suffixIcon: IconButton(
+                          icon: Icon(
+                            _obscureText1
+                                ? Icons.visibility_off
+                                : Icons.visibility,
+                            color: Colors.grey,
+                          ),
+                          onPressed: () {
+                            setState(() {
+                              _obscureText1 = !_obscureText1;
+                            });
+                          },
+                        ),
                       ),
                       onChanged: (value) {
                         setState(() {});
@@ -251,22 +264,25 @@ class _RegisterPageState extends State<RegisterPage> {
                   ),
                 ),
               ),
+
               SizedBox(
                 height: 30,
               ),
-              //Password
+              // Password
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 25.0),
+                padding: EdgeInsets.only(left: 40.0),
                 child: Container(
+                  width: 305,
                   decoration: BoxDecoration(
-                      color: Color(0xFFF5F5F5),
-                      borderRadius: BorderRadius.circular(12)),
+                    color: Color(0xFFF5F5F5),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                   child: FormBuilder(
                     autovalidateMode: AutovalidateMode.onUserInteraction,
                     child: FormBuilderTextField(
                       name: 'repetir contrasenya',
                       controller: _confirmpasswordController,
-                      obscureText: true,
+                      obscureText: _obscureText,
                       decoration: InputDecoration(
                         border: OutlineInputBorder(),
                         enabledBorder: OutlineInputBorder(
@@ -286,6 +302,19 @@ class _RegisterPageState extends State<RegisterPage> {
                           color: Colors.grey,
                         ),
                         floatingLabelBehavior: FloatingLabelBehavior.always,
+                        suffixIcon: IconButton(
+                          icon: Icon(
+                            _obscureText
+                                ? Icons.visibility_off
+                                : Icons.visibility,
+                            color: Colors.grey,
+                          ),
+                          onPressed: () {
+                            setState(() {
+                              _obscureText = !_obscureText;
+                            });
+                          },
+                        ),
                       ),
                       onChanged: (value) {
                         setState(() {});
@@ -299,19 +328,58 @@ class _RegisterPageState extends State<RegisterPage> {
                 ),
               ),
               SizedBox(
-                height: 30,
-              ), //Nom d'usuari
+                height: 10,
+              ),
+              // Terms and Conditions
+              Padding(
+                padding: EdgeInsets.only(left: 40.0),
+                child: Row(
+                  children: [
+                    Transform.scale(
+                      scale: 0.8,
+                      child: Checkbox(
+                        value: _acceptTerms,
+                        onChanged: (value) {
+                          setState(() {
+                            _acceptTerms = value;
+                          });
+                        },
+                        activeColor: Color(0xFF1FA29E),
+                      ),
+                    ),
+                    RichText(
+                      text: TextSpan(
+                        children: [
+                          TextSpan(
+                            text: 'En crear un compte, accepteu els nostres\n',
+                            style: GoogleFonts.dmSans(
+                              fontSize: 12,
+                              color: Colors.grey,
+                            ),
+                          ),
+                          TextSpan(
+                            text: 'Termes i Condicions.',
+                            style: GoogleFonts.dmSans(
+                                fontSize: 12, color: Color(0xFF1FA29E)),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
 
               SizedBox(
-                height: 10,
+                height: 30,
               ),
               //sign up button
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 25.0),
+                padding: EdgeInsets.only(left: 40.0),
                 child: GestureDetector(
                   onTap: signUp,
                   child: Container(
                     padding: EdgeInsets.all(20),
+                    width: 305,
                     decoration: BoxDecoration(
                       color: Color(0xFF1FA29E),
                       borderRadius: BorderRadius.circular(12),
@@ -326,6 +394,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   ),
                 ),
               ),
+
               SizedBox(
                 height: 25,
               ),
