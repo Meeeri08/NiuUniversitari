@@ -19,13 +19,24 @@ class _RegisterPageState extends State<RegisterPage> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmpasswordController = TextEditingController();
-  final _firstNameController = TextEditingController();
-  final _secondNameController = TextEditingController();
-  final _ageController = TextEditingController();
-  final _carreraController = TextEditingController();
+  //final _firstNameController = TextEditingController();
+  //final _secondNameController = TextEditingController();
+  //final _ageController = TextEditingController();
+  //final _carreraController = TextEditingController();
   final _emailFocusNode = FocusNode();
   final _passwordFocusNode = FocusNode();
   final _confirmpasswordFocusNode = FocusNode();
+
+  bool _passwordsMatch() {
+    final password = _passwordController.text;
+    final confirmPassword = _confirmpasswordController.text;
+
+    if (password.isEmpty || confirmPassword.isEmpty) {
+      return false;
+    }
+
+    return password == confirmPassword;
+  }
 
   bool _obscureText = true;
   bool _obscureText1 = true;
@@ -39,10 +50,10 @@ class _RegisterPageState extends State<RegisterPage> {
     _confirmpasswordFocusNode.dispose();
     _passwordController.dispose();
     _confirmpasswordController.dispose();
-    _firstNameController.dispose();
-    _secondNameController.dispose();
-    _ageController.dispose();
-    _carreraController.dispose();
+    // _firstNameController.dispose();
+    //_secondNameController.dispose();
+    //_ageController.dispose();
+    //_carreraController.dispose();
 
     super.dispose();
   }
@@ -57,31 +68,32 @@ class _RegisterPageState extends State<RegisterPage> {
           password: _passwordController.text.trim());
       //add user details
       addUserDetails(
-          data.user?.uid as String,
-          _firstNameController.text.trim(),
-          _secondNameController.text.trim(),
-          _emailController.text.trim(),
-          _carreraController.text.trim(),
-          int.parse(
-            _ageController.text.trim(),
-          ));
+        data.user?.uid as String,
+        // _firstNameController.text.trim(),
+        // _secondNameController.text.trim(),
+        _emailController.text.trim(),
+        //_carreraController.text.trim(),
+        //  int.parse(
+        //  _ageController.text.trim(),
+        // )
+      );
     }
   }
 
   Future addUserDetails(
     String id,
-    String firstName,
-    String lastName,
+    // String firstName,
+    // String lastName,
     String email,
-    String carrera,
-    int age,
+    // String carrera,
+    //int age,
   ) async {
     await FirebaseFirestore.instance.collection("users").doc(id).set({
-      'first name': firstName,
-      'last name': lastName,
+      //'first name': firstName,
+      // 'last name': lastName,
       'email': email,
-      'carrera': carrera,
-      'age': age,
+      //   'carrera': carrera,
+      // 'age': age,
     });
   }
 
@@ -183,7 +195,7 @@ class _RegisterPageState extends State<RegisterPage> {
                           borderSide: BorderSide(color: Colors.red),
                           borderRadius: BorderRadius.circular(12),
                         ),
-                        labelText: 'Correo Electrónico',
+                        labelText: 'Correu Electrònic',
                         labelStyle: TextStyle(
                           color: Colors.grey,
                         ),
@@ -204,7 +216,6 @@ class _RegisterPageState extends State<RegisterPage> {
               SizedBox(
                 height: 30,
               ),
-              // Password
 // Password
               Padding(
                 padding: EdgeInsets.only(left: 40.0),
@@ -265,10 +276,9 @@ class _RegisterPageState extends State<RegisterPage> {
                 ),
               ),
 
-              SizedBox(
-                height: 30,
-              ),
-              // Password
+              SizedBox(height: 30),
+
+// Confirm Password
               Padding(
                 padding: EdgeInsets.only(left: 40.0),
                 child: Container(
@@ -302,18 +312,31 @@ class _RegisterPageState extends State<RegisterPage> {
                           color: Colors.grey,
                         ),
                         floatingLabelBehavior: FloatingLabelBehavior.always,
-                        suffixIcon: IconButton(
-                          icon: Icon(
-                            _obscureText
-                                ? Icons.visibility_off
-                                : Icons.visibility,
-                            color: Colors.grey,
-                          ),
-                          onPressed: () {
-                            setState(() {
-                              _obscureText = !_obscureText;
-                            });
-                          },
+                        suffixIcon: _passwordsMatch()
+                            ? Padding(
+                                padding: const EdgeInsets.only(right: 10),
+                                child: Icon(
+                                  Icons.check,
+                                  color: Colors.green,
+                                  size: 18,
+                                ),
+                              )
+                            : IconButton(
+                                icon: Icon(
+                                  _obscureText
+                                      ? Icons.visibility_off
+                                      : Icons.visibility,
+                                  color: Colors.grey,
+                                ),
+                                onPressed: () {
+                                  setState(() {
+                                    _obscureText = !_obscureText;
+                                  });
+                                },
+                              ),
+                        suffixIconConstraints: BoxConstraints(
+                          minWidth: 24,
+                          minHeight: 24,
                         ),
                       ),
                       onChanged: (value) {
@@ -327,6 +350,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   ),
                 ),
               ),
+
               SizedBox(
                 height: 10,
               ),

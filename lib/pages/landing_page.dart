@@ -65,8 +65,8 @@ class _LandingState extends State<Landing> {
                         decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(5),
                             color: (index == _currentPage)
-                                ? Colors.blue
-                                : Colors.blue.withOpacity(0.5)));
+                                ? Color(0xFF1FA29E)
+                                : Color(0xFF1FA29E).withOpacity(0.5)));
                   })),
               InkWell(
                 onTap: () {
@@ -85,7 +85,7 @@ class _LandingState extends State<Landing> {
                   height: 70,
                   width: (_currentPage == (_pages.length - 1)) ? 200 : 75,
                   decoration: BoxDecoration(
-                      color: Color(0xFF407BFE),
+                      color: Color(0xFF1FA29E),
                       borderRadius: BorderRadius.circular(35)),
                   child: (_currentPage == (_pages.length - 1))
                       ? Text(
