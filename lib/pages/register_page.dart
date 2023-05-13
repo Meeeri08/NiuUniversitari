@@ -89,6 +89,7 @@ class _RegisterPageState extends State<RegisterPage> {
     //int age,
   ) async {
     await FirebaseFirestore.instance.collection("users").doc(id).set({
+      'id': id, // Add the ID field to the document
       //'first name': firstName,
       // 'last name': lastName,
       'email': email,
@@ -154,9 +155,9 @@ class _RegisterPageState extends State<RegisterPage> {
                 child: Text(
                   "És la teva primera vegada aqui? Crea un Compte",
                   style: GoogleFonts.dmSans(
-                    fontWeight: FontWeight.w600,
-                    fontSize: 24,
-                    color: Colors.grey[400],
+                    fontWeight: FontWeight.normal,
+                    fontSize: 25,
+                    color: Color.fromARGB(255, 166, 164, 164),
                   ),
                 ),
               ),
@@ -253,9 +254,9 @@ class _RegisterPageState extends State<RegisterPage> {
                         suffixIcon: IconButton(
                           icon: Icon(
                             _obscureText1
-                                ? Icons.visibility_off
-                                : Icons.visibility,
-                            color: Colors.grey,
+                                ? Icons.visibility_off_outlined
+                                : Icons.visibility_outlined,
+                            color: Colors.grey[400],
                           ),
                           onPressed: () {
                             setState(() {
@@ -324,9 +325,9 @@ class _RegisterPageState extends State<RegisterPage> {
                             : IconButton(
                                 icon: Icon(
                                   _obscureText
-                                      ? Icons.visibility_off
-                                      : Icons.visibility,
-                                  color: Colors.grey,
+                                      ? Icons.visibility_off_outlined
+                                      : Icons.visibility_outlined,
+                                  color: Colors.grey[400],
                                 ),
                                 onPressed: () {
                                   setState(() {
@@ -413,7 +414,7 @@ class _RegisterPageState extends State<RegisterPage> {
                           style: TextStyle(
                               color: Colors.white,
                               fontWeight: FontWeight.bold,
-                              fontSize: 18)),
+                              fontSize: 15)),
                     ),
                   ),
                 ),
@@ -428,7 +429,10 @@ class _RegisterPageState extends State<RegisterPage> {
                 children: [
                   Text(
                     "Ja estas registrat? ",
-                    style: TextStyle(fontWeight: FontWeight.bold),
+                    style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 13,
+                        color: Colors.grey[500]),
                   ),
                   GestureDetector(
                     onTap: widget.showLoginPage,
@@ -436,7 +440,8 @@ class _RegisterPageState extends State<RegisterPage> {
                       "Inicia la Sessió",
                       style: TextStyle(
                           color: Color(0xFF1FA29E),
-                          fontWeight: FontWeight.bold),
+                          fontWeight: FontWeight.bold,
+                          fontSize: 13),
                     ),
                   )
                 ],
