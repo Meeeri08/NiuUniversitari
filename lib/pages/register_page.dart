@@ -86,96 +86,68 @@ class _RegisterPageState extends State<RegisterPage> {
 
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: Colors.grey[300],
+        backgroundColor: Color(0xFFF5F5F5),
         body: SafeArea(
-            child: Center(
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              //logo
+              Row(
+                children: [
+                  IconButton(
+                    icon: Icon(Icons.arrow_back),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                  Expanded(
+                    child: Center(
+                      child: Text(
+                        'Registrar',
+                        style: GoogleFonts.dmSans(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                  ),
+                  SizedBox(width: 48), // Espacio adicional para la flecha
+                ],
+              ),
+              SizedBox(height: 30),
 
-              Text(
-                'Benvingut!',
-                style: GoogleFonts.bebasNeue(
-                  fontSize: 52,
+              Padding(
+                padding: EdgeInsets.only(left: 50.0),
+                child: Text(
+                  "Primers Passos",
+                  style: GoogleFonts.dmSans(
+                      fontWeight: FontWeight.bold, fontSize: 36),
                 ),
               ),
-              SizedBox(height: 10),
-              Text(
-                "Registra" "'t",
-                style: TextStyle(fontWeight: FontWeight.normal, fontSize: 20),
+              SizedBox(
+                height: 10,
               ),
+              Padding(
+                padding: EdgeInsets.only(left: 50.0),
+                child: Text(
+                  "És la teva primera vegada aqui? Crea un Compte",
+                  style: GoogleFonts.dmSans(
+                    fontWeight: FontWeight.w600,
+                    fontSize: 24,
+                    color: Colors.grey[400],
+                  ),
+                ),
+              ),
+
               SizedBox(height: 15),
-              //First name
 
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 25.0),
-                child: Container(
-                  decoration: BoxDecoration(
-                      color: Colors.grey[200],
-                      border: Border.all(color: Colors.white),
-                      borderRadius: BorderRadius.circular(12)),
-                  child: Padding(
-                    padding: const EdgeInsets.only(left: 20.0),
-                    child: TextField(
-                      controller: _firstNameController,
-                      decoration: InputDecoration(
-                        border: InputBorder.none,
-                        hintText: 'Nom',
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              SizedBox(
-                height: 10,
-              ),
-              //Cognoms
-
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 25.0),
-                child: Container(
-                  decoration: BoxDecoration(
-                      color: Colors.grey[200],
-                      border: Border.all(color: Colors.white),
-                      borderRadius: BorderRadius.circular(12)),
-                  child: Padding(
-                    padding: const EdgeInsets.only(left: 20.0),
-                    child: TextField(
-                      controller: _secondNameController,
-                      decoration: InputDecoration(
-                        border: InputBorder.none,
-                        hintText: 'Cognoms',
-                      ),
-                    ),
-                  ),
-                ),
-              ),
               SizedBox(
                 height: 10,
               ),
 
-              //Edat
-
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 25.0),
-                child: Container(
-                  decoration: BoxDecoration(
-                      color: Colors.grey[200],
-                      border: Border.all(color: Colors.white),
-                      borderRadius: BorderRadius.circular(12)),
-                  child: Padding(
-                    padding: const EdgeInsets.only(left: 20.0),
-                    child: TextField(
-                      controller: _ageController,
-                      decoration: InputDecoration(
-                        border: InputBorder.none,
-                        hintText: 'Edat',
-                      ),
-                    ),
-                  ),
-                ),
+              SizedBox(
+                height: 10,
               ),
+
               SizedBox(
                 height: 10,
               ),
@@ -185,21 +157,38 @@ class _RegisterPageState extends State<RegisterPage> {
                 padding: const EdgeInsets.symmetric(horizontal: 25.0),
                 child: Container(
                   decoration: BoxDecoration(
-                      color: Colors.grey[200],
-                      border: Border.all(color: Colors.white),
-                      borderRadius: BorderRadius.circular(12)),
-                  child: Padding(
-                    padding: const EdgeInsets.only(left: 20.0),
-                    child: TextField(
-                      controller: _emailController,
-                      decoration: InputDecoration(
-                        border: InputBorder.none,
-                        hintText: 'Correu Electrònic',
+                    color: Color(0xFFF5F5F5),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: TextField(
+                    controller: _emailController,
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(),
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.grey.shade300),
+                        borderRadius: BorderRadius.circular(12),
                       ),
+                      labelText: _emailController.text.isEmpty
+                          ? 'Correu Electrònic'
+                          : null,
+                      hintText: 'Correu Electrònic',
+                      contentPadding: EdgeInsets.symmetric(horizontal: 15.0),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.green),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      labelStyle: TextStyle(
+                        color: Colors.grey,
+                      ),
+                      floatingLabelBehavior: FloatingLabelBehavior.always,
                     ),
+                    onChanged: (value) {
+                      setState(() {});
+                    },
                   ),
                 ),
               ),
+
               SizedBox(
                 height: 10,
               ),
@@ -208,8 +197,8 @@ class _RegisterPageState extends State<RegisterPage> {
                 padding: const EdgeInsets.symmetric(horizontal: 25.0),
                 child: Container(
                   decoration: BoxDecoration(
-                      color: Colors.grey[200],
-                      border: Border.all(color: Colors.white),
+                      color: Color(0xFFF5F5F5),
+                      border: Border.all(color: Colors.grey.shade300),
                       borderRadius: BorderRadius.circular(12)),
                   child: Padding(
                     padding: const EdgeInsets.only(left: 20.0),
@@ -232,8 +221,8 @@ class _RegisterPageState extends State<RegisterPage> {
                 padding: const EdgeInsets.symmetric(horizontal: 25.0),
                 child: Container(
                   decoration: BoxDecoration(
-                      color: Colors.grey[200],
-                      border: Border.all(color: Colors.white),
+                      color: Color(0xFFF5F5F5),
+                      border: Border.all(color: Colors.grey.shade300),
                       borderRadius: BorderRadius.circular(12)),
                   child: Padding(
                     padding: const EdgeInsets.only(left: 20.0),
@@ -252,25 +241,6 @@ class _RegisterPageState extends State<RegisterPage> {
                 height: 10,
               ), //Nom d'usuari
 
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 25.0),
-                child: Container(
-                  decoration: BoxDecoration(
-                      color: Colors.grey[200],
-                      border: Border.all(color: Colors.white),
-                      borderRadius: BorderRadius.circular(12)),
-                  child: Padding(
-                    padding: const EdgeInsets.only(left: 20.0),
-                    child: TextField(
-                      controller: _carreraController,
-                      decoration: InputDecoration(
-                        border: InputBorder.none,
-                        hintText: "Carrera",
-                      ),
-                    ),
-                  ),
-                ),
-              ),
               SizedBox(
                 height: 10,
               ),
@@ -282,7 +252,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   child: Container(
                     padding: EdgeInsets.all(20),
                     decoration: BoxDecoration(
-                      color: Colors.green[300],
+                      color: Color(0xFF407bfe),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Center(
@@ -311,13 +281,14 @@ class _RegisterPageState extends State<RegisterPage> {
                     child: Text(
                       "Inicia la Sessió",
                       style: TextStyle(
-                          color: Colors.blue, fontWeight: FontWeight.bold),
+                          color: Color(0xFF407bfe),
+                          fontWeight: FontWeight.bold),
                     ),
                   )
                 ],
               ),
             ],
           ),
-        )));
+        ));
   }
 }
