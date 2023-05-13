@@ -3,6 +3,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class RegisterPage extends StatefulWidget {
@@ -22,10 +23,16 @@ class _RegisterPageState extends State<RegisterPage> {
   final _secondNameController = TextEditingController();
   final _ageController = TextEditingController();
   final _carreraController = TextEditingController();
+  final _emailFocusNode = FocusNode();
+  final _passwordFocusNode = FocusNode();
+  final _confirmpasswordFocusNode = FocusNode();
 
   @override
   void dispose() {
     _emailController.dispose();
+    _emailFocusNode.dispose();
+    _passwordFocusNode.dispose();
+    _confirmpasswordFocusNode.dispose();
     _passwordController.dispose();
     _confirmpasswordController.dispose();
     _firstNameController.dispose();
@@ -36,7 +43,7 @@ class _RegisterPageState extends State<RegisterPage> {
     super.dispose();
   }
 
-  int _currentStep = 0;
+  final int _currentStep = 0;
 
   Future signUp() async {
     if (passwordConfirmed()) {
@@ -110,7 +117,7 @@ class _RegisterPageState extends State<RegisterPage> {
                       ),
                     ),
                   ),
-                  SizedBox(width: 48), // Espacio adicional para la flecha
+                  SizedBox(width: 48),
                 ],
               ),
               SizedBox(height: 30),
@@ -152,7 +159,6 @@ class _RegisterPageState extends State<RegisterPage> {
                 height: 10,
               ),
               //E-mail
-
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 25.0),
                 child: Container(
@@ -160,61 +166,93 @@ class _RegisterPageState extends State<RegisterPage> {
                     color: Color(0xFFF5F5F5),
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: TextField(
-                    controller: _emailController,
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(),
-                      enabledBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.grey.shade300),
-                        borderRadius: BorderRadius.circular(12),
+                  child: FormBuilder(
+                    autovalidateMode: AutovalidateMode.onUserInteraction,
+                    child: FormBuilderTextField(
+                      name: 'email',
+                      controller: _emailController,
+                      decoration: InputDecoration(
+                        border: OutlineInputBorder(),
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.grey.shade300),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.green),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        focusedErrorBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.red),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        labelText: 'Correo Electrónico',
+                        labelStyle: TextStyle(
+                          color: Colors.grey,
+                        ),
+                        floatingLabelBehavior: FloatingLabelBehavior.always,
                       ),
-                      labelText: _emailController.text.isEmpty
-                          ? 'Correu Electrònic'
-                          : null,
-                      hintText: 'Correu Electrònic',
-                      contentPadding: EdgeInsets.symmetric(horizontal: 15.0),
-                      focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.green),
-                        borderRadius: BorderRadius.circular(12),
+                      onChanged: (value) {
+                        setState(() {});
+                      },
+                      style: TextStyle(
+                        color: Colors.black,
                       ),
-                      labelStyle: TextStyle(
-                        color: Colors.grey,
-                      ),
-                      floatingLabelBehavior: FloatingLabelBehavior.always,
+                      focusNode: _emailFocusNode,
                     ),
-                    onChanged: (value) {
-                      setState(() {});
-                    },
                   ),
                 ),
               ),
 
               SizedBox(
-                height: 10,
+                height: 30,
               ),
               //Password
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 25.0),
                 child: Container(
                   decoration: BoxDecoration(
-                      color: Color(0xFFF5F5F5),
-                      border: Border.all(color: Colors.grey.shade300),
-                      borderRadius: BorderRadius.circular(12)),
-                  child: Padding(
-                    padding: const EdgeInsets.only(left: 20.0),
-                    child: TextField(
+                    color: Color(0xFFF5F5F5),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: FormBuilder(
+                    autovalidateMode: AutovalidateMode.onUserInteraction,
+                    child: FormBuilderTextField(
+                      name: 'contrasenya',
                       controller: _passwordController,
                       obscureText: true,
                       decoration: InputDecoration(
-                        border: InputBorder.none,
-                        hintText: 'Contrasenya',
+                        border: OutlineInputBorder(),
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.grey.shade300),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.green),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        focusedErrorBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.red),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        labelText: 'Contrasenya',
+                        labelStyle: TextStyle(
+                          color: Colors.grey,
+                        ),
+                        floatingLabelBehavior: FloatingLabelBehavior.always,
                       ),
+                      onChanged: (value) {
+                        setState(() {});
+                      },
+                      style: TextStyle(
+                        color: Colors.black,
+                      ),
+                      focusNode: _passwordFocusNode,
                     ),
                   ),
                 ),
               ),
               SizedBox(
-                height: 10,
+                height: 30,
               ),
               //Password
               Padding(
@@ -222,23 +260,46 @@ class _RegisterPageState extends State<RegisterPage> {
                 child: Container(
                   decoration: BoxDecoration(
                       color: Color(0xFFF5F5F5),
-                      border: Border.all(color: Colors.grey.shade300),
                       borderRadius: BorderRadius.circular(12)),
-                  child: Padding(
-                    padding: const EdgeInsets.only(left: 20.0),
-                    child: TextField(
+                  child: FormBuilder(
+                    autovalidateMode: AutovalidateMode.onUserInteraction,
+                    child: FormBuilderTextField(
+                      name: 'repetir contrasenya',
                       controller: _confirmpasswordController,
                       obscureText: true,
                       decoration: InputDecoration(
-                        border: InputBorder.none,
-                        hintText: 'Repetir Contrasenya',
+                        border: OutlineInputBorder(),
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.grey.shade300),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.green),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        focusedErrorBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.red),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        labelText: 'Repetir Contrasenya',
+                        labelStyle: TextStyle(
+                          color: Colors.grey,
+                        ),
+                        floatingLabelBehavior: FloatingLabelBehavior.always,
                       ),
+                      onChanged: (value) {
+                        setState(() {});
+                      },
+                      style: TextStyle(
+                        color: Colors.black,
+                      ),
+                      focusNode: _confirmpasswordFocusNode,
                     ),
                   ),
                 ),
               ),
               SizedBox(
-                height: 10,
+                height: 30,
               ), //Nom d'usuari
 
               SizedBox(
@@ -252,7 +313,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   child: Container(
                     padding: EdgeInsets.all(20),
                     decoration: BoxDecoration(
-                      color: Color(0xFF407bfe),
+                      color: Color(0xFF1FA29E),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Center(
@@ -281,7 +342,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     child: Text(
                       "Inicia la Sessió",
                       style: TextStyle(
-                          color: Color(0xFF407bfe),
+                          color: Color(0xFF1FA29E),
                           fontWeight: FontWeight.bold),
                     ),
                   )
