@@ -1,12 +1,9 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
 import 'package:appinio_swiper/appinio_swiper.dart';
 import '../components/tinder_buttons.dart';
 import '../components/tinder_candidate_model.dart';
 import '../components/tinder_card.dart';
 import 'dart:developer';
-import 'package:appinio_swiper/appinio_swiper.dart';
 
 class Tinder extends StatefulWidget {
   const Tinder({

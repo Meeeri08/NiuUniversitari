@@ -58,8 +58,6 @@ class _RegisterPageState extends State<RegisterPage> {
     super.dispose();
   }
 
-  final int _currentStep = 0;
-
   Future signUp() async {
     if (passwordConfirmed()) {
       //create user
@@ -105,7 +103,6 @@ class _RegisterPageState extends State<RegisterPage> {
     } else {
       return false;
     }
-    ;
   }
 
   Widget build(BuildContext context) {
