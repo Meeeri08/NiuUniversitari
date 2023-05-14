@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 class Chat extends StatefulWidget {
+  const Chat({super.key});
+
   @override
   _ChatState createState() => _ChatState();
 }
@@ -57,7 +59,7 @@ class _ChatState extends State<Chat> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color.fromARGB(236, 236, 236, 236),
+      backgroundColor: const Color.fromARGB(236, 236, 236, 236),
       body: Column(
         children: <Widget>[
           Expanded(
@@ -66,7 +68,7 @@ class _ChatState extends State<Chat> {
               builder: (BuildContext context,
                   AsyncSnapshot<QuerySnapshot> snapshot) {
                 if (!snapshot.hasData) {
-                  return Center(
+                  return const Center(
                     child: CircularProgressIndicator(),
                   );
                 }
@@ -100,13 +102,13 @@ class _ChatState extends State<Chat> {
                 Expanded(
                   child: TextField(
                     controller: _messageController,
-                    decoration: InputDecoration(
+                    decoration: const InputDecoration(
                       hintText: 'Escriu un missatge...',
                     ),
                   ),
                 ),
                 IconButton(
-                  icon: Icon(Icons.send),
+                  icon: const Icon(Icons.send),
                   onPressed: () {
                     _sendMessage();
                   },

@@ -1,5 +1,4 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
 class ForgotPasswordPage extends StatefulWidget {
@@ -25,7 +24,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
       showDialog(
           context: context,
           builder: (context) {
-            return AlertDialog(
+            return const AlertDialog(
               content: Text('Enllaç enviat. Fes un cop dull a la teva bústia'),
             );
           });
@@ -51,15 +50,15 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 25.0),
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 25.0),
             child: Text(
               'Introdueix el teu correu i mira la teva bústia',
               textAlign: TextAlign.center,
               style: TextStyle(fontSize: 20),
             ),
           ),
-          SizedBox(
+          const SizedBox(
             height: 10,
           ),
           //E-mail
@@ -75,7 +74,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                 padding: const EdgeInsets.only(left: 20.0),
                 child: TextField(
                   controller: _emailController,
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     border: InputBorder.none,
                     hintText: 'Correu Electrònic',
                   ),
@@ -83,13 +82,13 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
               ),
             ),
           ),
-          SizedBox(
+          const SizedBox(
             height: 10,
           ),
           MaterialButton(
             onPressed: passwordReset,
-            child: Text('Canviar Contrasenya'),
             color: Colors.deepPurple[200],
+            child: const Text('Canviar Contrasenya'),
           )
         ],
       ),

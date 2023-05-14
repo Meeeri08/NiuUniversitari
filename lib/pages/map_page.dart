@@ -7,6 +7,8 @@ import 'package:jobapp/pages/house_detail_screen.dart';
 import 'package:flutter/services.dart' show ByteData, Uint8List, rootBundle;
 
 class MapPage extends StatefulWidget {
+  const MapPage({super.key});
+
   @override
   _MapPageState createState() => _MapPageState();
 }
@@ -37,11 +39,11 @@ class _MapPageState extends State<MapPage> {
   }
 
   Future<BitmapDescriptor> _createMarkerIcon(String price) async {
-    final String markerAssetPath = 'assets/marker_icon.png';
+    const String markerAssetPath = 'assets/marker_icon.png';
     final ByteData markerByteData = await rootBundle.load(markerAssetPath);
     final Uint8List markerIconBytes = markerByteData.buffer.asUint8List();
 
-    final Size markerSize = Size(20.0, 40.0);
+    const Size markerSize = Size(20.0, 40.0);
 
     final PictureRecorder pictureRecorder = PictureRecorder();
     final Canvas canvas = Canvas(pictureRecorder);
@@ -55,7 +57,7 @@ class _MapPageState extends State<MapPage> {
       markerPaint,
     );
 
-    final textStyle = TextStyle(
+    const textStyle = TextStyle(
       fontSize: 20,
       color: Colors.white,
       fontWeight: FontWeight.bold,
@@ -106,7 +108,7 @@ class _MapPageState extends State<MapPage> {
             child: Padding(
               padding: const EdgeInsets.only(left: 16.0),
               child: IconButton(
-                icon: Icon(Icons.arrow_back),
+                icon: const Icon(Icons.arrow_back),
                 onPressed: () => Navigator.of(context).pop(),
               ),
             ),
@@ -157,7 +159,7 @@ class _MapPageState extends State<MapPage> {
                   ),
                 );
               },
-              child: Container(
+              child: SizedBox(
                 height: 300,
                 child: Column(
                   children: [
@@ -183,22 +185,22 @@ class _MapPageState extends State<MapPage> {
                               children: [
                                 Text(
                                   doc['title'],
-                                  style: TextStyle(
+                                  style: const TextStyle(
                                     fontWeight: FontWeight.bold,
                                     fontSize: 16,
                                   ),
                                 ),
                                 Text(
                                   doc.get('price').toString(),
-                                  style: TextStyle(
+                                  style: const TextStyle(
                                     fontWeight: FontWeight.bold,
                                     fontSize: 16,
                                   ),
                                 ),
                               ],
                             ),
-                            SizedBox(height: 10),
-                            Row(
+                            const SizedBox(height: 10),
+                            const Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Row(

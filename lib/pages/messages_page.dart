@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 class Messages extends StatefulWidget {
+  const Messages({super.key});
+
   @override
   _MessagesState createState() => _MessagesState();
 }
@@ -52,7 +54,7 @@ class _MessagesState extends State<Messages> {
           _user.uid
         ], // Add the user's UID to the list of participants
       };
-      String messageId = _user.uid + '_' + messageData['timestamp'].toString();
+      String messageId = '${_user.uid}_${messageData['timestamp']}';
       await _firestore.collection('chats').doc(messageId).set(messageData);
 
       // Update the list of messages
@@ -69,7 +71,7 @@ class _MessagesState extends State<Messages> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color.fromARGB(236, 236, 236, 236),
+      backgroundColor: const Color.fromARGB(236, 236, 236, 236),
       body: Column(
         children: <Widget>[
           Expanded(
@@ -78,7 +80,7 @@ class _MessagesState extends State<Messages> {
               builder: (BuildContext context,
                   AsyncSnapshot<QuerySnapshot> snapshot) {
                 if (!snapshot.hasData) {
-                  return Center(
+                  return const Center(
                     child: CircularProgressIndicator(),
                   );
                 }
@@ -113,13 +115,13 @@ class _MessagesState extends State<Messages> {
                 Expanded(
                   child: TextField(
                     controller: _messageController,
-                    decoration: InputDecoration(
+                    decoration: const InputDecoration(
                       hintText: 'Escriu un missatge...',
                     ),
                   ),
                 ),
                 IconButton(
-                  icon: Icon(Icons.send),
+                  icon: const Icon(Icons.send),
                   onPressed: () {
                     _sendMessage();
                   },

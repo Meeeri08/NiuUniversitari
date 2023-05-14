@@ -38,7 +38,7 @@ class _HouseDetailScreenState extends State<HouseDetailScreen> {
     return Scaffold(
         extendBodyBehindAppBar: true,
         appBar: AppBar(
-          backgroundColor: Color(0x44000000),
+          backgroundColor: const Color(0x44000000),
           elevation: 0,
         ),
         body: StreamBuilder<DocumentSnapshot>(
@@ -52,7 +52,7 @@ class _HouseDetailScreenState extends State<HouseDetailScreen> {
                 return Center(child: Text('Error: ${snapshot.error}'));
               }
               if (snapshot.connectionState == ConnectionState.waiting) {
-                return Center(child: CircularProgressIndicator());
+                return const Center(child: CircularProgressIndicator());
               }
               final house = snapshot.data!;
               final imageUrl = house.get('image_url');
@@ -67,25 +67,23 @@ class _HouseDetailScreenState extends State<HouseDetailScreen> {
                   child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Container(
+                  SizedBox(
                     height: 300,
                     child: Stack(
                       children: [
                         GoogleMap(
                           initialCameraPosition: CameraPosition(
-                              target: _initialLatLng ?? LatLng(0, 0), zoom: 15),
+                              target: _initialLatLng ?? const LatLng(0, 0), zoom: 15),
                           onMapCreated: (GoogleMapController controller) {
-                            if (_mapController == null) {
-                              _mapController = controller;
-                            }
+                            _mapController ??= controller;
                           },
                           markers: {
                             Marker(
                               markerId: MarkerId(widget.houseId),
-                              position: _initialLatLng ?? LatLng(0, 0),
+                              position: _initialLatLng ?? const LatLng(0, 0),
                               icon: BitmapDescriptor.defaultMarkerWithHue(
                                   BitmapDescriptor.hueViolet),
-                              anchor: Offset(0.3, 0.3),
+                              anchor: const Offset(0.3, 0.3),
                               infoWindow: InfoWindow(title: title),
                             ),
                           },
@@ -94,7 +92,7 @@ class _HouseDetailScreenState extends State<HouseDetailScreen> {
                           bottom: 16,
                           right: 16,
                           child: Container(
-                            padding: EdgeInsets.all(8),
+                            padding: const EdgeInsets.all(8),
                             decoration: BoxDecoration(
                               color: Colors.white,
                               borderRadius: BorderRadius.circular(8),
@@ -112,13 +110,13 @@ class _HouseDetailScreenState extends State<HouseDetailScreen> {
                               children: [
                                 Text(
                                   '\$$price',
-                                  style: TextStyle(
+                                  style: const TextStyle(
                                     fontWeight: FontWeight.bold,
                                     fontSize: 20,
                                   ),
                                 ),
-                                SizedBox(height: 4),
-                                Text(
+                                const SizedBox(height: 4),
+                                const Text(
                                   'Per Month',
                                   style: TextStyle(fontSize: 16),
                                 ),
@@ -129,50 +127,50 @@ class _HouseDetailScreenState extends State<HouseDetailScreen> {
                       ],
                     ),
                   ),
-                  SizedBox(height: 16),
+                  const SizedBox(height: 16),
                   Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 16),
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
                           title,
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 24,
                           ),
                         ),
-                        SizedBox(height: 8),
+                        const SizedBox(height: 8),
                         Row(
                           children: [
-                            Icon(Icons.location_on),
-                            SizedBox(width: 8),
+                            const Icon(Icons.location_on),
+                            const SizedBox(width: 8),
                             Text('$latLng'),
                           ],
                         ),
-                        SizedBox(height: 16),
-                        Text(
+                        const SizedBox(height: 16),
+                        const Text(
                           'Description',
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 18,
                           ),
                         ),
-                        SizedBox(height: 8),
+                        const SizedBox(height: 8),
                         Text(
                           description,
-                          style: TextStyle(fontSize: 16),
+                          style: const TextStyle(fontSize: 16),
                         ),
-                        SizedBox(height: 16),
-                        Text(
+                        const SizedBox(height: 16),
+                        const Text(
                           'Details',
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 18,
                           ),
                         ),
-                        SizedBox(height: 8),
-                        Row(children: [
+                        const SizedBox(height: 8),
+                        const Row(children: [
                           Expanded(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,

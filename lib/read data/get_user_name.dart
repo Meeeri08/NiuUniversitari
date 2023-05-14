@@ -18,10 +18,10 @@ class GetUserName extends StatelessWidget {
                   snapshot.data!.data() as Map<String, dynamic>;
               return Text('First Name: ${data['first name']}');
             } else {
-              return Text('Error al leer datos');
+              return const Text('Error al leer datos');
             }
           } else {
-            return CircularProgressIndicator();
+            return const CircularProgressIndicator();
           }
         }));
   }

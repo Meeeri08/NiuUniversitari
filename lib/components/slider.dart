@@ -6,7 +6,7 @@ class SliderPage extends StatelessWidget {
   final String description;
   final String image;
 
-  SliderPage({this.title = "", this.description = "", this.image = ""});
+  const SliderPage({super.key, this.title = "", this.description = "", this.image = ""});
   @override
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
@@ -20,21 +20,21 @@ class SliderPage extends StatelessWidget {
             image,
             width: width * 0.6,
           ),
-          SizedBox(
+          const SizedBox(
             height: 60,
           ),
           Text(
             title,
-            style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+            style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
           ),
-          SizedBox(
+          const SizedBox(
             height: 20,
           ),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 80),
             child: Text(
               description,
-              style: TextStyle(
+              style: const TextStyle(
                 height: 1.5,
                 fontWeight: FontWeight.normal,
                 fontSize: 14,
@@ -43,7 +43,7 @@ class SliderPage extends StatelessWidget {
               textAlign: TextAlign.center,
             ),
           ),
-          SizedBox(
+          const SizedBox(
             height: 60,
           ),
         ],

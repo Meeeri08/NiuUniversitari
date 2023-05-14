@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:jobapp/pages/house_detail_screen.dart';
-import 'package:jobapp/pages/chat_page.dart';
 import 'package:jobapp/pages/profile_page.dart';
 import 'package:jobapp/pages/map_page.dart';
 import 'package:jobapp/pages/tinder.dart';
@@ -19,10 +18,11 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   int _currentIndex = 0;
 
+  @override
   Widget build(BuildContext context) {
     return Center(
         child: Scaffold(
-      backgroundColor: Color(0xFFF5F5F5),
+      backgroundColor: const Color(0xFFF5F5F5),
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0.0,
@@ -46,7 +46,7 @@ class _HomePageState extends State<HomePage> {
                         onPressed: () {
                           Navigator.push(context, MaterialPageRoute(
                             builder: (context) {
-                              return MapPage();
+                              return const MapPage();
                             },
                           ));
                         },
@@ -59,7 +59,7 @@ class _HomePageState extends State<HomePage> {
         actions: _currentIndex == 0
             ? <Widget>[
                 Container(
-                  padding: EdgeInsets.only(right: 20),
+                  padding: const EdgeInsets.only(right: 20),
                   child: Column(
                     children: [
                       Container(
@@ -76,7 +76,7 @@ class _HomePageState extends State<HomePage> {
                           onPressed: () {
                             Navigator.push(context, MaterialPageRoute(
                               builder: (context) {
-                                return MapPage();
+                                return const MapPage();
                               },
                             ));
                           },
@@ -99,7 +99,7 @@ class _HomePageState extends State<HomePage> {
                 return Center(child: Text('Error: ${snapshot.error}'));
               }
               if (snapshot.connectionState == ConnectionState.waiting) {
-                return Center(child: CircularProgressIndicator());
+                return const Center(child: CircularProgressIndicator());
               }
               final houses = snapshot.data!.docs;
               return ListView.builder(
@@ -144,8 +144,8 @@ class _HomePageState extends State<HomePage> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text('$nRooms rooms, $nBathroom bathrooms'),
-                                SizedBox(height: 4),
-                                Text('Price: $price\€'),
+                                const SizedBox(height: 4),
+                                Text('Price: $price€'),
                               ],
                             ),
                           ),
@@ -158,15 +158,15 @@ class _HomePageState extends State<HomePage> {
             },
           ),
         ),
-        Tinder(),
-        Messages(),
+        const Tinder(),
+        const Messages(),
 
-        Profile(),
+        const Profile(),
       ]),
       bottomNavigationBar: CurvedNavigationBar(
           backgroundColor: Colors.transparent,
           color: Colors.deepPurple.shade100,
-          animationDuration: Duration(milliseconds: 400),
+          animationDuration: const Duration(milliseconds: 400),
           onTap: (index) {
             setState(() {
               _currentIndex = index;

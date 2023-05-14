@@ -15,7 +15,7 @@ class _ProfileState extends State<Profile> {
   Widget build(BuildContext context) {
     return Center(
       child: Scaffold(
-        backgroundColor: Color.fromARGB(236, 236, 236, 236),
+        backgroundColor: const Color.fromARGB(236, 236, 236, 236),
         body: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -23,13 +23,13 @@ class _ProfileState extends State<Profile> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text('Has iniciat sessió com a: ' + user.email!),
+                  Text('Has iniciat sessió com a: ${user.email!}'),
                   MaterialButton(
                       onPressed: () {
                         FirebaseAuth.instance.signOut();
                       },
                       color: Colors.deepPurple[200],
-                      child: Text('Tanca la sessió'))
+                      child: const Text('Tanca la sessió'))
                 ],
               ),
             ),

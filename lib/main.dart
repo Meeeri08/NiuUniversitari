@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:jobapp/firebase_options.dart';
-import 'package:jobapp/auth/main_page.dart';
 import 'package:jobapp/pages/landing_page.dart';
 
 Future<void> main() async {
@@ -16,7 +15,7 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return const MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Landing(),
     );
