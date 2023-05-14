@@ -36,52 +36,53 @@ class _TinderPageState extends State<Tinder> {
   }
 
   @override
+  @override
   Widget build(BuildContext context) {
-    return Container(
-      child: CupertinoPageScaffold(
-        backgroundColor: Color.fromARGB(236, 236, 236, 236),
-        child: Column(
-          children: [
-            Container(
-              child: const SizedBox(
-                height: 50,
+    return CupertinoPageScaffold(
+      child: Column(
+        children: [
+          const SizedBox(
+            height: 50,
+          ),
+          SizedBox(
+            height: MediaQuery.of(context).size.height * 0.60,
+            child: AppinioSwiper(
+              swipeOptions: AppinioSwipeOptions.vertical,
+              unlimitedUnswipe: true,
+              controller: controller,
+              unswipe: _unswipe,
+              onSwipe: _swipe,
+              padding: const EdgeInsets.only(
+                left: 25,
+                right: 25,
+                top: 20,
+                bottom: 40,
               ),
+              onEnd: _onEnd,
+              cardsCount: candidates.length,
+              cardsBuilder: (BuildContext context, int index) {
+                return TinderCard(candidate: candidates[index]);
+              },
             ),
-            SizedBox(
-              height: MediaQuery.of(context).size.height * 0.60,
-              child: AppinioSwiper(
-                unlimitedUnswipe: true,
-                controller: controller,
-                unswipe: _unswipe,
-                cards: cards,
-                onSwipe: _swipe,
-                padding: const EdgeInsets.only(
-                  left: 25,
-                  right: 25,
-                  top: 20,
-                  bottom: 40,
-                ),
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const SizedBox(
+                width: 80,
               ),
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const SizedBox(
-                  width: 80,
-                ),
-                swipeLeftButton(controller),
-                const SizedBox(
-                  width: 20,
-                ),
-                swipeRightButton(controller),
-                const SizedBox(
-                  width: 20,
-                ),
-                unswipeButton(controller),
-              ],
-            )
-          ],
-        ),
+              swipeLeftButton(controller),
+              const SizedBox(
+                width: 20,
+              ),
+              swipeRightButton(controller),
+              const SizedBox(
+                width: 20,
+              ),
+              unswipeButton(controller),
+            ],
+          )
+        ],
       ),
     );
   }
@@ -96,5 +97,9 @@ class _TinderPageState extends State<Tinder> {
     } else {
       log("FAIL: no card left to unswipe");
     }
+  }
+
+  void _onEnd() {
+    log("end reached!");
   }
 }
