@@ -71,7 +71,7 @@ class _MessagesState extends State<Messages> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color.fromARGB(236, 236, 236, 236),
+      backgroundColor: const Color(0xfffafafa),
       body: Column(
         children: <Widget>[
           Expanded(

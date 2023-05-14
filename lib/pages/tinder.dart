@@ -39,6 +39,7 @@ class _TinderPageState extends State<Tinder> {
   @override
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
+      backgroundColor: const Color(0xfffafafa),
       child: Column(
         children: [
           const SizedBox(

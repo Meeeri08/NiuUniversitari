@@ -15,7 +15,7 @@ class _ProfileState extends State<Profile> {
   Widget build(BuildContext context) {
     return Center(
       child: Scaffold(
-        backgroundColor: const Color.fromARGB(236, 236, 236, 236),
+        backgroundColor: const Color(0xfffafafa),
         body: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
