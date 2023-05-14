@@ -40,13 +40,19 @@ class _HomePageState extends State<HomePage> {
                       ),
                       child: GestureDetector(
                         onTap: () async {
-                          final result = await Navigator.push(
+                          List<DocumentSnapshot>? result = await Navigator.push(
                             context,
                             MaterialPageRoute(builder: (context) {
-                              return FilterScreen();
+                              return FilterScreen(
+                                onFilterApplied: (houses) {
+                                  setState(() {
+                                    filteredHouses = houses;
+                                  });
+                                },
+                              );
                             }),
                           );
-                          if (result is List<DocumentSnapshot>) {
+                          if (result != null) {
                             setState(() {
                               filteredHouses = result;
                             });
