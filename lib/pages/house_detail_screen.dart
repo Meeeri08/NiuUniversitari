@@ -408,12 +408,11 @@ class _HouseDetailScreenState extends State<HouseDetailScreen> {
                     );
                   },
                 ),
-                const SizedBox(height: 80),
+                const SizedBox(height: 10),
                 Container(
                     width: double.infinity,
-                    color: Colors
-                        .red, // Personaliza el color según tus necesidades
-                    child: Center(
+                    color: Colors.red,
+                    child: const Center(
                       child: Text(
                         'Container',
                         style: TextStyle(

@@ -118,7 +118,7 @@ class _HomePageState extends State<HomePage> {
                 child: Padding(
                   padding: const EdgeInsets.only(top: 100, left: 30),
                   child: Text(
-                    'Find your',
+                    'Troba el teu',
                     style: GoogleFonts.dmSans(
                       fontSize: 36,
                       color: Colors.grey.shade600,
@@ -131,7 +131,7 @@ class _HomePageState extends State<HomePage> {
                 child: Padding(
                   padding: const EdgeInsets.only(left: 30),
                   child: Text(
-                    'best property',
+                    'habitatge ideal',
                     style: GoogleFonts.dmSans(
                       fontSize: 36,
                       fontWeight: FontWeight.bold,
