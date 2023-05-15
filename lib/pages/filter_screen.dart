@@ -14,6 +14,8 @@ class FilterScreen extends StatefulWidget {
 class _FilterScreenState extends State<FilterScreen> {
   int minPrice = 0;
   int maxPrice = 2000;
+  int minRooms = 0;
+  int maxRooms = 10;
 
   @override
   Widget build(BuildContext context) {
@@ -38,6 +40,21 @@ class _FilterScreenState extends State<FilterScreen> {
               },
             ),
           ),
+          ListTile(
+            title: Text('Number of Rooms'),
+            subtitle: RangeSlider(
+              values: RangeValues(minRooms.toDouble(), maxRooms.toDouble()),
+              min: 0,
+              max: 10,
+              divisions: 10,
+              onChanged: (RangeValues values) {
+                setState(() {
+                  minRooms = values.start.toInt();
+                  maxRooms = values.end.toInt();
+                });
+              },
+            ),
+          ),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: Row(
@@ -45,6 +62,16 @@ class _FilterScreenState extends State<FilterScreen> {
               children: [
                 Text('Min Price: $minPrice'),
                 Text('Max Price: $maxPrice'),
+              ],
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text('Min Rooms: $minRooms'),
+                Text('Max Rooms: $maxRooms'),
               ],
             ),
           ),
@@ -76,10 +103,42 @@ class _FilterScreenState extends State<FilterScreen> {
 
     filteredQuery.get().then((QuerySnapshot querySnapshot) {
       List<DocumentSnapshot> filteredHouses = querySnapshot.docs;
-      print('Filtered Houses: ${filteredHouses.length}');
+      print('Filtered Houses (Price): ${filteredHouses.length}');
 
-      widget.onFilterApplied(filteredHouses);
-      Navigator.pop(context);
+      Query roomsQuery = housesCollection;
+
+      if (minRooms != 0 || maxRooms != 10) {
+        if (minRooms != 0 && maxRooms != 10) {
+          roomsQuery = roomsQuery.where('rooms',
+              isGreaterThanOrEqualTo: minRooms, isLessThanOrEqualTo: maxRooms);
+        } else if (minRooms != 0) {
+          roomsQuery =
+              roomsQuery.where('rooms', isGreaterThanOrEqualTo: minRooms);
+        } else {
+          roomsQuery = roomsQuery.where('rooms', isLessThanOrEqualTo: maxRooms);
+        }
+      }
+
+      roomsQuery.get().then((QuerySnapshot roomsSnapshot) {
+        List<DocumentSnapshot> filteredRooms = roomsSnapshot.docs;
+        print('Filtered Houses (Rooms): ${filteredRooms.length}');
+
+        // Combine the results from price and rooms filters
+        List<DocumentSnapshot> finalFilteredHouses = [];
+
+        for (var house in filteredHouses) {
+          var roomId = house.id;
+          var matchingRooms = filteredRooms.where((room) => room.id == roomId);
+          if (matchingRooms.isNotEmpty) {
+            finalFilteredHouses.add(house);
+          }
+        }
+
+        print('Final Filtered Houses: ${finalFilteredHouses.length}');
+
+        widget.onFilterApplied(finalFilteredHouses);
+        Navigator.pop(context);
+      });
     });
   }
 }
