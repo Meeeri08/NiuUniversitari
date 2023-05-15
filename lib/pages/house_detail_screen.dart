@@ -299,24 +299,66 @@ class _HouseDetailScreenState extends State<HouseDetailScreen> {
                                           ],
                                         ),
                                         Spacer(),
-                                        IconButton(
-                                          onPressed: () {
-                                            // Chat button action
-                                          },
-                                          icon: Icon(
-                                            Icons.chat_bubble_outline_rounded,
-                                            color: Color(0xff25262b),
-                                            // Add desired gradient or shadow to the icon
-                                          ),
+                                        Row(
+                                          children: [
+                                            InkWell(
+                                              onTap: () {
+                                                // Chat button action
+                                              },
+                                              borderRadius:
+                                                  BorderRadius.circular(13.0),
+                                              child: Container(
+                                                height: 40,
+                                                width: 40,
+                                                decoration: BoxDecoration(
+                                                  color: Colors.white,
+                                                  borderRadius:
+                                                      BorderRadius.circular(13),
+                                                  boxShadow: [
+                                                    BoxShadow(
+                                                      color: Colors.black
+                                                          .withOpacity(0.05),
+                                                      blurRadius: 4.0,
+                                                      offset: Offset(0, 2),
+                                                    ),
+                                                  ],
+                                                ),
+                                                child: Icon(
+                                                  Icons
+                                                      .chat_bubble_outline_rounded,
+                                                  color: Color(0xff25262b),
+                                                ),
+                                              ),
+                                            ),
+                                            SizedBox(width: 8.0),
+                                          ],
                                         ),
-                                        IconButton(
-                                          onPressed: () {
+                                        InkWell(
+                                          onTap: () {
                                             // Phone call button action
                                           },
-                                          icon: Icon(
-                                            Icons.phone_outlined,
-                                            color: Color(0xff25262b),
-                                            // Add desired gradient or shadow to the icon
+                                          borderRadius:
+                                              BorderRadius.circular(13.0),
+                                          child: Container(
+                                            height: 40,
+                                            width: 40,
+                                            decoration: BoxDecoration(
+                                              color: Colors.white,
+                                              borderRadius:
+                                                  BorderRadius.circular(13.0),
+                                              boxShadow: [
+                                                BoxShadow(
+                                                  color: Colors.black
+                                                      .withOpacity(0.05),
+                                                  blurRadius: 4.0,
+                                                  offset: Offset(0, 2),
+                                                ),
+                                              ],
+                                            ),
+                                            child: Icon(
+                                              Icons.phone_outlined,
+                                              color: Color(0xff25262b),
+                                            ),
                                           ),
                                         ),
                                       ],

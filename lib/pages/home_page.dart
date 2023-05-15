@@ -175,9 +175,21 @@ class _HomePageState extends State<HomePage> {
                                 }
                                 final houses = snapshot.data!.docs;
 
-                                if (houses.isEmpty) {
-                                  return Center(
-                                    child: Text('No houses match the filters'),
+                                if (filteredHouses?.isEmpty == true) {
+                                  return AlertDialog(
+                                    title: const Text('Error'),
+                                    content: const Text(
+                                        'No hi ha cap resultat per a la teva cerca.'),
+                                    actions: <Widget>[
+                                      TextButton(
+                                        child: const Text('OK'),
+                                        onPressed: () {
+                                          setState(() {
+                                            filteredHouses = null;
+                                          });
+                                        },
+                                      ),
+                                    ],
                                   );
                                 }
 
