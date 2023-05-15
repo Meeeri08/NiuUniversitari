@@ -183,6 +183,7 @@ class _HomePageState extends State<HomePage> {
                                 return Container(
                                   width:
                                       350, // Ajusta el ancho del ListView aquí
+
                                   child: ListView.builder(
                                     itemCount: houses.length,
                                     itemBuilder:

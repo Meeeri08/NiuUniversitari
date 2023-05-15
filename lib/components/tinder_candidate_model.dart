@@ -29,36 +29,48 @@ List<TinderCandidateModel> candidates = [
     nom: 'Seven, 7',
     carrera: 'Enginyeria Informàtica',
     zona: 'Sarrià',
+    image:
+        'https://img.staticmb.com/mbcontent//images/uploads/2022/12/Most-Beautiful-House-in-the-World.jpg',
     color: gradientBlue,
   ),
   TinderCandidateModel(
     nom: 'Six, 6',
     carrera: 'Enginyeria Informàtica',
     zona: 'Sarrià',
+    image:
+        'https://img.staticmb.com/mbcontent//images/uploads/2022/12/Most-Beautiful-House-in-the-World.jpg',
     color: gradientPurple,
   ),
   TinderCandidateModel(
     nom: 'Five, 5',
     carrera: 'Enginyeria Informàtica',
     zona: 'Sarrià',
+    image:
+        'https://img.staticmb.com/mbcontent//images/uploads/2022/12/Most-Beautiful-House-in-the-World.jpg',
     color: gradientRed,
   ),
   TinderCandidateModel(
     nom: 'Four, 4',
     carrera: 'Enginyeria Informàtica',
     zona: 'Sarrià',
+    image:
+        'https://img.staticmb.com/mbcontent//images/uploads/2022/12/Most-Beautiful-House-in-the-World.jpg',
     color: gradientPink,
   ),
   TinderCandidateModel(
     nom: 'Three, 3',
     carrera: 'Enginyeria Informàtica',
     zona: 'Sarrià',
+    image:
+        'https://img.staticmb.com/mbcontent//images/uploads/2022/12/Most-Beautiful-House-in-the-World.jpg',
     color: gradientBlue,
   ),
   TinderCandidateModel(
     nom: 'Two, 2',
     carrera: 'Enginyeria Informàtica',
     zona: 'Sarrià',
+    image:
+        'https://img.staticmb.com/mbcontent//images/uploads/2022/12/Most-Beautiful-House-in-the-World.jpg',
     color: gradientPurple,
   ),
   TinderCandidateModel(
