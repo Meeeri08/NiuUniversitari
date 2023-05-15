@@ -104,6 +104,7 @@ class _HomePageState extends State<HomePage> {
               gradient: LinearGradient(
                 colors: [
                   Color(0xffffffff),
+                  Color(0xffffffff),
                   Color.fromARGB(255, 237, 237, 239),
                 ],
                 begin: Alignment.topCenter,
@@ -290,7 +291,7 @@ class _HomePageState extends State<HomePage> {
                                                               size: 14,
                                                             ),
                                                             Text(
-                                                              '  $nRooms rooms',
+                                                              '  $nRooms Habitació',
                                                               style: GoogleFonts
                                                                   .dmSans(
                                                                 fontSize: 12,
@@ -302,7 +303,7 @@ class _HomePageState extends State<HomePage> {
                                                                         .w700,
                                                               ),
                                                             ),
-                                                            SizedBox(width: 25),
+                                                            SizedBox(width: 5),
                                                             Icon(
                                                               Icons
                                                                   .bathtub_outlined,

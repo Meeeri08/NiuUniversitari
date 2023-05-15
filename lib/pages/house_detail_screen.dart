@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:expandable_text/expandable_text.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:photo_view/photo_view.dart';
@@ -18,9 +19,14 @@ class _HouseDetailScreenState extends State<HouseDetailScreen> {
   GoogleMapController? _mapController;
   LatLng? _initialLatLng;
   List<String> imageUrls = [];
+  String _mapStyle = '';
 
   @override
   void initState() {
+    rootBundle.loadString('assets/map_style2.json').then((string) {
+      _mapStyle = string;
+    });
+
     super.initState();
 
     // Initialize the initial LatLng value to the location of the house
@@ -67,7 +73,7 @@ class _HouseDetailScreenState extends State<HouseDetailScreen> {
                 Row(
                   children: [
                     SizedBox(
-                      width: 10,
+                      width: 12,
                     ), // Move the top arrow a bit to the right
                     IconButton(
                       icon: Icon(Icons.arrow_back_ios),
@@ -143,7 +149,6 @@ class _HouseDetailScreenState extends State<HouseDetailScreen> {
                                         MaterialPageRoute(
                                           builder: (BuildContext context) {
                                             return Scaffold(
-                                              backgroundColor: Colors.black,
                                               body: Stack(
                                                 children: [
                                                   Positioned.fill(
@@ -247,10 +252,82 @@ class _HouseDetailScreenState extends State<HouseDetailScreen> {
                                   ),
                                 ],
                               ),
-                              Divider(
-                                thickness: 1,
-                                color: Color.fromARGB(146, 224, 224, 224),
-                                height: 30,
+                              Column(
+                                children: [
+                                  const Divider(
+                                    thickness: 1,
+                                    color: Color.fromARGB(146, 224, 224, 224),
+                                    height: 30,
+                                  ),
+                                  Container(
+                                    height: 50,
+                                    padding:
+                                        EdgeInsets.symmetric(horizontal: 16),
+                                    child: Row(
+                                      children: [
+                                        Container(
+                                          width: 35,
+                                          height: 35,
+                                          decoration: BoxDecoration(
+                                            shape: BoxShape.circle,
+                                            color: Colors.grey[300],
+                                          ),
+                                          // child: Image.asset(
+                                          //     'your_image_path.png'), // Replace with your image
+                                        ),
+                                        SizedBox(width: 10),
+                                        Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            Text(
+                                              'Full Name',
+                                              style: GoogleFonts.dmSans(
+                                                fontSize: 14,
+                                                color: Color(0xff25262b),
+                                              ),
+                                            ),
+                                            Text(
+                                              'Propietari',
+                                              style: GoogleFonts.dmSans(
+                                                fontSize: 12,
+                                                color: Colors.grey,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                        Spacer(),
+                                        IconButton(
+                                          onPressed: () {
+                                            // Chat button action
+                                          },
+                                          icon: Icon(
+                                            Icons.chat_bubble_outline_rounded,
+                                            color: Color(0xff25262b),
+                                            // Add desired gradient or shadow to the icon
+                                          ),
+                                        ),
+                                        IconButton(
+                                          onPressed: () {
+                                            // Phone call button action
+                                          },
+                                          icon: Icon(
+                                            Icons.phone_outlined,
+                                            color: Color(0xff25262b),
+                                            // Add desired gradient or shadow to the icon
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  Divider(
+                                    thickness: 1,
+                                    color: Color.fromARGB(146, 224, 224, 224),
+                                    height: 30,
+                                  ),
+                                ],
                               ),
                               const Text(
                                 'Ubicació',
@@ -270,9 +347,9 @@ class _HouseDetailScreenState extends State<HouseDetailScreen> {
                                         _initialLatLng ?? const LatLng(0, 0),
                                     zoom: 15,
                                   ),
-                                  onMapCreated:
-                                      (GoogleMapController controller) {
-                                    _mapController ??= controller;
+                                  onMapCreated: (controller) {
+                                    _mapController = controller;
+                                    _mapController!.setMapStyle(_mapStyle);
                                   },
                                   myLocationButtonEnabled: false,
                                   markers: {
@@ -296,6 +373,7 @@ class _HouseDetailScreenState extends State<HouseDetailScreen> {
                                 color: Color.fromARGB(146, 224, 224, 224),
                                 height: 30,
                               ),
+
                               const SizedBox(height: 15),
                               Text(
                                 'Descripció',
