@@ -112,25 +112,30 @@ class _HomePageState extends State<HomePage> {
             ),
             child:
                 Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              SizedBox(height: 100),
-              Padding(
-                padding: const EdgeInsets.only(left: 30),
-                child: Text(
-                  'Find your',
-                  style: GoogleFonts.dmSans(
-                    fontSize: 36,
-                    color: Colors.grey.shade600,
+              Visibility(
+                visible: _currentIndex == 0,
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 100, left: 30),
+                  child: Text(
+                    'Find your',
+                    style: GoogleFonts.dmSans(
+                      fontSize: 36,
+                      color: Colors.grey.shade600,
+                    ),
                   ),
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.only(left: 30),
-                child: Text(
-                  'best property',
-                  style: GoogleFonts.dmSans(
-                    fontSize: 36,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xff25262b),
+              Visibility(
+                visible: _currentIndex == 0,
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 30),
+                  child: Text(
+                    'best property',
+                    style: GoogleFonts.dmSans(
+                      fontSize: 36,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xff25262b),
+                    ),
                   ),
                 ),
               ),
@@ -189,6 +194,7 @@ class _HomePageState extends State<HomePage> {
                                       final price = house.get('price');
                                       final title = house.get('title');
                                       final latLng = house.get('latlng');
+                                      final barri = house.get('barri');
 
                                       return Padding(
                                         padding: const EdgeInsets.symmetric(
@@ -198,7 +204,7 @@ class _HomePageState extends State<HomePage> {
                                             elevation: 0,
                                             shape: RoundedRectangleBorder(
                                               borderRadius:
-                                                  BorderRadius.circular(8.0),
+                                                  BorderRadius.circular(10.0),
                                             ),
                                             child: InkWell(
                                               onTap: () {
@@ -218,8 +224,8 @@ class _HomePageState extends State<HomePage> {
                                                 child: Row(
                                                   children: [
                                                     Container(
-                                                      width: 140,
-                                                      height: 140,
+                                                      width: 130,
+                                                      height: 130,
                                                       decoration: BoxDecoration(
                                                         borderRadius:
                                                             BorderRadius
@@ -241,22 +247,39 @@ class _HomePageState extends State<HomePage> {
                                                           title,
                                                           style: GoogleFonts
                                                               .dmSans(
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .bold,
-                                                                  fontSize: 16,
-                                                                  color: Color(
-                                                                      0xff25262b)),
-                                                        ),
-                                                        Text(
-                                                          title,
-                                                          style: GoogleFonts
-                                                              .dmSans(
-                                                            fontSize:
-                                                                14, // Ajusta el tamaño de fuente aquí
+                                                            fontWeight:
+                                                                FontWeight.bold,
+                                                            fontSize: 16,
+                                                            color: Color(
+                                                                0xff25262b),
                                                           ),
                                                         ),
-                                                        SizedBox(height: 4),
+                                                        SizedBox(height: 15),
+                                                        Row(
+                                                          children: [
+                                                            Icon(
+                                                              Icons
+                                                                  .location_on_outlined,
+                                                              color: Colors.grey
+                                                                  .shade500,
+                                                              size: 14,
+                                                            ),
+                                                            Text(
+                                                              '  $barri',
+                                                              style: GoogleFonts
+                                                                  .dmSans(
+                                                                fontSize: 12,
+                                                                color: Colors
+                                                                    .grey
+                                                                    .shade500,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w700,
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                        SizedBox(height: 10),
                                                         Row(
                                                           children: [
                                                             Icon(
@@ -269,13 +292,16 @@ class _HomePageState extends State<HomePage> {
                                                               '  $nRooms rooms',
                                                               style: GoogleFonts
                                                                   .dmSans(
-                                                                      fontSize:
-                                                                          12, // Ajusta el tamaño de fuente aquí
-                                                                      color: Colors
-                                                                          .grey
-                                                                          .shade500),
+                                                                fontSize: 12,
+                                                                color: Colors
+                                                                    .grey
+                                                                    .shade500,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w700,
+                                                              ),
                                                             ),
-                                                            SizedBox(width: 8),
+                                                            SizedBox(width: 25),
                                                             Icon(
                                                               Icons
                                                                   .bathtub_outlined,
@@ -284,20 +310,23 @@ class _HomePageState extends State<HomePage> {
                                                               size: 14,
                                                             ),
                                                             Text(
-                                                              '  $nBathroom  Lavabo',
+                                                              '  $nBathroom Lavabo',
                                                               style: GoogleFonts
                                                                   .dmSans(
-                                                                      fontSize:
-                                                                          12,
-                                                                      color: Colors
-                                                                          .grey
-                                                                          .shade500),
+                                                                fontSize: 12,
+                                                                color: Colors
+                                                                    .grey
+                                                                    .shade500,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w700,
+                                                              ),
                                                             ),
                                                           ],
                                                         ),
-                                                        SizedBox(height: 8),
+                                                        SizedBox(height: 30),
                                                         Text(
-                                                          'Price: $price€',
+                                                          ' $price€ /mes',
                                                           style: GoogleFonts
                                                               .dmSans(
                                                             fontSize: 16,

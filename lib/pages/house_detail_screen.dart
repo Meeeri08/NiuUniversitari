@@ -1,6 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:expandable_text/expandable_text.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:photo_view/photo_view.dart';
 
 class HouseDetailScreen extends StatefulWidget {
   final String houseId;
@@ -12,8 +15,10 @@ class HouseDetailScreen extends StatefulWidget {
 }
 
 class _HouseDetailScreenState extends State<HouseDetailScreen> {
-  late final LatLng _initialLatLng;
   GoogleMapController? _mapController;
+  LatLng? _initialLatLng;
+  List<String> imageUrls = [];
+
   @override
   void initState() {
     super.initState();
@@ -24,173 +29,303 @@ class _HouseDetailScreenState extends State<HouseDetailScreen> {
         .doc(widget.houseId)
         .get()
         .then((snapshot) {
-      final latLng = snapshot.get('latlng');
-      final lat = latLng.latitude;
-      final lng = latLng.longitude;
-      setState(() {
-        _initialLatLng = LatLng(lat, lng);
-      });
+      final latLngData = snapshot.get('latlng');
+      print('latLngData type: ${latLngData.runtimeType}');
+      if (latLngData is GeoPoint) {
+        final lat = latLngData.latitude;
+        final lng = latLngData.longitude;
+        setState(() {
+          _initialLatLng = LatLng(lat, lng);
+        });
+      } else {
+        print('Error: Invalid data type for latLng field.');
+      }
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        extendBodyBehindAppBar: true,
-        appBar: AppBar(
-          backgroundColor: const Color(0x44000000),
-          elevation: 0,
+    return Container(
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            Color(0xffffffff),
+            Color.fromARGB(255, 237, 237, 239),
+          ],
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
         ),
-        body: StreamBuilder<DocumentSnapshot>(
-            stream: FirebaseFirestore.instance
-                .collection('houses')
-                .doc(widget.houseId)
-                .snapshots(),
-            builder: (BuildContext context,
-                AsyncSnapshot<DocumentSnapshot> snapshot) {
-              if (snapshot.hasError) {
-                return Center(child: Text('Error: ${snapshot.error}'));
-              }
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return const Center(child: CircularProgressIndicator());
-              }
-              final house = snapshot.data!;
-              final imageUrl = house.get('image_url');
-              final nRooms = house.get('n_rooms');
-              final nBathroom = house.get('n_bathroom');
-              final price = house.get('price');
-              final title = house.get('title');
-              final latLng = house.get('latlng');
-              final description = house.get('description');
-
-              return SingleChildScrollView(
-                  child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  SizedBox(
-                    height: 300,
-                    child: Stack(
-                      children: [
-                        GoogleMap(
-                          initialCameraPosition: CameraPosition(
-                              target: _initialLatLng ?? const LatLng(0, 0), zoom: 15),
-                          onMapCreated: (GoogleMapController controller) {
-                            _mapController ??= controller;
-                          },
-                          markers: {
-                            Marker(
-                              markerId: MarkerId(widget.houseId),
-                              position: _initialLatLng ?? const LatLng(0, 0),
-                              icon: BitmapDescriptor.defaultMarkerWithHue(
-                                  BitmapDescriptor.hueViolet),
-                              anchor: const Offset(0.3, 0.3),
-                              infoWindow: InfoWindow(title: title),
-                            ),
-                          },
+      ),
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        body: SafeArea(
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    SizedBox(
+                        width: 10), // Move the top arrow a bit to the right
+                    IconButton(
+                      icon: Icon(Icons.arrow_back_ios),
+                      iconSize: 20,
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                    ),
+                    Expanded(
+                      child: Center(
+                        child: Text(
+                          'Detalls',
+                          style: GoogleFonts.dmSans(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w500,
+                            color: Color(0xff25262b),
+                          ),
                         ),
-                        Positioned(
-                          bottom: 16,
-                          right: 16,
-                          child: Container(
-                            padding: const EdgeInsets.all(8),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(8),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.grey.withOpacity(0.5),
-                                  spreadRadius: 1,
-                                  blurRadius: 5,
-                                ),
-                              ],
+                      ),
+                    ),
+                    SizedBox(
+                      width: 48,
+                      height: 40,
+                    ),
+                  ],
+                ),
+                StreamBuilder<DocumentSnapshot>(
+                  stream: FirebaseFirestore.instance
+                      .collection('houses')
+                      .doc(widget.houseId)
+                      .snapshots(),
+                  builder: (
+                    BuildContext context,
+                    AsyncSnapshot<DocumentSnapshot> snapshot,
+                  ) {
+                    if (snapshot.hasError) {
+                      return Center(child: Text('Error: ${snapshot.error}'));
+                    }
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
+                    final house = snapshot.data!;
+                    final imageUrl = house.get('image_url');
+                    final nRooms = house.get('n_rooms');
+                    final nBathroom = house.get('n_bathroom');
+                    final price = house.get('price');
+                    final title = house.get('title');
+                    final latLng = house.get('latlng');
+                    final description = house.get('description');
+                    final dimensions = house.get('dimensions');
+                    final imatges = house.get('imatges');
+                    final imageUrls =
+                        imatges != null && imatges is List<dynamic>
+                            ? List<String>.from(imatges)
+                            : [];
+
+                    return SingleChildScrollView(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Resto del código...
+
+                          // Lista de imágenes desplazable
+                          SizedBox(
+                            height: 200,
+                            child: PageView.builder(
+                              itemCount: imageUrls.length,
+                              itemBuilder: (context, index) {
+                                return Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(10),
+                                    child: GestureDetector(
+                                      onTap: () {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (BuildContext context) {
+                                              return Scaffold(
+                                                backgroundColor: Colors.black,
+                                                body: Stack(
+                                                  children: [
+                                                    Positioned.fill(
+                                                      child: PhotoView(
+                                                        imageProvider:
+                                                            NetworkImage(
+                                                          imageUrls[index],
+                                                        ),
+                                                      ),
+                                                    ),
+                                                    Positioned(
+                                                      top:
+                                                          MediaQuery.of(context)
+                                                                  .padding
+                                                                  .top +
+                                                              16,
+                                                      right: 16,
+                                                      child: IconButton(
+                                                        icon: Icon(
+                                                          Icons.arrow_back,
+                                                          color: Colors.white,
+                                                        ),
+                                                        onPressed: () {
+                                                          Navigator.pop(
+                                                              context);
+                                                        },
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              );
+                                            },
+                                          ),
+                                        );
+                                      },
+                                      child: Padding(
+                                        padding: const EdgeInsets.only(
+                                            right: 18, left: 18),
+                                        child: ClipRRect(
+                                          borderRadius:
+                                              BorderRadius.circular(8),
+                                          child: Image.network(
+                                            imageUrls[index],
+                                            fit: BoxFit.cover,
+                                            width: 340,
+                                            height: 190,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              },
                             ),
+                          ),
+                          const SizedBox(height: 10),
+
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 30),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisSize: MainAxisSize.min,
                               children: [
                                 Text(
-                                  '\$$price',
-                                  style: const TextStyle(
+                                  title,
+                                  style: GoogleFonts.dmSans(
                                     fontWeight: FontWeight.bold,
                                     fontSize: 20,
+                                    color: Color(0xff25262b),
                                   ),
                                 ),
-                                const SizedBox(height: 4),
-                                const Text(
-                                  'Per Month',
-                                  style: TextStyle(fontSize: 16),
+                                const SizedBox(height: 10),
+                                Row(
+                                  children: [
+                                    Icon(Icons.bed_outlined, size: 23),
+                                    SizedBox(width: 8),
+                                    Text(
+                                      '$nRooms Habitacio',
+                                      style: GoogleFonts.dmSans(
+                                        fontSize: 14,
+                                        //fontWeight: FontWeight.bold,
+                                        color: Color(0xff25262b),
+                                      ),
+                                    ),
+                                    SizedBox(width: 16),
+                                    Icon(Icons.bathtub_outlined, size: 23),
+                                    SizedBox(width: 8),
+                                    Text(
+                                      '$nBathroom Lavabo',
+                                      style: GoogleFonts.dmSans(
+                                        fontSize: 14,
+                                        //fontWeight: FontWeight.bold,
+                                        color: Color(0xff25262b),
+                                      ),
+                                    ),
+                                    SizedBox(width: 16),
+                                    Icon(Icons.square_foot_outlined, size: 23),
+                                    SizedBox(width: 8),
+                                    Text(
+                                      '$dimensions m\u00B2',
+                                      style: GoogleFonts.dmSans(
+                                        fontSize: 14,
+                                        //fontWeight: FontWeight.bold,
+                                        color: Color(0xff25262b),
+                                      ),
+                                    ),
+                                  ],
                                 ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          title,
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 24,
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        Row(
-                          children: [
-                            const Icon(Icons.location_on),
-                            const SizedBox(width: 8),
-                            Text('$latLng'),
-                          ],
-                        ),
-                        const SizedBox(height: 16),
-                        const Text(
-                          'Description',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 18,
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          description,
-                          style: const TextStyle(fontSize: 16),
-                        ),
-                        const SizedBox(height: 16),
-                        const Text(
-                          'Details',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 18,
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        const Row(children: [
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  'Rooms',
+                                const SizedBox(height: 15),
+                                const Text(
+                                  'Ubicació',
                                   style: TextStyle(
                                     fontWeight: FontWeight.bold,
-                                    fontSize: 16,
+                                    fontSize: 15,
+                                    color: Color(0xff25262b),
+                                  ),
+                                ),
+                                const SizedBox(height: 15),
+                                Container(
+                                  width: double.infinity,
+                                  height: 150,
+                                  child: GoogleMap(
+                                    initialCameraPosition: CameraPosition(
+                                      target:
+                                          _initialLatLng ?? const LatLng(0, 0),
+                                      zoom: 15,
+                                    ),
+                                    onMapCreated:
+                                        (GoogleMapController controller) {
+                                      _mapController ??= controller;
+                                    },
+                                    myLocationButtonEnabled: false,
+                                    markers: {
+                                      Marker(
+                                        markerId: MarkerId(widget.houseId),
+                                        position: _initialLatLng ??
+                                            const LatLng(0, 0),
+                                        icon: BitmapDescriptor
+                                            .defaultMarkerWithHue(
+                                          BitmapDescriptor.hueViolet,
+                                        ),
+                                        anchor: const Offset(0.3, 0.3),
+                                        infoWindow: InfoWindow(title: title),
+                                      ),
+                                    },
+                                  ),
+                                ),
+                                const SizedBox(height: 15),
+                                Text(
+                                  'Descripció',
+                                  style: GoogleFonts.dmSans(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 15,
+                                    color: Color(0xff25262b),
+                                  ),
+                                ),
+                                const SizedBox(height: 15),
+                                ExpandableText(
+                                  description,
+                                  expandText: 'Llegeix Més',
+                                  collapseText: 'Llegeix Menys',
+                                  linkColor: Color(0xff25262b),
+                                  maxLines: 2,
+                                  style: TextStyle(
+                                    fontSize: 13,
+                                    color: Color(0xff25262b),
                                   ),
                                 ),
                               ],
                             ),
                           ),
-                        ]),
-                      ],
-                    ),
-                  ),
-                ],
-              ));
-            }));
+                        ],
+                      ),
+                    );
+                  },
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
   }
 }

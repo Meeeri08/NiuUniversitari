@@ -13,7 +13,7 @@ class FilterScreen extends StatefulWidget {
 
 class _FilterScreenState extends State<FilterScreen> {
   int minPrice = 0;
-  int maxPrice = 1000;
+  int maxPrice = 2000;
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +28,7 @@ class _FilterScreenState extends State<FilterScreen> {
             subtitle: RangeSlider(
               values: RangeValues(minPrice.toDouble(), maxPrice.toDouble()),
               min: 0,
-              max: 1000,
+              max: 2000,
               divisions: 100,
               onChanged: (RangeValues values) {
                 setState(() {
@@ -62,8 +62,8 @@ class _FilterScreenState extends State<FilterScreen> {
 
     Query filteredQuery = housesCollection;
 
-    if (minPrice != 0 || maxPrice != 1000) {
-      if (minPrice != 0 && maxPrice != 1000) {
+    if (minPrice != 0 || maxPrice != 2000) {
+      if (minPrice != 0 && maxPrice != 2000) {
         filteredQuery = filteredQuery.where('price',
             isGreaterThanOrEqualTo: minPrice, isLessThan: maxPrice + 1);
       } else if (minPrice != 0) {

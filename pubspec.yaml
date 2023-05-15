@@ -53,6 +53,8 @@ dependencies:
   flutter_form_builder: ^9.0.0
   google_fonts: ^4.0.4
   firebase_core_platform_interface: ^4.8.0
+  photo_view: ^0.14.0
+  expandable_text: ^2.3.0
   
 flutter_icons:
   image_path: "lib/images/icon.png"
