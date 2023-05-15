@@ -200,18 +200,18 @@ class _MapPageState extends State<MapPage> {
                               ],
                             ),
                             const SizedBox(height: 10),
-                            const Row(
+                            Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Row(
-                                  children: [
+                                  children: const [
                                     Icon(Icons.king_bed),
                                     SizedBox(width: 5),
                                     Text("3 bedrooms"),
                                   ],
                                 ),
                                 Row(
-                                  children: [
+                                  children: const [
                                     Icon(Icons.bathtub),
                                     SizedBox(width: 5),
                                     Text("2 bathrooms"),

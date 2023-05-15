@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:expandable_text/expandable_text.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:photo_view/photo_view.dart';
@@ -19,14 +18,9 @@ class _HouseDetailScreenState extends State<HouseDetailScreen> {
   GoogleMapController? _mapController;
   LatLng? _initialLatLng;
   List<String> imageUrls = [];
-  String _mapStyle = '';
 
   @override
   void initState() {
-    rootBundle.loadString('assets/map_style2.json').then((string) {
-      _mapStyle = string;
-    });
-
     super.initState();
 
     // Initialize the initial LatLng value to the location of the house
@@ -56,7 +50,6 @@ class _HouseDetailScreenState extends State<HouseDetailScreen> {
         gradient: LinearGradient(
           colors: [
             Color(0xffffffff),
-            Color(0xffffffff),
             Color.fromARGB(255, 237, 237, 239),
           ],
           begin: Alignment.topCenter,
@@ -64,6 +57,18 @@ class _HouseDetailScreenState extends State<HouseDetailScreen> {
         ),
       ),
       child: Scaffold(
+        bottomNavigationBar: Container(
+            height: 80,
+            color: Colors.red,
+            child: const Center(
+              child: Text(
+                'Container',
+                style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 30,
+                    fontWeight: FontWeight.bold),
+              ),
+            )),
         backgroundColor: Colors.transparent,
         body: SafeArea(
           child: SingleChildScrollView(
@@ -73,8 +78,7 @@ class _HouseDetailScreenState extends State<HouseDetailScreen> {
                 Row(
                   children: [
                     SizedBox(
-                      width: 12,
-                    ), // Move the top arrow a bit to the right
+                        width: 10), // Move the top arrow a bit to the right
                     IconButton(
                       icon: Icon(Icons.arrow_back_ios),
                       iconSize: 20,
@@ -130,340 +134,221 @@ class _HouseDetailScreenState extends State<HouseDetailScreen> {
                             ? List<String>.from(imatges)
                             : [];
 
-                    return Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        SizedBox(
-                          height: 200,
-                          child: PageView.builder(
-                            itemCount: imageUrls.length,
-                            itemBuilder: (context, index) {
-                              return Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(10),
-                                  child: GestureDetector(
-                                    onTap: () {
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (BuildContext context) {
-                                            return Scaffold(
-                                              body: Stack(
-                                                children: [
-                                                  Positioned.fill(
-                                                    child: PhotoView(
-                                                      imageProvider:
-                                                          NetworkImage(
-                                                        imageUrls[index],
+                    return SingleChildScrollView(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Resto del código...
+
+                          // Lista de imágenes desplazable
+                          SizedBox(
+                            height: 200,
+                            child: PageView.builder(
+                              itemCount: imageUrls.length,
+                              itemBuilder: (context, index) {
+                                return Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(10),
+                                    child: GestureDetector(
+                                      onTap: () {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (BuildContext context) {
+                                              return Scaffold(
+                                                backgroundColor: Colors.black,
+                                                body: Stack(
+                                                  children: [
+                                                    Positioned.fill(
+                                                      child: PhotoView(
+                                                        imageProvider:
+                                                            NetworkImage(
+                                                          imageUrls[index],
+                                                        ),
                                                       ),
                                                     ),
-                                                  ),
-                                                  Positioned(
-                                                    top: MediaQuery.of(context)
-                                                            .padding
-                                                            .top +
-                                                        16,
-                                                    left: 16,
-                                                    child: IconButton(
-                                                      icon: Icon(
-                                                        Icons.arrow_back,
-                                                        color: Colors.white,
+                                                    Positioned(
+                                                      top:
+                                                          MediaQuery.of(context)
+                                                                  .padding
+                                                                  .top +
+                                                              16,
+                                                      left: 16,
+                                                      child: IconButton(
+                                                        icon: Icon(
+                                                          Icons.arrow_back,
+                                                          color: Colors.white,
+                                                        ),
+                                                        onPressed: () {
+                                                          Navigator.pop(
+                                                              context);
+                                                        },
                                                       ),
-                                                      onPressed: () {
-                                                        Navigator.pop(context);
-                                                      },
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                            );
-                                          },
-                                        ),
-                                      );
-                                    },
-                                    child: Padding(
-                                      padding: const EdgeInsets.only(
-                                          right: 18, left: 18),
-                                      child: ClipRRect(
-                                        borderRadius: BorderRadius.circular(8),
-                                        child: Image.network(
-                                          imageUrls[index],
-                                          fit: BoxFit.cover,
-                                          width: 340,
-                                          height: 190,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              );
-                            },
-                          ),
-                        ),
-                        const SizedBox(height: 10),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 30),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                title,
-                                style: GoogleFonts.dmSans(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 20,
-                                  color: Color(0xff25262b),
-                                ),
-                              ),
-                              const SizedBox(height: 10),
-                              Row(
-                                children: [
-                                  Icon(Icons.bed_outlined, size: 23),
-                                  SizedBox(width: 8),
-                                  Text(
-                                    '$nRooms Habitacio',
-                                    style: GoogleFonts.dmSans(
-                                      fontSize: 14,
-                                      //fontWeight: FontWeight.bold,
-                                      color: Color(0xff25262b),
-                                    ),
-                                  ),
-                                  SizedBox(width: 16),
-                                  Icon(Icons.bathtub_outlined, size: 23),
-                                  SizedBox(width: 8),
-                                  Text(
-                                    '$nBathroom Lavabo',
-                                    style: GoogleFonts.dmSans(
-                                      fontSize: 14,
-                                      //fontWeight: FontWeight.bold,
-                                      color: Color(0xff25262b),
-                                    ),
-                                  ),
-                                  SizedBox(width: 16),
-                                  Icon(Icons.square_foot_outlined, size: 23),
-                                  SizedBox(width: 8),
-                                  Text(
-                                    '$dimensions m²',
-                                    style: GoogleFonts.dmSans(
-                                      fontSize: 14,
-                                      //fontWeight: FontWeight.bold,
-                                      color: Color(0xff25262b),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              Column(
-                                children: [
-                                  const Divider(
-                                    thickness: 1,
-                                    color: Color.fromARGB(146, 224, 224, 224),
-                                    height: 30,
-                                  ),
-                                  Container(
-                                    height: 50,
-                                    padding:
-                                        EdgeInsets.symmetric(horizontal: 16),
-                                    child: Row(
-                                      children: [
-                                        Container(
-                                          width: 35,
-                                          height: 35,
-                                          decoration: BoxDecoration(
-                                            shape: BoxShape.circle,
-                                            color: Colors.grey[300],
-                                          ),
-                                          // child: Image.asset(
-                                          //     'your_image_path.png'), // Replace with your image
-                                        ),
-                                        SizedBox(width: 10),
-                                        Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: [
-                                            Text(
-                                              'Full Name',
-                                              style: GoogleFonts.dmSans(
-                                                fontSize: 14,
-                                                color: Color(0xff25262b),
-                                              ),
-                                            ),
-                                            Text(
-                                              'Propietari',
-                                              style: GoogleFonts.dmSans(
-                                                fontSize: 12,
-                                                color: Colors.grey,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                        Spacer(),
-                                        Row(
-                                          children: [
-                                            InkWell(
-                                              onTap: () {
-                                                // Chat button action
-                                              },
-                                              borderRadius:
-                                                  BorderRadius.circular(13.0),
-                                              child: Container(
-                                                height: 40,
-                                                width: 40,
-                                                decoration: BoxDecoration(
-                                                  color: Colors.white,
-                                                  borderRadius:
-                                                      BorderRadius.circular(13),
-                                                  boxShadow: [
-                                                    BoxShadow(
-                                                      color: Colors.black
-                                                          .withOpacity(0.05),
-                                                      blurRadius: 4.0,
-                                                      offset: Offset(0, 2),
                                                     ),
                                                   ],
                                                 ),
-                                                child: Icon(
-                                                  Icons
-                                                      .chat_bubble_outline_rounded,
-                                                  color: Color(0xff25262b),
-                                                ),
-                                              ),
-                                            ),
-                                            SizedBox(width: 8.0),
-                                          ],
-                                        ),
-                                        InkWell(
-                                          onTap: () {
-                                            // Phone call button action
-                                          },
+                                              );
+                                            },
+                                          ),
+                                        );
+                                      },
+                                      child: Padding(
+                                        padding: const EdgeInsets.only(
+                                            right: 18, left: 18),
+                                        child: ClipRRect(
                                           borderRadius:
-                                              BorderRadius.circular(13.0),
-                                          child: Container(
-                                            height: 40,
-                                            width: 40,
-                                            decoration: BoxDecoration(
-                                              color: Colors.white,
-                                              borderRadius:
-                                                  BorderRadius.circular(13.0),
-                                              boxShadow: [
-                                                BoxShadow(
-                                                  color: Colors.black
-                                                      .withOpacity(0.05),
-                                                  blurRadius: 4.0,
-                                                  offset: Offset(0, 2),
-                                                ),
-                                              ],
-                                            ),
-                                            child: Icon(
-                                              Icons.phone_outlined,
-                                              color: Color(0xff25262b),
-                                            ),
+                                              BorderRadius.circular(8),
+                                          child: Image.network(
+                                            imageUrls[index],
+                                            fit: BoxFit.cover,
+                                            width: 340,
+                                            height: 190,
                                           ),
                                         ),
-                                      ],
-                                    ),
-                                  ),
-                                  Divider(
-                                    thickness: 1,
-                                    color: Color.fromARGB(146, 224, 224, 224),
-                                    height: 30,
-                                  ),
-                                ],
-                              ),
-                              const Text(
-                                'Ubicació',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 15,
-                                  color: Color(0xff25262b),
-                                ),
-                              ),
-                              const SizedBox(height: 15),
-                              Container(
-                                width: double.infinity,
-                                height: 150,
-                                child: GoogleMap(
-                                  initialCameraPosition: CameraPosition(
-                                    target:
-                                        _initialLatLng ?? const LatLng(0, 0),
-                                    zoom: 15,
-                                  ),
-                                  onMapCreated: (controller) {
-                                    _mapController = controller;
-                                    _mapController!.setMapStyle(_mapStyle);
-                                  },
-                                  myLocationButtonEnabled: false,
-                                  markers: {
-                                    Marker(
-                                      markerId: MarkerId(widget.houseId),
-                                      position:
-                                          _initialLatLng ?? const LatLng(0, 0),
-                                      icon:
-                                          BitmapDescriptor.defaultMarkerWithHue(
-                                        BitmapDescriptor.hueViolet,
                                       ),
-                                      anchor: const Offset(0.3, 0.3),
-                                      infoWindow: InfoWindow(title: title),
                                     ),
-                                  },
-                                ),
-                              ), // Divider
-                              const SizedBox(height: 5),
-                              Divider(
-                                thickness: 1,
-                                color: Color.fromARGB(146, 224, 224, 224),
-                                height: 30,
-                              ),
-
-                              const SizedBox(height: 15),
-                              Text(
-                                'Descripció',
-                                style: GoogleFonts.dmSans(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 15,
-                                  color: Color(0xff25262b),
-                                ),
-                              ),
-                              const SizedBox(height: 15),
-                              ExpandableText(
-                                description,
-                                expandText: 'Llegeix Més',
-                                collapseText: 'Llegeix Menys',
-                                linkColor: const Color(0xff25262b),
-                                maxLines: 2,
-                                animation: true,
-                                animationDuration: const Duration(seconds: 2),
-                                linkEllipsis: false,
-                                textAlign: TextAlign.justify,
-                                linkStyle: const TextStyle(
-                                    decoration: TextDecoration.underline),
-                                style: const TextStyle(
-                                  fontSize: 13,
-                                  color: Color(0xff25262b),
-                                ),
-                              ),
-                            ],
+                                  ),
+                                );
+                              },
+                            ),
                           ),
-                        ),
-                      ],
+                          const SizedBox(height: 10),
+
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 30),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  title,
+                                  style: GoogleFonts.dmSans(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 20,
+                                    color: Color(0xff25262b),
+                                  ),
+                                ),
+                                const SizedBox(height: 10),
+                                Row(
+                                  children: [
+                                    Icon(Icons.bed_outlined, size: 23),
+                                    SizedBox(width: 8),
+                                    Text(
+                                      '$nRooms Habitacio',
+                                      style: GoogleFonts.dmSans(
+                                        fontSize: 14,
+                                        //fontWeight: FontWeight.bold,
+                                        color: Color(0xff25262b),
+                                      ),
+                                    ),
+                                    SizedBox(width: 16),
+                                    Icon(Icons.bathtub_outlined, size: 23),
+                                    SizedBox(width: 8),
+                                    Text(
+                                      '$nBathroom Lavabo',
+                                      style: GoogleFonts.dmSans(
+                                        fontSize: 14,
+                                        //fontWeight: FontWeight.bold,
+                                        color: Color(0xff25262b),
+                                      ),
+                                    ),
+                                    SizedBox(width: 16),
+                                    Icon(Icons.square_foot_outlined, size: 23),
+                                    SizedBox(width: 8),
+                                    Text(
+                                      '$dimensions m\u00B2',
+                                      style: GoogleFonts.dmSans(
+                                        fontSize: 14,
+                                        //fontWeight: FontWeight.bold,
+                                        color: Color(0xff25262b),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                Divider(
+                                  thickness: 1,
+                                  color: Color.fromARGB(146, 224, 224, 224),
+                                  height: 30,
+                                ),
+                                const Text(
+                                  'Ubicació',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 15,
+                                    color: Color(0xff25262b),
+                                  ),
+                                ),
+                                const SizedBox(height: 15),
+                                Container(
+                                  width: double.infinity,
+                                  height: 150,
+                                  child: GoogleMap(
+                                    initialCameraPosition: CameraPosition(
+                                      target:
+                                          _initialLatLng ?? const LatLng(0, 0),
+                                      zoom: 15,
+                                    ),
+                                    onMapCreated:
+                                        (GoogleMapController controller) {
+                                      _mapController ??= controller;
+                                    },
+                                    myLocationButtonEnabled: false,
+                                    markers: {
+                                      Marker(
+                                        markerId: MarkerId(widget.houseId),
+                                        position: _initialLatLng ??
+                                            const LatLng(0, 0),
+                                        icon: BitmapDescriptor
+                                            .defaultMarkerWithHue(
+                                          BitmapDescriptor.hueViolet,
+                                        ),
+                                        anchor: const Offset(0.3, 0.3),
+                                        infoWindow: InfoWindow(title: title),
+                                      ),
+                                    },
+                                  ),
+                                ), // Divider
+                                const SizedBox(height: 5),
+
+                                Divider(
+                                  thickness: 1,
+                                  color: Color.fromARGB(146, 224, 224, 224),
+                                  height: 30,
+                                ),
+                                const SizedBox(height: 15),
+                                Text(
+                                  'Descripció',
+                                  style: GoogleFonts.dmSans(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 15,
+                                    color: Color(0xff25262b),
+                                  ),
+                                ),
+                                const SizedBox(height: 15),
+                                ExpandableText(
+                                  description,
+                                  expandText: 'Llegeix Més',
+                                  collapseText: 'Llegeix Menys',
+                                  linkColor: const Color(0xff25262b),
+                                  maxLines: 2,
+                                  animation: true,
+                                  animationDuration: const Duration(seconds: 2),
+                                  linkEllipsis: false,
+                                  linkStyle: const TextStyle(
+                                      decoration: TextDecoration.underline),
+                                  style: const TextStyle(
+                                    fontSize: 13,
+                                    color: Color(0xff25262b),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
                     );
                   },
                 ),
-                const SizedBox(height: 10),
-                Container(
-                    width: double.infinity,
-                    color: Colors.red,
-                    child: const Center(
-                      child: Text(
-                        'Container',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ))
               ],
             ),
           ),

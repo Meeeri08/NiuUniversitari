@@ -103,21 +103,30 @@ class _FilterScreenState extends State<FilterScreen> {
 
     filteredQuery.get().then((QuerySnapshot querySnapshot) {
       List<DocumentSnapshot> filteredHouses = querySnapshot.docs;
-      print('Filtered Houses (Price): ${filteredHouses.length}');
+      // print('Filtered Houses (Price): ${filteredHouses.length}');
+
+      print('Filtered Houses (Rooms): Min $minRooms Max $maxRooms');
 
       Query roomsQuery = housesCollection;
 
+      // roomsQuery.where('price').get().then((value) =>
+      //     print('Filtered Houses (Rooms): = ${value.docs.first.data()}'));
+
       if (minRooms != 0 || maxRooms != 10) {
         if (minRooms != 0 && maxRooms != 10) {
-          roomsQuery = roomsQuery.where('rooms',
+          roomsQuery = roomsQuery.where('n_rooms',
               isGreaterThanOrEqualTo: minRooms, isLessThanOrEqualTo: maxRooms);
         } else if (minRooms != 0) {
           roomsQuery =
-              roomsQuery.where('rooms', isGreaterThanOrEqualTo: minRooms);
+              roomsQuery.where('n_rooms', isGreaterThanOrEqualTo: minRooms);
         } else {
-          roomsQuery = roomsQuery.where('rooms', isLessThanOrEqualTo: maxRooms);
+          roomsQuery =
+              roomsQuery.where('n_rooms', isLessThanOrEqualTo: maxRooms);
         }
       }
+      //else {
+      //   print('Final Filtered Houses: Not Woking right');
+      // }
 
       roomsQuery.get().then((QuerySnapshot roomsSnapshot) {
         List<DocumentSnapshot> filteredRooms = roomsSnapshot.docs;
@@ -137,6 +146,7 @@ class _FilterScreenState extends State<FilterScreen> {
         print('Final Filtered Houses: ${finalFilteredHouses.length}');
 
         widget.onFilterApplied(finalFilteredHouses);
+
         Navigator.pop(context);
       });
     });
