@@ -162,7 +162,7 @@ class _HouseDetailScreenState extends State<HouseDetailScreen> {
                                                                   .padding
                                                                   .top +
                                                               16,
-                                                      right: 16,
+                                                      left: 16,
                                                       child: IconButton(
                                                         icon: Icon(
                                                           Icons.arrow_back,
@@ -306,9 +306,14 @@ class _HouseDetailScreenState extends State<HouseDetailScreen> {
                                   description,
                                   expandText: 'Llegeix Més',
                                   collapseText: 'Llegeix Menys',
-                                  linkColor: Color(0xff25262b),
+                                  linkColor: const Color(0xff25262b),
                                   maxLines: 2,
-                                  style: TextStyle(
+                                  animation: true,
+                                  animationDuration: const Duration(seconds: 2),
+                                  linkEllipsis: false,
+                                  linkStyle: const TextStyle(
+                                      decoration: TextDecoration.underline),
+                                  style: const TextStyle(
                                     fontSize: 13,
                                     color: Color(0xff25262b),
                                   ),
