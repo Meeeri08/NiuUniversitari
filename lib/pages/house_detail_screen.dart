@@ -1,6 +1,10 @@
+import 'dart:typed_data';
+import 'dart:ui';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:expandable_text/expandable_text.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:photo_view/photo_view.dart';
@@ -19,11 +23,28 @@ class _HouseDetailScreenState extends State<HouseDetailScreen> {
   LatLng? _initialLatLng;
   List<String> imageUrls = [];
   int price = 0;
+  late BitmapDescriptor _markerIcon;
+  Future<void> _loadMarkerIcon() async {
+    final BitmapDescriptor markerIcon = await _createMarkerIcon();
+
+    setState(() {
+      _markerIcon = markerIcon;
+    });
+  }
+
+  Future<BitmapDescriptor> _createMarkerIcon() async {
+    const String markerAssetPath = 'assets/marker_icon.png';
+    final ByteData markerByteData = await rootBundle.load(markerAssetPath);
+    final Uint8List markerIconBytes = markerByteData.buffer.asUint8List();
+
+    return BitmapDescriptor.fromBytes(markerIconBytes);
+  }
 
   @override
   void initState() {
-    super.initState();
+    _loadMarkerIcon();
 
+    super.initState();
     // Initialize the initial LatLng value to the location of the house
     FirebaseFirestore.instance
         .collection('houses')
@@ -471,19 +492,20 @@ class _HouseDetailScreenState extends State<HouseDetailScreen> {
                                       _mapController ??= controller;
                                     },
                                     myLocationButtonEnabled: false,
-                                    markers: {
-                                      Marker(
-                                        markerId: MarkerId(widget.houseId),
-                                        position: _initialLatLng ??
-                                            const LatLng(0, 0),
-                                        icon: BitmapDescriptor
-                                            .defaultMarkerWithHue(
-                                          BitmapDescriptor.hueViolet,
-                                        ),
-                                        anchor: const Offset(0.5, 0.5),
-                                        infoWindow: InfoWindow(title: title),
-                                      ),
-                                    },
+                                    markers: _markerIcon != null
+                                        ? {
+                                            Marker(
+                                              markerId:
+                                                  MarkerId(widget.houseId),
+                                              position: _initialLatLng ??
+                                                  const LatLng(0, 0),
+                                              icon: _markerIcon,
+                                              anchor: const Offset(0.5, 0.5),
+                                              infoWindow:
+                                                  InfoWindow(title: title),
+                                            ),
+                                          }
+                                        : {},
                                   ),
                                 ), // Divider
                                 const SizedBox(height: 5),
