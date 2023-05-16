@@ -50,6 +50,7 @@ class _HouseDetailScreenState extends State<HouseDetailScreen> {
         gradient: LinearGradient(
           colors: [
             Color(0xffffffff),
+            Color(0xffffffff),
             Color.fromARGB(255, 237, 237, 239),
           ],
           begin: Alignment.topCenter,
@@ -58,7 +59,7 @@ class _HouseDetailScreenState extends State<HouseDetailScreen> {
       ),
       child: Scaffold(
         bottomNavigationBar: Container(
-            height: 80,
+            height: 60,
             color: Colors.red,
             child: const Center(
               child: Text(
@@ -77,8 +78,7 @@ class _HouseDetailScreenState extends State<HouseDetailScreen> {
               children: [
                 Row(
                   children: [
-                    SizedBox(
-                        width: 10), // Move the top arrow a bit to the right
+                    SizedBox(width: 10),
                     IconButton(
                       icon: Icon(Icons.arrow_back_ios),
                       iconSize: 20,
@@ -138,9 +138,6 @@ class _HouseDetailScreenState extends State<HouseDetailScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          // Resto del código...
-
-                          // Lista de imágenes desplazable
                           SizedBox(
                             height: 200,
                             child: PageView.builder(
@@ -214,7 +211,6 @@ class _HouseDetailScreenState extends State<HouseDetailScreen> {
                             ),
                           ),
                           const SizedBox(height: 10),
-
                           Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 30),
                             child: Column(
@@ -265,11 +261,127 @@ class _HouseDetailScreenState extends State<HouseDetailScreen> {
                                     ),
                                   ],
                                 ),
-                                Divider(
-                                  thickness: 1,
-                                  color: Color.fromARGB(146, 224, 224, 224),
-                                  height: 30,
+                                Column(
+                                  children: [
+                                    const Divider(
+                                      thickness: 1,
+                                      color: Color.fromARGB(146, 224, 224, 224),
+                                      height: 30,
+                                    ),
+                                    Container(
+                                      height: 50,
+                                      padding:
+                                          EdgeInsets.symmetric(horizontal: 16),
+                                      child: Row(
+                                        children: [
+                                          Container(
+                                            width: 35,
+                                            height: 35,
+                                            decoration: BoxDecoration(
+                                              shape: BoxShape.circle,
+                                              color: Colors.grey[300],
+                                            ),
+                                            // child: Image.asset(
+                                            //     'your_image_path.png'), // Replace with your image
+                                          ),
+                                          SizedBox(width: 10),
+                                          Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            children: [
+                                              Text(
+                                                'Full Name',
+                                                style: GoogleFonts.dmSans(
+                                                  fontSize: 14,
+                                                  color: Color(0xff25262b),
+                                                ),
+                                              ),
+                                              Text(
+                                                'Propietari',
+                                                style: GoogleFonts.dmSans(
+                                                  fontSize: 12,
+                                                  color: Colors.grey,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                          Spacer(),
+                                          Row(
+                                            children: [
+                                              InkWell(
+                                                onTap: () {
+                                                  // Chat button action
+                                                },
+                                                borderRadius:
+                                                    BorderRadius.circular(13.0),
+                                                child: Container(
+                                                  height: 40,
+                                                  width: 40,
+                                                  decoration: BoxDecoration(
+                                                    color: Colors.white,
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            13),
+                                                    boxShadow: [
+                                                      BoxShadow(
+                                                        color: Colors.black
+                                                            .withOpacity(0.05),
+                                                        blurRadius: 4.0,
+                                                        offset: Offset(0, 2),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                  child: Icon(
+                                                    Icons
+                                                        .chat_bubble_outline_rounded,
+                                                    color: Color(0xff25262b),
+                                                  ),
+                                                ),
+                                              ),
+                                              SizedBox(width: 8.0),
+                                            ],
+                                          ),
+                                          InkWell(
+                                            onTap: () {
+                                              // Phone call button action
+                                            },
+                                            borderRadius:
+                                                BorderRadius.circular(13.0),
+                                            child: Container(
+                                              height: 40,
+                                              width: 40,
+                                              decoration: BoxDecoration(
+                                                color: Colors.white,
+                                                borderRadius:
+                                                    BorderRadius.circular(13.0),
+                                                boxShadow: [
+                                                  BoxShadow(
+                                                    color: Colors.black
+                                                        .withOpacity(0.05),
+                                                    blurRadius: 4.0,
+                                                    offset: Offset(0, 2),
+                                                  ),
+                                                ],
+                                              ),
+                                              child: Icon(
+                                                Icons.phone_outlined,
+                                                color: Color(0xff25262b),
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    Divider(
+                                      thickness: 1,
+                                      color: Color.fromARGB(146, 224, 224, 224),
+                                      height: 30,
+                                    ),
+                                  ],
                                 ),
+
                                 const Text(
                                   'Ubicació',
                                   style: TextStyle(
@@ -334,6 +446,7 @@ class _HouseDetailScreenState extends State<HouseDetailScreen> {
                                   animation: true,
                                   animationDuration: const Duration(seconds: 2),
                                   linkEllipsis: false,
+                                  textAlign: TextAlign.justify,
                                   linkStyle: const TextStyle(
                                       decoration: TextDecoration.underline),
                                   style: const TextStyle(

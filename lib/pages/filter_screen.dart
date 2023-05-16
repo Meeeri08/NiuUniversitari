@@ -14,8 +14,10 @@ class FilterScreen extends StatefulWidget {
 class _FilterScreenState extends State<FilterScreen> {
   int minPrice = 0;
   int maxPrice = 2000;
-  int minRooms = 0;
-  int maxRooms = 10;
+  int minRooms = 1;
+  int maxRooms = 5;
+  int minBathrooms = 1;
+  int maxBathrooms = 5;
 
   @override
   Widget build(BuildContext context) {
@@ -28,10 +30,10 @@ class _FilterScreenState extends State<FilterScreen> {
           ListTile(
             title: Text('Price Range'),
             subtitle: RangeSlider(
+              divisions: 20,
               values: RangeValues(minPrice.toDouble(), maxPrice.toDouble()),
               min: 0,
               max: 2000,
-              divisions: 100,
               onChanged: (RangeValues values) {
                 setState(() {
                   minPrice = values.start.toInt();
@@ -40,13 +42,27 @@ class _FilterScreenState extends State<FilterScreen> {
               },
             ),
           ),
+
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text('Min Price: $minPrice'),
+                Text('Max Price: $maxPrice'),
+              ],
+            ),
+          ),
+
+          //use a dropdown button for min and max rooms
           ListTile(
             title: Text('Number of Rooms'),
             subtitle: RangeSlider(
               values: RangeValues(minRooms.toDouble(), maxRooms.toDouble()),
-              min: 0,
-              max: 10,
-              divisions: 10,
+              min: 1,
+              max: 5,
+              activeColor: Color(0xFF1FA29E),
+              inactiveColor: Colors.grey.shade300,
               onChanged: (RangeValues values) {
                 setState(() {
                   minRooms = values.start.toInt();
@@ -60,9 +76,25 @@ class _FilterScreenState extends State<FilterScreen> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('Min Price: $minPrice'),
-                Text('Max Price: $maxPrice'),
+                Text('Min Rooms: $minRooms'),
+                Text('Max Rooms: $maxRooms'),
               ],
+            ),
+          ),
+          //Create ListTile for min and max bathrooms
+          ListTile(
+            title: Text('Number of Bathrooms'),
+            subtitle: RangeSlider(
+              values:
+                  RangeValues(minBathrooms.toDouble(), maxBathrooms.toDouble()),
+              min: 1,
+              max: 5,
+              onChanged: (RangeValues values) {
+                setState(() {
+                  minBathrooms = values.start.toInt();
+                  maxBathrooms = values.end.toInt();
+                });
+              },
             ),
           ),
           Padding(
@@ -70,13 +102,16 @@ class _FilterScreenState extends State<FilterScreen> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('Min Rooms: $minRooms'),
-                Text('Max Rooms: $maxRooms'),
+                Text('Min Bathrooms: $minBathrooms'),
+                Text('Max Bathrooms: $maxBathrooms'),
               ],
             ),
           ),
+          //Create a button to apply the filters
           ElevatedButton(
-            onPressed: filterHouses,
+            onPressed: () {
+              filterHouses();
+            },
             child: Text('Apply Filters'),
           ),
         ],
@@ -85,38 +120,39 @@ class _FilterScreenState extends State<FilterScreen> {
   }
 
   void filterHouses() {
+    //house collection in firebase
     final housesCollection = FirebaseFirestore.instance.collection('houses');
 
-    Query filteredQuery = housesCollection;
+    //price Query
+    Query priceQuery = housesCollection;
 
     if (minPrice != 0 || maxPrice != 2000) {
       if (minPrice != 0 && maxPrice != 2000) {
-        filteredQuery = filteredQuery.where('price',
+        priceQuery = priceQuery.where('price',
             isGreaterThanOrEqualTo: minPrice, isLessThan: maxPrice + 1);
       } else if (minPrice != 0) {
-        filteredQuery =
-            filteredQuery.where('price', isGreaterThanOrEqualTo: minPrice);
+        priceQuery =
+            priceQuery.where('price', isGreaterThanOrEqualTo: minPrice);
       } else {
-        filteredQuery = filteredQuery.where('price', isLessThan: maxPrice + 1);
+        priceQuery = priceQuery.where('price', isLessThan: maxPrice + 1);
       }
     }
 
-    filteredQuery.get().then((QuerySnapshot querySnapshot) {
+    //get the houses that match the price filter
+    priceQuery.get().then((QuerySnapshot querySnapshot) {
       List<DocumentSnapshot> filteredHouses = querySnapshot.docs;
-      // print('Filtered Houses (Price): ${filteredHouses.length}');
 
-      print('Filtered Houses (Rooms): Min $minRooms Max $maxRooms');
+      print('Filtered Houses (Price): ${filteredHouses.length}');
 
+      //rooms Query
       Query roomsQuery = housesCollection;
 
-      // roomsQuery.where('price').get().then((value) =>
-      //     print('Filtered Houses (Rooms): = ${value.docs.first.data()}'));
-
-      if (minRooms != 0 || maxRooms != 10) {
-        if (minRooms != 0 && maxRooms != 10) {
+      //if the min and max rooms are not the default values
+      if (minRooms != 1 || maxRooms != 5) {
+        if (minRooms != 1 && maxRooms != 5) {
           roomsQuery = roomsQuery.where('n_rooms',
               isGreaterThanOrEqualTo: minRooms, isLessThanOrEqualTo: maxRooms);
-        } else if (minRooms != 0) {
+        } else if (minRooms != 1) {
           roomsQuery =
               roomsQuery.where('n_rooms', isGreaterThanOrEqualTo: minRooms);
         } else {
@@ -124,30 +160,55 @@ class _FilterScreenState extends State<FilterScreen> {
               roomsQuery.where('n_rooms', isLessThanOrEqualTo: maxRooms);
         }
       }
-      //else {
-      //   print('Final Filtered Houses: Not Woking right');
-      // }
 
+      //get the houses that match the rooms filter
       roomsQuery.get().then((QuerySnapshot roomsSnapshot) {
         List<DocumentSnapshot> filteredRooms = roomsSnapshot.docs;
         print('Filtered Houses (Rooms): ${filteredRooms.length}');
 
-        // Combine the results from price and rooms filters
-        List<DocumentSnapshot> finalFilteredHouses = [];
+        //bathrooms Query
+        Query bathroomQuery = housesCollection;
 
-        for (var house in filteredHouses) {
-          var roomId = house.id;
-          var matchingRooms = filteredRooms.where((room) => room.id == roomId);
-          if (matchingRooms.isNotEmpty) {
-            finalFilteredHouses.add(house);
+        //if the min and max rooms are not the default values
+        if (minBathrooms != 1 || maxBathrooms != 5) {
+          if (minBathrooms != 1 && maxBathrooms != 5) {
+            bathroomQuery = bathroomQuery.where('n_bathroom',
+                isGreaterThanOrEqualTo: minBathrooms,
+                isLessThanOrEqualTo: maxBathrooms);
+          } else if (minBathrooms != 1) {
+            bathroomQuery = bathroomQuery.where('n_bathroom',
+                isGreaterThanOrEqualTo: minBathrooms);
+          } else {
+            bathroomQuery = bathroomQuery.where('n_bathroom',
+                isLessThanOrEqualTo: maxBathrooms);
           }
         }
 
-        print('Final Filtered Houses: ${finalFilteredHouses.length}');
+        //get the houses that match the rooms filter
+        bathroomQuery.get().then((QuerySnapshot bathroomSnapshot) {
+          List<DocumentSnapshot> filteredBathrooms = bathroomSnapshot.docs;
+          print('Filtered Houses (Bathrooms): ${filteredBathrooms.length}');
 
-        widget.onFilterApplied(finalFilteredHouses);
+          List<DocumentSnapshot> final2FilteredHouses = [];
 
-        Navigator.pop(context);
+          for (var house in filteredHouses) {
+            var roomId = house.id;
+            var matchingRooms =
+                filteredRooms.where((room) => room.id == roomId);
+            var matchingBathrooms =
+                filteredBathrooms.where((bathroom) => bathroom.id == roomId);
+
+            if (matchingRooms.isNotEmpty && matchingBathrooms.isNotEmpty) {
+              final2FilteredHouses.add(house);
+            }
+          }
+
+          print('Final Filtered Houses: ${final2FilteredHouses.length}');
+
+          widget.onFilterApplied(final2FilteredHouses);
+
+          Navigator.pop(context);
+        });
       });
     });
   }

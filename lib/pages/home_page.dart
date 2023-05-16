@@ -44,7 +44,7 @@ class _HomePageState extends State<HomePage> {
                         child: Padding(
                           padding: const EdgeInsets.only(top: 30, left: 30),
                           child: Text(
-                            'Find your',
+                            'Troba el teu',
                             style: GoogleFonts.dmSans(
                               fontSize: 36,
                               color: Colors.grey.shade600,
@@ -57,7 +57,7 @@ class _HomePageState extends State<HomePage> {
                         child: Padding(
                           padding: const EdgeInsets.only(left: 30, bottom: 20),
                           child: Text(
-                            'best property',
+                            'habitatge ideal',
                             style: GoogleFonts.dmSans(
                               fontSize: 36,
                               fontWeight: FontWeight.bold,
@@ -177,9 +177,21 @@ class _HomePageState extends State<HomePage> {
                           }
                           final houses = snapshot.data!.docs;
 
-                          if (houses.isEmpty) {
-                            return const Center(
-                              child: Text('No houses match the filters'),
+                          if (filteredHouses?.isEmpty == true) {
+                            return AlertDialog(
+                              title: const Text('Error'),
+                              content: const Text(
+                                  'No hi ha cap resultat per a la teva cerca.'),
+                              actions: <Widget>[
+                                TextButton(
+                                  child: const Text('OK'),
+                                  onPressed: () {
+                                    setState(() {
+                                      filteredHouses = null;
+                                    });
+                                  },
+                                ),
+                              ],
                             );
                           }
 
