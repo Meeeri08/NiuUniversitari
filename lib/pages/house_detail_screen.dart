@@ -18,6 +18,7 @@ class _HouseDetailScreenState extends State<HouseDetailScreen> {
   GoogleMapController? _mapController;
   LatLng? _initialLatLng;
   List<String> imageUrls = [];
+  int price = 0;
 
   @override
   void initState() {
@@ -36,6 +37,7 @@ class _HouseDetailScreenState extends State<HouseDetailScreen> {
         final lng = latLngData.longitude;
         setState(() {
           _initialLatLng = LatLng(lat, lng);
+          price = snapshot.get('price');
         });
       } else {
         print('Error: Invalid data type for latLng field.');
@@ -59,17 +61,77 @@ class _HouseDetailScreenState extends State<HouseDetailScreen> {
       ),
       child: Scaffold(
         bottomNavigationBar: Container(
-            height: 60,
-            color: Colors.red,
-            child: const Center(
-              child: Text(
-                'Container',
-                style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 30,
-                    fontWeight: FontWeight.bold),
+          height: 80,
+          color: Colors.white,
+          child: Row(
+            children: [
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 30),
+                  child: Row(
+                    children: [
+                      Stack(
+                        alignment: Alignment.center,
+                        children: [
+                          Text(
+                            '${price.toString()}   ',
+                            style: GoogleFonts.dmSans(
+                              fontSize: 20,
+                              fontWeight: FontWeight.w700,
+                              color: Colors.black,
+                            ),
+                          ),
+                          Positioned(
+                            right: 3,
+                            child: Text(
+                              '€',
+                              style: GoogleFonts.dmSans(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w700,
+                                color: Colors.black,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      Text(
+                        ' / mes',
+                        style: GoogleFonts.dmSans(fontSize: 14),
+                      ),
+                    ],
+                  ),
+                ),
               ),
-            )),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 30),
+                child: SizedBox(
+                  width: 150,
+                  height: 40,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      // Handle button press
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF1FA29E),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      elevation: 4,
+                      shadowColor: Colors.black,
+                    ),
+                    child: Text(
+                      "M'interessa",
+                      style: GoogleFonts.dmSans(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
         backgroundColor: Colors.transparent,
         body: SafeArea(
           child: SingleChildScrollView(
@@ -121,10 +183,12 @@ class _HouseDetailScreenState extends State<HouseDetailScreen> {
                     }
                     final house = snapshot.data!;
                     final imageUrl = house.get('image_url');
+                    final propietariUrl = house.get('propietari_url');
                     final nRooms = house.get('n_rooms');
                     final nBathroom = house.get('n_bathroom');
                     final price = house.get('price');
                     final title = house.get('title');
+                    final propietari = house.get('propietari');
                     final latLng = house.get('latlng');
                     final description = house.get('description');
                     final dimensions = house.get('dimensions');
@@ -139,7 +203,7 @@ class _HouseDetailScreenState extends State<HouseDetailScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           SizedBox(
-                            height: 200,
+                            height: 190,
                             child: PageView.builder(
                               itemCount: imageUrls.length,
                               itemBuilder: (context, index) {
@@ -279,10 +343,12 @@ class _HouseDetailScreenState extends State<HouseDetailScreen> {
                                             height: 35,
                                             decoration: BoxDecoration(
                                               shape: BoxShape.circle,
-                                              color: Colors.grey[300],
+                                              image: DecorationImage(
+                                                image:
+                                                    NetworkImage(propietariUrl),
+                                                fit: BoxFit.cover,
+                                              ),
                                             ),
-                                            // child: Image.asset(
-                                            //     'your_image_path.png'), // Replace with your image
                                           ),
                                           SizedBox(width: 10),
                                           Column(
@@ -292,7 +358,7 @@ class _HouseDetailScreenState extends State<HouseDetailScreen> {
                                                 MainAxisAlignment.center,
                                             children: [
                                               Text(
-                                                'Full Name',
+                                                propietari,
                                                 style: GoogleFonts.dmSans(
                                                   fontSize: 14,
                                                   color: Color(0xff25262b),
@@ -393,7 +459,7 @@ class _HouseDetailScreenState extends State<HouseDetailScreen> {
                                 const SizedBox(height: 15),
                                 Container(
                                   width: double.infinity,
-                                  height: 150,
+                                  height: 120,
                                   child: GoogleMap(
                                     initialCameraPosition: CameraPosition(
                                       target:
@@ -414,7 +480,7 @@ class _HouseDetailScreenState extends State<HouseDetailScreen> {
                                             .defaultMarkerWithHue(
                                           BitmapDescriptor.hueViolet,
                                         ),
-                                        anchor: const Offset(0.3, 0.3),
+                                        anchor: const Offset(0.5, 0.5),
                                         infoWindow: InfoWindow(title: title),
                                       ),
                                     },
