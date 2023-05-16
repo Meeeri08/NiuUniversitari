@@ -43,6 +43,7 @@ class _HouseDetailScreenState extends State<HouseDetailScreen> {
   @override
   void initState() {
     _loadMarkerIcon();
+    bool isSaved = false;
 
     super.initState();
     // Initialize the initial LatLng value to the location of the house
@@ -161,10 +162,11 @@ class _HouseDetailScreenState extends State<HouseDetailScreen> {
               children: [
                 Row(
                   children: [
-                    SizedBox(width: 10),
+                    SizedBox(width: 14),
                     IconButton(
                       icon: Icon(Icons.arrow_back_ios),
-                      iconSize: 20,
+                      iconSize: 22,
+                      color: Color(0xff25262b),
                       onPressed: () {
                         Navigator.of(context).pop();
                       },
@@ -181,9 +183,26 @@ class _HouseDetailScreenState extends State<HouseDetailScreen> {
                         ),
                       ),
                     ),
-                    SizedBox(
-                      width: 48,
-                      height: 40,
+                    Padding(
+                      padding: const EdgeInsets.only(right: 12),
+                      child: Builder(
+                        builder: (BuildContext context) {
+                          return IconButton(
+                            icon: Icon(
+                              isSaved ? Icons.bookmark : Icons.bookmark_border,
+                            ),
+                            iconSize: 26,
+                            color: Color(0xff25262b),
+                            onPressed: () {
+                              setState(() {
+                                isSaved = !isSaved;
+                              });
+
+                              // Handle favorite button press
+                            },
+                          );
+                        },
+                      ),
                     ),
                   ],
                 ),
