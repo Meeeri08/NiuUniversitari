@@ -23,7 +23,23 @@ class _FilterScreenState extends State<FilterScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Filter'),
+        elevation: 0.5,
+        leading: Padding(
+          padding: const EdgeInsets.only(left: 15, bottom: 15),
+          child: IconButton(
+            icon: Icon(Icons.arrow_back_ios),
+            color: Color(0xff25262b),
+            onPressed: () {
+              Navigator.pop(context);
+            },
+          ),
+        ),
+        title: Padding(
+          padding: const EdgeInsets.only(bottom: 15),
+          child:
+              Text('Filtrar', style: TextStyle(color: const Color(0xff25262b))),
+        ),
+        backgroundColor: Colors.white,
       ),
       body: Column(
         children: [

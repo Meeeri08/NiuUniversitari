@@ -28,7 +28,7 @@ class _HomePageState extends State<HomePage> {
         SliverAppBar(
           pinned: true,
           floating: true,
-          backgroundColor: Colors.transparent, // Set the gradient color here
+          backgroundColor: Colors.transparent,
           elevation: 0.0,
           automaticallyImplyLeading: false,
           leadingWidth: 90,
@@ -70,7 +70,6 @@ class _HomePageState extends State<HomePage> {
                   ),
                 )
               : null,
-
           leading: _currentIndex == 0
               ? SizedBox(
                   child: Column(

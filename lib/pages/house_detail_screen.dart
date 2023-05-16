@@ -24,6 +24,7 @@ class _HouseDetailScreenState extends State<HouseDetailScreen> {
   List<String> imageUrls = [];
   int price = 0;
   late BitmapDescriptor _markerIcon;
+  bool isSaved = false;
   Future<void> _loadMarkerIcon() async {
     final BitmapDescriptor markerIcon = await _createMarkerIcon();
 
@@ -43,7 +44,6 @@ class _HouseDetailScreenState extends State<HouseDetailScreen> {
   @override
   void initState() {
     _loadMarkerIcon();
-    bool isSaved = false;
 
     super.initState();
     // Initialize the initial LatLng value to the location of the house
@@ -74,8 +74,7 @@ class _HouseDetailScreenState extends State<HouseDetailScreen> {
         gradient: LinearGradient(
           colors: [
             Color(0xffffffff),
-            Color(0xffffffff),
-            Color.fromARGB(255, 237, 237, 239),
+            Color(0xfff9f9fa),
           ],
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
@@ -100,7 +99,7 @@ class _HouseDetailScreenState extends State<HouseDetailScreen> {
                             style: GoogleFonts.dmSans(
                               fontSize: 20,
                               fontWeight: FontWeight.w700,
-                              color: Colors.black,
+                              color: Color(0xff25262b),
                             ),
                           ),
                           Positioned(
@@ -110,7 +109,7 @@ class _HouseDetailScreenState extends State<HouseDetailScreen> {
                               style: GoogleFonts.dmSans(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w700,
-                                color: Colors.black,
+                                color: Color(0xff25262b),
                               ),
                             ),
                           ),
@@ -118,7 +117,10 @@ class _HouseDetailScreenState extends State<HouseDetailScreen> {
                       ),
                       Text(
                         ' / mes',
-                        style: GoogleFonts.dmSans(fontSize: 14),
+                        style: GoogleFonts.dmSans(
+                          fontSize: 14,
+                          color: Color(0xff25262b),
+                        ),
                       ),
                     ],
                   ),
@@ -520,8 +522,6 @@ class _HouseDetailScreenState extends State<HouseDetailScreen> {
                                                   const LatLng(0, 0),
                                               icon: _markerIcon,
                                               anchor: const Offset(0.5, 0.5),
-                                              infoWindow:
-                                                  InfoWindow(title: title),
                                             ),
                                           }
                                         : {},
