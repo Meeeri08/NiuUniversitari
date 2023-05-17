@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_xlider/flutter_xlider.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class FilterScreen extends StatefulWidget {
   final Function(List<DocumentSnapshot>?) onFilterApplied;
@@ -36,27 +38,106 @@ class _FilterScreenState extends State<FilterScreen> {
         ),
         title: Padding(
           padding: const EdgeInsets.only(bottom: 15),
-          child:
-              Text('Filtrar', style: TextStyle(color: const Color(0xff25262b))),
+          child: Text('Filtrar',
+              style: GoogleFonts.dmSans(
+                color: const Color(0xff25262b),
+                fontWeight: FontWeight.w500,
+              )),
         ),
         backgroundColor: Colors.white,
       ),
       body: Column(
         children: [
-          ListTile(
-            title: Text('Price Range'),
-            subtitle: RangeSlider(
-              divisions: 20,
-              values: RangeValues(minPrice.toDouble(), maxPrice.toDouble()),
-              min: 0,
-              max: 2000,
-              onChanged: (RangeValues values) {
-                setState(() {
-                  minPrice = values.start.toInt();
-                  maxPrice = values.end.toInt();
-                });
-              },
-            ),
+          Column(
+            children: [
+              const Align(
+                alignment: Alignment.centerLeft,
+                child: Padding(
+                  padding: EdgeInsets.only(left: 30, top: 30),
+                  child: Text(
+                    'Preferències',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontFamily: 'dmSans',
+                      fontSize: 24,
+                      color: Color(0xff25262b),
+                    ),
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(right: 10, left: 10),
+                child: ListTile(
+                  subtitle: FlutterSlider(
+                    handlerHeight: 25,
+                    handlerWidth: 25,
+                    values: [minPrice.toDouble(), maxPrice.toDouble()],
+                    rangeSlider: true,
+                    min: 0,
+                    max: 2000,
+                    step: FlutterSliderStep(
+                        step: 100), // Set the step size to 100
+                    onDragging: (handlerIndex, lowerValue, upperValue) {
+                      setState(() {
+                        minPrice = (lowerValue / 100).round() *
+                            100; // Adjust the values in increments of 100
+                        maxPrice = (upperValue / 100).round() * 100;
+                      });
+                    },
+                    trackBar: FlutterSliderTrackBar(
+                      activeTrackBar: BoxDecoration(color: Color(0xFF1FA29E)),
+                      inactiveTrackBar:
+                          BoxDecoration(color: Colors.grey.shade300),
+                    ),
+                    tooltip: FlutterSliderTooltip(
+                      textStyle: TextStyle(fontSize: 17),
+                      custom: (value) {
+                        return Text('${value.toInt().toString()}',
+                            style: TextStyle(fontSize: 17));
+                      },
+                    ),
+                    handler: FlutterSliderHandler(
+                      child: Container(),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.5),
+                            spreadRadius: 1,
+                            blurRadius: 2,
+                            offset: Offset(0, 3), // changes position of shadow
+                          ),
+                        ],
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          color: Colors.grey,
+                          width: 2,
+                        ),
+                      ),
+                    ),
+                    rightHandler: FlutterSliderHandler(
+                      child: Container(),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.5),
+                            spreadRadius: 1,
+                            blurRadius: 2,
+                            offset: Offset(0, 3), // changes position of shadow
+                          ),
+                        ],
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          color: Colors.grey,
+                          width: 2,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
 
           Padding(
@@ -105,6 +186,8 @@ class _FilterScreenState extends State<FilterScreen> {
                   RangeValues(minBathrooms.toDouble(), maxBathrooms.toDouble()),
               min: 1,
               max: 5,
+              activeColor: Color(0xFF1FA29E),
+              inactiveColor: Colors.grey.shade300,
               onChanged: (RangeValues values) {
                 setState(() {
                   minBathrooms = values.start.toInt();
