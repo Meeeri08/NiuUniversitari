@@ -65,90 +65,118 @@ class _FilterScreenState extends State<FilterScreen> {
                   ),
                 ),
               ),
+              SizedBox(height: 20),
               Padding(
-                padding: const EdgeInsets.only(right: 10, left: 10),
-                child: ListTile(
-                  subtitle: FlutterSlider(
-                    handlerHeight: 25,
-                    handlerWidth: 25,
-                    values: [minPrice.toDouble(), maxPrice.toDouble()],
-                    rangeSlider: true,
-                    min: 0,
-                    max: 2000,
-                    step: FlutterSliderStep(
-                        step: 100), // Set the step size to 100
-                    onDragging: (handlerIndex, lowerValue, upperValue) {
-                      setState(() {
-                        minPrice = (lowerValue / 100).round() *
-                            100; // Adjust the values in increments of 100
-                        maxPrice = (upperValue / 100).round() * 100;
-                      });
-                    },
-                    trackBar: FlutterSliderTrackBar(
-                      activeTrackBar: BoxDecoration(color: Color(0xFF1FA29E)),
-                      inactiveTrackBar:
-                          BoxDecoration(color: Colors.grey.shade300),
-                    ),
-                    tooltip: FlutterSliderTooltip(
-                      textStyle: TextStyle(fontSize: 17),
-                      custom: (value) {
-                        return Text('${value.toInt().toString()}',
-                            style: TextStyle(fontSize: 17));
-                      },
-                    ),
-                    handler: FlutterSliderHandler(
-                      child: Container(),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.grey.withOpacity(0.5),
-                            spreadRadius: 1,
-                            blurRadius: 2,
-                            offset: Offset(0, 3), // changes position of shadow
+                padding: const EdgeInsets.only(left: 20),
+                child: Column(
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 15),
+                          child: Text(
+                            'Preu',
+                            style: TextStyle(
+                              fontFamily: 'DM Sans',
+                              fontSize: 18,
+                              fontWeight: FontWeight.w500,
+                              color: Colors.grey.shade500,
+                            ),
                           ),
-                        ],
-                        shape: BoxShape.circle,
-                        border: Border.all(
-                          color: Colors.grey,
-                          width: 2,
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 25),
+                          child: Text(
+                            '\ $minPrice -\ $maxPrice',
+                            style: TextStyle(
+                              fontFamily: 'DM Sans',
+                              fontSize: 16,
+                              fontWeight: FontWeight.w500,
+                              color: Color(0xff25262b),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 20),
+                    ListTile(
+                      subtitle: FlutterSlider(
+                        handlerHeight: 25,
+                        handlerWidth: 25,
+                        values: [minPrice.toDouble(), maxPrice.toDouble()],
+                        rangeSlider: true,
+                        min: 0,
+                        max: 2000,
+                        step: FlutterSliderStep(
+                            step: 100), // Set the step size to 100
+                        onDragging: (handlerIndex, lowerValue, upperValue) {
+                          setState(() {
+                            minPrice = (lowerValue / 100).round() *
+                                100; // Adjust the values in increments of 100
+                            maxPrice = (upperValue / 100).round() * 100;
+                          });
+                        },
+                        trackBar: FlutterSliderTrackBar(
+                          activeTrackBar:
+                              BoxDecoration(color: Color(0xFF1FA29E)),
+                          inactiveTrackBar:
+                              BoxDecoration(color: Colors.grey.shade300),
+                        ),
+                        tooltip: FlutterSliderTooltip(
+                          textStyle: TextStyle(fontSize: 17),
+                          custom: (value) {
+                            return Text('${value.toInt().toString()}',
+                                style: TextStyle(fontSize: 17));
+                          },
+                        ),
+                        handler: FlutterSliderHandler(
+                          child: Container(),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.grey.withOpacity(0.5),
+                                spreadRadius: 1,
+                                blurRadius: 2,
+                                offset:
+                                    Offset(0, 3), // changes position of shadow
+                              ),
+                            ],
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color: Colors.grey,
+                              width: 2,
+                            ),
+                          ),
+                        ),
+                        rightHandler: FlutterSliderHandler(
+                          child: Container(),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.grey.withOpacity(0.5),
+                                spreadRadius: 1,
+                                blurRadius: 2,
+                                offset:
+                                    Offset(0, 3), // changes position of shadow
+                              ),
+                            ],
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color: Colors.grey,
+                              width: 2,
+                            ),
+                          ),
                         ),
                       ),
                     ),
-                    rightHandler: FlutterSliderHandler(
-                      child: Container(),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.grey.withOpacity(0.5),
-                            spreadRadius: 1,
-                            blurRadius: 2,
-                            offset: Offset(0, 3), // changes position of shadow
-                          ),
-                        ],
-                        shape: BoxShape.circle,
-                        border: Border.all(
-                          color: Colors.grey,
-                          width: 2,
-                        ),
-                      ),
-                    ),
-                  ),
+                    SizedBox(height: 20),
+                  ],
                 ),
               ),
             ],
-          ),
-
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text('Min Price: $minPrice'),
-                Text('Max Price: $maxPrice'),
-              ],
-            ),
           ),
 
           //use a dropdown button for min and max rooms
