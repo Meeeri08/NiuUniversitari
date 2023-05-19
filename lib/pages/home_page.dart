@@ -32,7 +32,7 @@ class _HomePageState extends State<HomePage> {
           elevation: 0.0,
           automaticallyImplyLeading: false,
           leadingWidth: 90,
-          expandedHeight: _currentIndex == 0 ? 240.0 : 10,
+          expandedHeight: _currentIndex == 0 ? 180.0 : 10,
           flexibleSpace: _currentIndex == 0
               ? FlexibleSpaceBar(
                   background: Column(
@@ -42,7 +42,7 @@ class _HomePageState extends State<HomePage> {
                       Visibility(
                         visible: _currentIndex == 0,
                         child: Padding(
-                          padding: const EdgeInsets.only(top: 30, left: 30),
+                          padding: const EdgeInsets.only(top: 70, left: 30),
                           child: Text(
                             'Troba el teu',
                             style: GoogleFonts.dmSans(
@@ -177,20 +177,23 @@ class _HomePageState extends State<HomePage> {
                           final houses = snapshot.data!.docs;
 
                           if (filteredHouses?.isEmpty == true) {
-                            return AlertDialog(
-                              title: const Text('Error'),
-                              content: const Text(
-                                  'No hi ha cap resultat per a la teva cerca.'),
-                              actions: <Widget>[
-                                TextButton(
-                                  child: const Text('OK'),
-                                  onPressed: () {
-                                    setState(() {
-                                      filteredHouses = null;
-                                    });
-                                  },
-                                ),
-                              ],
+                            return Padding(
+                              padding: const EdgeInsets.only(bottom: 300.0),
+                              child: AlertDialog(
+                                title: const Text('Error'),
+                                content: const Text(
+                                    'No hi ha cap resultat per a la teva cerca.'),
+                                actions: <Widget>[
+                                  TextButton(
+                                    child: const Text('OK'),
+                                    onPressed: () {
+                                      setState(() {
+                                        filteredHouses = null;
+                                      });
+                                    },
+                                  ),
+                                ],
+                              ),
                             );
                           }
 
@@ -363,7 +366,7 @@ class _HomePageState extends State<HomePage> {
                 right: 0,
                 bottom: 0,
                 child: CurvedNavigationBar(
-                  height: 50,
+                  height: 75,
                   backgroundColor: Colors.transparent,
                   animationDuration: const Duration(milliseconds: 600),
                   index: _currentIndex,

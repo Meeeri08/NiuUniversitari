@@ -20,6 +20,7 @@ class _FilterScreenState extends State<FilterScreen> {
   int maxRooms = 5;
   int minBathrooms = 1;
   int maxBathrooms = 5;
+  bool petPolicy = true;
 
   @override
   Widget build(BuildContext context) {
@@ -86,7 +87,7 @@ class _FilterScreenState extends State<FilterScreen> {
                           ),
                         ),
                         Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 25),
+                          padding: const EdgeInsets.symmetric(horizontal: 30),
                           child: Text(
                             '\ $minPrice -\ $maxPrice',
                             style: TextStyle(
@@ -178,59 +179,245 @@ class _FilterScreenState extends State<FilterScreen> {
               ),
             ],
           ),
-
-          //use a dropdown button for min and max rooms
-          ListTile(
-            title: Text('Number of Rooms'),
-            subtitle: RangeSlider(
-              values: RangeValues(minRooms.toDouble(), maxRooms.toDouble()),
-              min: 1,
-              max: 5,
-              activeColor: Color(0xFF1FA29E),
-              inactiveColor: Colors.grey.shade300,
-              onChanged: (RangeValues values) {
-                setState(() {
-                  minRooms = values.start.toInt();
-                  maxRooms = values.end.toInt();
-                });
-              },
-            ),
-          ),
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            padding: const EdgeInsets.only(left: 20),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('Min Rooms: $minRooms'),
-                Text('Max Rooms: $maxRooms'),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 15),
+                  child: Text(
+                    'Nombre d' "'" 'habitacions',
+                    style: TextStyle(
+                      fontFamily: 'DM Sans',
+                      fontSize: 18,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.grey.shade500,
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 30),
+                  child: Text(
+                    '\ $minRooms -\ $maxRooms',
+                    style: TextStyle(
+                      fontFamily: 'DM Sans',
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                      color: Color(0xff25262b),
+                    ),
+                  ),
+                ),
               ],
             ),
           ),
-          //Create ListTile for min and max bathrooms
+          SizedBox(height: 20),
           ListTile(
-            title: Text('Number of Bathrooms'),
-            subtitle: RangeSlider(
-              values:
-                  RangeValues(minBathrooms.toDouble(), maxBathrooms.toDouble()),
-              min: 1,
-              max: 5,
-              activeColor: Color(0xFF1FA29E),
-              inactiveColor: Colors.grey.shade300,
-              onChanged: (RangeValues values) {
-                setState(() {
-                  minBathrooms = values.start.toInt();
-                  maxBathrooms = values.end.toInt();
-                });
-              },
+            subtitle: Padding(
+              padding: const EdgeInsets.only(left: 19),
+              child: FlutterSlider(
+                handlerHeight: 25,
+                handlerWidth: 25,
+                values: [minRooms.toDouble(), maxRooms.toDouble()],
+                rangeSlider: true,
+                min: 1,
+                max: 5,
+                step: FlutterSliderStep(step: 1),
+                onDragging: (handlerIndex, lowerValue, upperValue) {
+                  setState(() {
+                    minRooms = (lowerValue / 1).round() * 1;
+                    maxRooms = (upperValue / 1).round() * 1;
+                  });
+                },
+                trackBar: FlutterSliderTrackBar(
+                  activeTrackBar: BoxDecoration(color: Color(0xFF1FA29E)),
+                  inactiveTrackBar: BoxDecoration(color: Colors.grey.shade300),
+                ),
+                tooltip: FlutterSliderTooltip(
+                  textStyle: TextStyle(fontSize: 17),
+                  custom: (value) {
+                    return Text('${value.toInt().toString()}',
+                        style: TextStyle(fontSize: 17));
+                  },
+                ),
+                handler: FlutterSliderHandler(
+                  child: Container(),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.grey.withOpacity(0.5),
+                        spreadRadius: 1,
+                        blurRadius: 2,
+                        offset: Offset(0, 3), // changes position of shadow
+                      ),
+                    ],
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: Colors.grey,
+                      width: 2,
+                    ),
+                  ),
+                ),
+                rightHandler: FlutterSliderHandler(
+                  child: Container(),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.grey.withOpacity(0.5),
+                        spreadRadius: 1,
+                        blurRadius: 2,
+                        offset: Offset(0, 3), // changes position of shadow
+                      ),
+                    ],
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: Colors.grey,
+                      width: 2,
+                    ),
+                  ),
+                ),
+              ),
             ),
           ),
+
+          //Create ListTile for min and max bathrooms
+          SizedBox(height: 20),
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            padding: const EdgeInsets.only(left: 20),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('Min Bathrooms: $minBathrooms'),
-                Text('Max Bathrooms: $maxBathrooms'),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 15),
+                  child: Text(
+                    'Nombre de lavabos',
+                    style: TextStyle(
+                      fontFamily: 'DM Sans',
+                      fontSize: 18,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.grey.shade500,
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 30),
+                  child: Text(
+                    '\ $minBathrooms -\ $maxBathrooms',
+                    style: TextStyle(
+                      fontFamily: 'DM Sans',
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                      color: Color(0xff25262b),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          SizedBox(height: 20),
+
+          //create a dropdown button for min and max bathrooms
+
+          ListTile(
+            subtitle: Padding(
+              padding: const EdgeInsets.only(left: 19),
+              child: FlutterSlider(
+                handlerHeight: 25,
+                handlerWidth: 25,
+                values: [minBathrooms.toDouble(), maxBathrooms.toDouble()],
+                rangeSlider: true,
+                min: 1,
+                max: 5,
+                step: FlutterSliderStep(step: 1),
+                onDragging: (handlerIndex, lowerValue, upperValue) {
+                  setState(() {
+                    minBathrooms = (lowerValue / 1).round() * 1;
+                    maxBathrooms = (upperValue / 1).round() * 1;
+                  });
+                },
+                trackBar: FlutterSliderTrackBar(
+                  activeTrackBar: BoxDecoration(color: Color(0xFF1FA29E)),
+                  inactiveTrackBar: BoxDecoration(color: Colors.grey.shade300),
+                ),
+                tooltip: FlutterSliderTooltip(
+                  textStyle: TextStyle(fontSize: 17),
+                  custom: (value) {
+                    return Text('${value.toInt().toString()}',
+                        style: TextStyle(fontSize: 17));
+                  },
+                ),
+                handler: FlutterSliderHandler(
+                  child: Container(),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.grey.withOpacity(0.5),
+                        spreadRadius: 1,
+                        blurRadius: 2,
+                        offset: Offset(0, 3), // changes position of shadow
+                      ),
+                    ],
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: Colors.grey,
+                      width: 2,
+                    ),
+                  ),
+                ),
+                rightHandler: FlutterSliderHandler(
+                  child: Container(),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.grey.withOpacity(0.5),
+                        spreadRadius: 1,
+                        blurRadius: 2,
+                        offset: Offset(0, 3), // changes position of shadow
+                      ),
+                    ],
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: Colors.grey,
+                      width: 2,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+          SizedBox(height: 20),
+          Padding(
+            padding: const EdgeInsets.only(left: 20),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 15),
+                  child: Text(
+                    'Política de mascotes',
+                    style: TextStyle(
+                      fontFamily: 'DM Sans',
+                      fontSize: 18,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.grey.shade500,
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 30),
+                  child: Checkbox(
+                    value: petPolicy,
+                    onChanged: (bool? value) {
+                      setState(() {
+                        petPolicy = value ?? false;
+                      });
+                    },
+                  ),
+                ),
               ],
             ),
           ),
@@ -238,8 +425,23 @@ class _FilterScreenState extends State<FilterScreen> {
           ElevatedButton(
             onPressed: () {
               filterHouses();
+              // Handle button press
             },
-            child: Text('Apply Filters'),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFF1FA29E),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+              elevation: 4,
+              shadowColor: Colors.black,
+            ),
+            child: Text(
+              "Aplica els filtres",
+              style: GoogleFonts.dmSans(
+                color: Colors.white,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
           ),
         ],
       ),
@@ -316,25 +518,47 @@ class _FilterScreenState extends State<FilterScreen> {
           List<DocumentSnapshot> filteredBathrooms = bathroomSnapshot.docs;
           print('Filtered Houses (Bathrooms): ${filteredBathrooms.length}');
 
-          List<DocumentSnapshot> final2FilteredHouses = [];
+          //Pets policy Query
+          Query petPolicyQuery = housesCollection;
 
-          for (var house in filteredHouses) {
-            var roomId = house.id;
-            var matchingRooms =
-                filteredRooms.where((room) => room.id == roomId);
-            var matchingBathrooms =
-                filteredBathrooms.where((bathroom) => bathroom.id == roomId);
-
-            if (matchingRooms.isNotEmpty && matchingBathrooms.isNotEmpty) {
-              final2FilteredHouses.add(house);
-            }
+// Apply pet policy filter if enabled
+          if (petPolicy) {
+            petPolicyQuery =
+                petPolicyQuery.where('pet_policy', isEqualTo: true);
+          } else {
+            petPolicyQuery =
+                petPolicyQuery.where('pet_policy', isEqualTo: false);
           }
 
-          print('Final Filtered Houses: ${final2FilteredHouses.length}');
+          petPolicyQuery.get().then((QuerySnapshot petPolicySnapshot) {
+            List<DocumentSnapshot> filteredPetPolicy = petPolicySnapshot.docs;
 
-          widget.onFilterApplied(final2FilteredHouses);
+            print('Filtered Houses (Pet Policy): ${filteredPetPolicy.length}');
 
-          Navigator.pop(context);
+            List<DocumentSnapshot> finalFilteredHouses = [];
+
+            for (var house in filteredHouses) {
+              var roomId = house.id;
+              var matchingRooms =
+                  filteredRooms.where((room) => room.id == roomId);
+              var matchingBathrooms =
+                  filteredBathrooms.where((bathroom) => bathroom.id == roomId);
+              var matchingPetPolicy = filteredPetPolicy
+                  .where((petPolicy) => petPolicy.id == roomId);
+
+              if (matchingRooms.isNotEmpty &&
+                  matchingBathrooms.isNotEmpty &&
+                  matchingPetPolicy.isNotEmpty) {
+                finalFilteredHouses.add(house);
+              }
+            }
+
+            print('Final Filtered Houses: ${finalFilteredHouses.length}');
+
+            widget.onFilterApplied(finalFilteredHouses);
+
+            Navigator.pop(context);
+          });
         });
       });
     });

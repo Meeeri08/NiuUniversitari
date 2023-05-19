@@ -43,12 +43,12 @@ class _TinderPageState extends State<Tinder> {
       child: Column(
         children: [
           const SizedBox(
-            height: 130,
+            height: 50,
           ),
           SizedBox(
             height: MediaQuery.of(context).size.height * 0.60,
             child: AppinioSwiper(
-              swipeOptions: AppinioSwipeOptions.vertical,
+              swipeOptions: AppinioSwipeOptions.horizontal,
               unlimitedUnswipe: true,
               controller: controller,
               unswipe: _unswipe,
