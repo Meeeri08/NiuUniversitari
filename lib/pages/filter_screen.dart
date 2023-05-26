@@ -30,163 +30,177 @@ class _FilterScreenState extends State<FilterScreen> {
     'Les Corts',
     'Provença'
   ];
-  late String selectedOption;
+  late String selectedBarriOption;
 
+  late String selectedEstatOption;
+
+  List<String> selectedEstat = [];
+  List<String> estatOptions = [
+    'Nou',
+    'Refomat',
+    'Moblat',
+    'Sense moblar',
+  ];
+
+  late String selectedTipusOption;
+
+  List<String> selectedTipus = [];
+  List<String> tipusOptions = [
+    'Casa',
+    'Pis',
+    'Residència',
+    'Estudi',
+  ];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        elevation: 0.5,
-        leading: Padding(
-          padding: const EdgeInsets.only(left: 15, bottom: 15),
-          child: IconButton(
-            icon: Icon(Icons.arrow_back_ios),
-            color: Color(0xff25262b),
-            onPressed: () {
-              Navigator.pop(context);
-            },
+        appBar: AppBar(
+          elevation: 0.5,
+          leading: Padding(
+            padding: const EdgeInsets.only(left: 15, bottom: 15),
+            child: IconButton(
+              icon: Icon(Icons.arrow_back_ios),
+              color: Color(0xff25262b),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+            ),
           ),
+          title: Padding(
+            padding: const EdgeInsets.only(bottom: 15),
+            child: Text('Filtrar',
+                style: GoogleFonts.dmSans(
+                  color: const Color(0xff25262b),
+                  fontWeight: FontWeight.w500,
+                )),
+          ),
+          backgroundColor: Colors.white,
         ),
-        title: Padding(
-          padding: const EdgeInsets.only(bottom: 15),
-          child: Text('Filtrar',
-              style: GoogleFonts.dmSans(
-                color: const Color(0xff25262b),
-                fontWeight: FontWeight.w500,
-              )),
-        ),
-        backgroundColor: Colors.white,
-      ),
-      body: Column(
-        children: [
-          Column(
-            children: [
-              const Align(
-                alignment: Alignment.centerLeft,
-                child: Padding(
-                  padding: EdgeInsets.only(left: 30, top: 30),
-                  child: Text(
-                    'Preferències',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontFamily: 'dmSans',
-                      fontSize: 24,
-                      color: Color(0xff25262b),
-                    ),
-                  ),
+        body: ListView(shrinkWrap: true, children: [
+          Align(
+            alignment: Alignment.centerLeft,
+            child: Padding(
+              padding: EdgeInsets.only(left: 30, top: 30),
+              child: Text(
+                'Preferències',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontFamily: 'dmSans',
+                  fontSize: 24,
+                  color: Color(0xff25262b),
                 ),
               ),
-              SizedBox(height: 20),
-              Padding(
-                padding: const EdgeInsets.only(left: 20),
-                child: Column(
+            ),
+          ),
+          SizedBox(height: 20),
+          Padding(
+            padding: const EdgeInsets.only(left: 20),
+            child: Column(
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 15),
-                          child: Text(
-                            'Preu',
-                            style: TextStyle(
-                              fontFamily: 'DM Sans',
-                              fontSize: 18,
-                              fontWeight: FontWeight.w500,
-                              color: Colors.grey.shade500,
-                            ),
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 30),
-                          child: Text(
-                            '\ $minPrice -\ $maxPrice',
-                            style: TextStyle(
-                              fontFamily: 'DM Sans',
-                              fontSize: 16,
-                              fontWeight: FontWeight.w500,
-                              color: Color(0xff25262b),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: 20),
-                    ListTile(
-                      subtitle: FlutterSlider(
-                        handlerHeight: 25,
-                        handlerWidth: 25,
-                        values: [minPrice.toDouble(), maxPrice.toDouble()],
-                        rangeSlider: true,
-                        min: 0,
-                        max: 2000,
-                        step: FlutterSliderStep(
-                            step: 100), // Set the step size to 100
-                        onDragging: (handlerIndex, lowerValue, upperValue) {
-                          setState(() {
-                            minPrice = (lowerValue / 100).round() *
-                                100; // Adjust the values in increments of 100
-                            maxPrice = (upperValue / 100).round() * 100;
-                          });
-                        },
-                        trackBar: FlutterSliderTrackBar(
-                          activeTrackBar:
-                              BoxDecoration(color: Color(0xFF1FA29E)),
-                          inactiveTrackBar:
-                              BoxDecoration(color: Colors.grey.shade300),
-                        ),
-                        tooltip: FlutterSliderTooltip(
-                          textStyle: TextStyle(fontSize: 17),
-                          custom: (value) {
-                            return Text('${value.toInt().toString()}',
-                                style: TextStyle(fontSize: 17));
-                          },
-                        ),
-                        handler: FlutterSliderHandler(
-                          child: Container(),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.grey.withOpacity(0.5),
-                                spreadRadius: 1,
-                                blurRadius: 2,
-                                offset: Offset(0, 3),
-                              ),
-                            ],
-                            shape: BoxShape.circle,
-                            border: Border.all(
-                              color: Colors.grey,
-                              width: 2,
-                            ),
-                          ),
-                        ),
-                        rightHandler: FlutterSliderHandler(
-                          child: Container(),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.grey.withOpacity(0.5),
-                                spreadRadius: 1,
-                                blurRadius: 2,
-                                offset: Offset(0, 3),
-                              ),
-                            ],
-                            shape: BoxShape.circle,
-                            border: Border.all(
-                              color: Colors.grey,
-                              width: 2,
-                            ),
-                          ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 15),
+                      child: Text(
+                        'Preu',
+                        style: TextStyle(
+                          fontFamily: 'DM Sans',
+                          fontSize: 18,
+                          fontWeight: FontWeight.w500,
+                          color: Colors.grey.shade500,
                         ),
                       ),
                     ),
-                    SizedBox(height: 20),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 30),
+                      child: Text(
+                        '\ $minPrice -\ $maxPrice',
+                        style: TextStyle(
+                          fontFamily: 'DM Sans',
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                          color: Color(0xff25262b),
+                        ),
+                      ),
+                    ),
                   ],
                 ),
-              ),
-            ],
+                SizedBox(height: 20),
+                ListTile(
+                  subtitle: FlutterSlider(
+                    handlerHeight: 25,
+                    handlerWidth: 25,
+                    values: [minPrice.toDouble(), maxPrice.toDouble()],
+                    rangeSlider: true,
+                    min: 0,
+                    max: 2000,
+                    step: FlutterSliderStep(
+                        step: 100), // Set the step size to 100
+                    onDragging: (handlerIndex, lowerValue, upperValue) {
+                      setState(() {
+                        minPrice = (lowerValue / 100).round() *
+                            100; // Adjust the values in increments of 100
+                        maxPrice = (upperValue / 100).round() * 100;
+                      });
+                    },
+                    trackBar: FlutterSliderTrackBar(
+                      activeTrackBar: BoxDecoration(color: Color(0xFF1FA29E)),
+                      inactiveTrackBar:
+                          BoxDecoration(color: Colors.grey.shade300),
+                    ),
+                    tooltip: FlutterSliderTooltip(
+                      textStyle: TextStyle(fontSize: 17),
+                      custom: (value) {
+                        return Text('${value.toInt().toString()}',
+                            style: TextStyle(fontSize: 17));
+                      },
+                    ),
+                    handler: FlutterSliderHandler(
+                      child: Container(),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.5),
+                            spreadRadius: 1,
+                            blurRadius: 2,
+                            offset: Offset(0, 3),
+                          ),
+                        ],
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          color: Colors.grey,
+                          width: 2,
+                        ),
+                      ),
+                    ),
+                    rightHandler: FlutterSliderHandler(
+                      child: Container(),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.5),
+                            spreadRadius: 1,
+                            blurRadius: 2,
+                            offset: Offset(0, 3),
+                          ),
+                        ],
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          color: Colors.grey,
+                          width: 2,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                SizedBox(height: 20),
+              ],
+            ),
           ),
+
           Padding(
             padding: const EdgeInsets.only(left: 20),
             child: Row(
@@ -424,11 +438,14 @@ class _FilterScreenState extends State<FilterScreen> {
                         petPolicy = value ?? false;
                       });
                     },
+                    activeColor: Color(0xFF1FA29E),
                   ),
                 ),
               ],
             ),
           ),
+          SizedBox(height: 20),
+
           Padding(
             padding: const EdgeInsets.only(left: 20),
             child: Row(
@@ -449,7 +466,7 @@ class _FilterScreenState extends State<FilterScreen> {
                 SizedBox(
                   width: 200, // Ancho deseado para el dropdown
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 30),
+                    padding: const EdgeInsets.symmetric(horizontal: 10),
                     child: DropdownButtonFormField<String>(
                       value:
                           selectedBarris.isNotEmpty ? selectedBarris[0] : null,
@@ -489,7 +506,7 @@ class _FilterScreenState extends State<FilterScreen> {
                         });
                       },
                       isExpanded: true,
-                      hint: Text('Selecciona els barris'),
+                      hint: Text('Selecciona'),
                       isDense: true,
                     ),
                   ),
@@ -497,32 +514,180 @@ class _FilterScreenState extends State<FilterScreen> {
               ],
             ),
           ),
-
-          //Create a button to apply the filters
-          ElevatedButton(
-            onPressed: () {
-              filterHouses();
-              // Handle button press
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF1FA29E),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
-              ),
-              elevation: 4,
-              shadowColor: Colors.black,
+          SizedBox(
+            height: 20,
+          ),
+          Padding(
+            padding: const EdgeInsets.only(left: 20),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 15),
+                  child: Text(
+                    'Estat',
+                    style: TextStyle(
+                      fontFamily: 'DM Sans',
+                      fontSize: 18,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.grey.shade500,
+                    ),
+                  ),
+                ),
+                SizedBox(
+                  width: 200, // Ancho deseado para el dropdown
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 10),
+                    child: DropdownButtonFormField<String>(
+                      value: selectedEstat.isNotEmpty ? selectedEstat[0] : null,
+                      items: estatOptions.map((String value) {
+                        return DropdownMenuItem<String>(
+                          value: value,
+                          child: Row(
+                            children: [
+                              Icon(
+                                Icons.check,
+                                color: selectedEstat.contains(value)
+                                    ? Colors.blue
+                                    : Colors.transparent,
+                              ),
+                              SizedBox(width: 10),
+                              Text(
+                                value,
+                                style: TextStyle(
+                                  color: selectedEstat.contains(value)
+                                      ? Colors.blue
+                                      : Colors.black,
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      }).toList(),
+                      onChanged: (String? newValue) {
+                        setState(() {
+                          if (newValue != null) {
+                            if (selectedEstat.contains(newValue)) {
+                              selectedEstat.remove(newValue);
+                            } else {
+                              selectedEstat.add(newValue);
+                            }
+                          }
+                        });
+                      },
+                      isExpanded: true,
+                      hint: Text('Selecciona'),
+                      isDense: true,
+                    ),
+                  ),
+                ),
+              ],
             ),
-            child: Text(
-              "Aplica els filtres",
-              style: GoogleFonts.dmSans(
-                color: Colors.white,
-                fontWeight: FontWeight.w700,
+          ),
+          SizedBox(height: 20),
+
+          Padding(
+            padding: const EdgeInsets.only(left: 20),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 15),
+                  child: Text(
+                    'Estat',
+                    style: TextStyle(
+                      fontFamily: 'DM Sans',
+                      fontSize: 18,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.grey.shade500,
+                    ),
+                  ),
+                ),
+                SizedBox(
+                  height: 20,
+                ),
+                SizedBox(
+                  width: 200, // Ancho deseado para el dropdown
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 10),
+                    child: DropdownButtonFormField<String>(
+                      value: selectedTipus.isNotEmpty ? selectedTipus[0] : null,
+                      items: tipusOptions.map((String value) {
+                        return DropdownMenuItem<String>(
+                          value: value,
+                          child: Row(
+                            children: [
+                              Icon(
+                                Icons.check,
+                                color: selectedTipus.contains(value)
+                                    ? Colors.blue
+                                    : Colors.transparent,
+                              ),
+                              SizedBox(width: 10),
+                              Text(
+                                value,
+                                style: TextStyle(
+                                  color: selectedTipus.contains(value)
+                                      ? Colors.blue
+                                      : Colors.black,
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      }).toList(),
+                      onChanged: (String? newValue) {
+                        setState(() {
+                          if (newValue != null) {
+                            if (selectedTipus.contains(newValue)) {
+                              selectedTipus.remove(newValue);
+                            } else {
+                              selectedTipus.add(newValue);
+                            }
+                          }
+                        });
+                      },
+                      isExpanded: true,
+                      hint: Text('Selecciona'),
+                      isDense: true,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          SizedBox(
+            height: 50,
+          ), //Create a button to apply the filters
+          Padding(
+            padding: const EdgeInsets.only(left: 50.0, right: 50),
+            child: Container(
+              height: 50,
+              child: ElevatedButton(
+                onPressed: () {
+                  filterHouses();
+                  // Handle button press
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF1FA29E),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  elevation: 4,
+                  shadowColor: Colors.black,
+                ),
+                child: Text(
+                  "Aplica els filtres",
+                  style: GoogleFonts.dmSans(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
               ),
             ),
           ),
-        ],
-      ),
-    );
+          SizedBox(height: 40),
+        ]));
   }
 
   void filterHouses() {
@@ -619,31 +784,61 @@ class _FilterScreenState extends State<FilterScreen> {
               List<DocumentSnapshot> filteredBarris = barriSnapshot.docs;
               print('Filtered Houses (Barris): ${filteredBarris.length}');
 
-              List<DocumentSnapshot> finalFilteredHouses = [];
+              // estat Query
+              Query estatQuery = housesCollection;
 
-              for (var house in filteredHouses) {
-                var roomId = house.id;
-                var matchingRooms =
-                    filteredRooms.where((room) => room.id == roomId);
-                var matchingBathrooms = filteredBathrooms
-                    .where((bathroom) => bathroom.id == roomId);
-                var matchingPetPolicy = filteredPetPolicy
-                    .where((petPolicy) => petPolicy.id == roomId);
-                var matchingBarris =
-                    filteredBarris.where((barri) => barri.id == roomId);
-                if (matchingRooms.isNotEmpty &&
-                    matchingBathrooms.isNotEmpty &&
-                    matchingPetPolicy.isNotEmpty &&
-                    matchingBarris.isNotEmpty) {
-                  finalFilteredHouses.add(house);
-                }
+              if (selectedEstat.isNotEmpty) {
+                estatQuery = estatQuery.where('estat', whereIn: selectedEstat);
               }
+              estatQuery.get().then((QuerySnapshot estatSnapshot) {
+                List<DocumentSnapshot> filteredEstat = estatSnapshot.docs;
+                print('Filtered Houses (Estat): ${filteredEstat.length}');
 
-              print('Final Filtered Houses: ${finalFilteredHouses.length}');
+                //tipus Query
+                Query tipusQuery = housesCollection;
 
-              widget.onFilterApplied(finalFilteredHouses);
+                if (selectedTipus.isNotEmpty) {
+                  tipusQuery =
+                      tipusQuery.where('tipus', whereIn: selectedTipus);
+                }
 
-              Navigator.pop(context);
+                tipusQuery.get().then((QuerySnapshot tipusSnapshot) {
+                  List<DocumentSnapshot> filteredTipus = tipusSnapshot.docs;
+                  print('Filtered Houses (Tipus): ${filteredTipus.length}');
+
+                  List<DocumentSnapshot> finalFilteredHouses = [];
+
+                  for (var house in filteredHouses) {
+                    var roomId = house.id;
+                    var matchingRooms =
+                        filteredRooms.where((room) => room.id == roomId);
+                    var matchingBathrooms = filteredBathrooms
+                        .where((bathroom) => bathroom.id == roomId);
+                    var matchingPetPolicy = filteredPetPolicy
+                        .where((petPolicy) => petPolicy.id == roomId);
+                    var matchingBarris =
+                        filteredBarris.where((barri) => barri.id == roomId);
+                    var matchingEstat =
+                        filteredEstat.where((estat) => estat.id == roomId);
+                    var matchingTipus =
+                        filteredTipus.where((tipus) => tipus.id == roomId);
+                    if (matchingRooms.isNotEmpty &&
+                        matchingBathrooms.isNotEmpty &&
+                        matchingPetPolicy.isNotEmpty &&
+                        matchingBarris.isNotEmpty &&
+                        matchingEstat.isNotEmpty &&
+                        matchingTipus.isNotEmpty) {
+                      finalFilteredHouses.add(house);
+                    }
+                  }
+
+                  print('Final Filtered Houses: ${finalFilteredHouses.length}');
+
+                  widget.onFilterApplied(finalFilteredHouses);
+
+                  Navigator.pop(context);
+                });
+              });
             });
           });
         });
