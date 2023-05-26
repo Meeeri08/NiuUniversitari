@@ -57,6 +57,8 @@ dependencies:
   expandable_text: ^2.3.0
   sliver_tools: ^0.2.10
   flutter_xlider: ^3.5.0
+  image_picker: ^0.8.7+5
+  firebase_storage: ^11.2.1
   
 flutter_icons:
   image_path: "lib/images/icon.png"
