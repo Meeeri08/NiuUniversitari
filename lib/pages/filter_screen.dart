@@ -20,7 +20,17 @@ class _FilterScreenState extends State<FilterScreen> {
   int maxRooms = 5;
   int minBathrooms = 1;
   int maxBathrooms = 5;
-  bool petPolicy = true;
+  bool petPolicy = false;
+
+  List<String> selectedBarris = [];
+  List<String> barriOptions = [
+    'Gràcia',
+    'Sants',
+    'Poble Sec',
+    'Les Corts',
+    'Provença'
+  ];
+  late String selectedOption;
 
   @override
   Widget build(BuildContext context) {
@@ -140,8 +150,7 @@ class _FilterScreenState extends State<FilterScreen> {
                                 color: Colors.grey.withOpacity(0.5),
                                 spreadRadius: 1,
                                 blurRadius: 2,
-                                offset:
-                                    Offset(0, 3), // changes position of shadow
+                                offset: Offset(0, 3),
                               ),
                             ],
                             shape: BoxShape.circle,
@@ -160,8 +169,7 @@ class _FilterScreenState extends State<FilterScreen> {
                                 color: Colors.grey.withOpacity(0.5),
                                 spreadRadius: 1,
                                 blurRadius: 2,
-                                offset:
-                                    Offset(0, 3), // changes position of shadow
+                                offset: Offset(0, 3),
                               ),
                             ],
                             shape: BoxShape.circle,
@@ -268,7 +276,7 @@ class _FilterScreenState extends State<FilterScreen> {
                         color: Colors.grey.withOpacity(0.5),
                         spreadRadius: 1,
                         blurRadius: 2,
-                        offset: Offset(0, 3), // changes position of shadow
+                        offset: Offset(0, 3),
                       ),
                     ],
                     shape: BoxShape.circle,
@@ -398,7 +406,7 @@ class _FilterScreenState extends State<FilterScreen> {
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 15),
                   child: Text(
-                    'Política de mascotes',
+                    'Permeten mascotes',
                     style: TextStyle(
                       fontFamily: 'DM Sans',
                       fontSize: 18,
@@ -421,6 +429,75 @@ class _FilterScreenState extends State<FilterScreen> {
               ],
             ),
           ),
+          Padding(
+            padding: const EdgeInsets.only(left: 20),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 15),
+                  child: Text(
+                    'Barri',
+                    style: TextStyle(
+                      fontFamily: 'DM Sans',
+                      fontSize: 18,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.grey.shade500,
+                    ),
+                  ),
+                ),
+                SizedBox(
+                  width: 200, // Ancho deseado para el dropdown
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 30),
+                    child: DropdownButtonFormField<String>(
+                      value:
+                          selectedBarris.isNotEmpty ? selectedBarris[0] : null,
+                      items: barriOptions.map((String value) {
+                        return DropdownMenuItem<String>(
+                          value: value,
+                          child: Row(
+                            children: [
+                              Icon(
+                                Icons.check,
+                                color: selectedBarris.contains(value)
+                                    ? Colors.blue
+                                    : Colors.transparent,
+                              ),
+                              SizedBox(width: 10),
+                              Text(
+                                value,
+                                style: TextStyle(
+                                  color: selectedBarris.contains(value)
+                                      ? Colors.blue
+                                      : Colors.black,
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      }).toList(),
+                      onChanged: (String? newValue) {
+                        setState(() {
+                          if (newValue != null) {
+                            if (selectedBarris.contains(newValue)) {
+                              selectedBarris.remove(newValue);
+                            } else {
+                              selectedBarris.add(newValue);
+                            }
+                          }
+                        });
+                      },
+                      isExpanded: true,
+                      hint: Text('Selecciona els barris'),
+                      isDense: true,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+
           //Create a button to apply the filters
           ElevatedButton(
             onPressed: () {
@@ -521,13 +598,10 @@ class _FilterScreenState extends State<FilterScreen> {
           //Pets policy Query
           Query petPolicyQuery = housesCollection;
 
-// Apply pet policy filter if enabled
+          // Apply pet policy filter if enabled
           if (petPolicy) {
             petPolicyQuery =
                 petPolicyQuery.where('pet_policy', isEqualTo: true);
-          } else {
-            petPolicyQuery =
-                petPolicyQuery.where('pet_policy', isEqualTo: false);
           }
 
           petPolicyQuery.get().then((QuerySnapshot petPolicySnapshot) {
@@ -535,29 +609,42 @@ class _FilterScreenState extends State<FilterScreen> {
 
             print('Filtered Houses (Pet Policy): ${filteredPetPolicy.length}');
 
-            List<DocumentSnapshot> finalFilteredHouses = [];
+            // barri Query
+            Query barriQuery = housesCollection;
 
-            for (var house in filteredHouses) {
-              var roomId = house.id;
-              var matchingRooms =
-                  filteredRooms.where((room) => room.id == roomId);
-              var matchingBathrooms =
-                  filteredBathrooms.where((bathroom) => bathroom.id == roomId);
-              var matchingPetPolicy = filteredPetPolicy
-                  .where((petPolicy) => petPolicy.id == roomId);
-
-              if (matchingRooms.isNotEmpty &&
-                  matchingBathrooms.isNotEmpty &&
-                  matchingPetPolicy.isNotEmpty) {
-                finalFilteredHouses.add(house);
-              }
+            if (selectedBarris.isNotEmpty) {
+              barriQuery = barriQuery.where('barri', whereIn: selectedBarris);
             }
+            barriQuery.get().then((QuerySnapshot barriSnapshot) {
+              List<DocumentSnapshot> filteredBarris = barriSnapshot.docs;
+              print('Filtered Houses (Barris): ${filteredBarris.length}');
 
-            print('Final Filtered Houses: ${finalFilteredHouses.length}');
+              List<DocumentSnapshot> finalFilteredHouses = [];
 
-            widget.onFilterApplied(finalFilteredHouses);
+              for (var house in filteredHouses) {
+                var roomId = house.id;
+                var matchingRooms =
+                    filteredRooms.where((room) => room.id == roomId);
+                var matchingBathrooms = filteredBathrooms
+                    .where((bathroom) => bathroom.id == roomId);
+                var matchingPetPolicy = filteredPetPolicy
+                    .where((petPolicy) => petPolicy.id == roomId);
+                var matchingBarris =
+                    filteredBarris.where((barri) => barri.id == roomId);
+                if (matchingRooms.isNotEmpty &&
+                    matchingBathrooms.isNotEmpty &&
+                    matchingPetPolicy.isNotEmpty &&
+                    matchingBarris.isNotEmpty) {
+                  finalFilteredHouses.add(house);
+                }
+              }
 
-            Navigator.pop(context);
+              print('Final Filtered Houses: ${finalFilteredHouses.length}');
+
+              widget.onFilterApplied(finalFilteredHouses);
+
+              Navigator.pop(context);
+            });
           });
         });
       });
