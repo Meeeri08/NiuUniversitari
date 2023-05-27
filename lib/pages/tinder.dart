@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:appinio_swiper/appinio_swiper.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:jobapp/pages/profile_page.dart';
 import 'dart:developer';
 
 import '../components/tinder_buttons.dart';
@@ -25,6 +26,7 @@ class _TinderPageState extends State<Tinder> {
 
   @override
   void initState() {
+    _checkUserProfile();
     _loadCards();
     super.initState();
   }
@@ -58,6 +60,44 @@ class _TinderPageState extends State<Tinder> {
         );
       }).toList();
     });
+  }
+
+  void _checkUserProfile() async {
+    String currentUserId = FirebaseAuth.instance.currentUser!.uid;
+    DocumentSnapshot snapshot = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(currentUserId)
+        .get();
+
+    Map<String, dynamic>? userData = snapshot.data() as Map<String, dynamic>?;
+
+    if (userData == null ||
+        !userData.containsKey('name') ||
+        !userData.containsKey('bio') ||
+        !userData.containsKey('imageUrl')) {
+      showDialog(
+        context: context,
+        barrierDismissible:
+            false, // No se puede cerrar haciendo clic fuera del diálogo ni presionando el botón de retroceso
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Configura tu perfil'),
+            content:
+                Text('Por favor, configura tu perfil antes de poder acceder.'),
+            actions: [
+              TextButton(
+                child: Text('Configurar perfil'),
+                onPressed: () {
+                  Navigator.pop(context); // Cerrar el diálogo
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => Profile()));
+                },
+              ),
+            ],
+          );
+        },
+      );
+    }
   }
 
   @override
