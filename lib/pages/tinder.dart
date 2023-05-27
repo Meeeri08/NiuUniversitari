@@ -1,9 +1,13 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:appinio_swiper/appinio_swiper.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'dart:developer';
+
 import '../components/tinder_buttons.dart';
 import '../components/tinder_candidate_model.dart';
 import '../components/tinder_card.dart';
-import 'dart:developer';
 
 class Tinder extends StatefulWidget {
   const Tinder({
@@ -25,17 +29,37 @@ class _TinderPageState extends State<Tinder> {
     super.initState();
   }
 
-  void _loadCards() {
-    for (TinderCandidateModel candidate in candidates) {
-      cards.add(
-        TinderCard(
-          candidate: candidate,
-        ),
-      );
-    }
+  void _loadCards() async {
+    String currentUserId = FirebaseAuth
+        .instance.currentUser!.uid; // Obtén el ID del usuario actual
+    QuerySnapshot snapshot =
+        await FirebaseFirestore.instance.collection('users').get();
+
+    setState(() {
+      cards = snapshot.docs
+          .where((doc) =>
+              doc.id != currentUserId && // Filtrar el propio perfil del usuario
+              doc.data() != null && // Verificar si el mapa de datos no es nulo
+              (doc.data()! as Map<String, dynamic>)
+                  .containsKey('name') && // Verificar si el campo 'name' existe
+              (doc.data()! as Map<String, dynamic>)
+                  .containsKey('bio') && // Verificar si el campo 'bio' existe
+              (doc.data()! as Map<String, dynamic>).containsKey(
+                  'imageUrl')) // Verificar si el campo 'imageUrl' existe
+          .map((doc) {
+        Map<String, dynamic> data = doc.data()! as Map<String, dynamic>;
+        return TinderCard(
+          candidate: TinderCandidateModel(
+            name: data['name'] as String? ?? '',
+            bio: data['bio'] as String? ?? '',
+            image: data['imageUrl'] as String? ?? '',
+            color: gradientPink,
+          ),
+        );
+      }).toList();
+    });
   }
 
-  @override
   @override
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
@@ -60,9 +84,9 @@ class _TinderPageState extends State<Tinder> {
                 bottom: 40,
               ),
               onEnd: _onEnd,
-              cardsCount: candidates.length,
+              cardsCount: cards.length,
               cardsBuilder: (BuildContext context, int index) {
-                return TinderCard(candidate: candidates[index]);
+                return cards[index];
               },
             ),
           ),

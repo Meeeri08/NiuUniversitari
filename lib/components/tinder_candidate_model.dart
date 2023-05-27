@@ -1,87 +1,93 @@
-import 'package:flutter/cupertino.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
 
 class TinderCandidateModel {
-  String? nom;
-  String? carrera;
-  String? zona;
-  String? image; // new field
+  String? name;
+  String? bio;
+  String? image;
   LinearGradient? color;
 
   TinderCandidateModel({
-    this.nom,
-    this.carrera,
-    this.zona,
-    this.image, // new field
+    this.name,
+    this.bio,
+    this.image,
     this.color,
   });
 }
 
-List<TinderCandidateModel> candidates = [
-  TinderCandidateModel(
-    nom: 'Eight, 8',
-    carrera: 'Enginyeria Informàtica',
-    zona: 'Sarrià',
-    image:
-        'https://img.staticmb.com/mbcontent//images/uploads/2022/12/Most-Beautiful-House-in-the-World.jpg',
-    color: gradientPink,
-  ),
-  TinderCandidateModel(
-    nom: 'Seven, 7',
-    carrera: 'Enginyeria Informàtica',
-    zona: 'Sarrià',
-    image:
-        'https://img.staticmb.com/mbcontent//images/uploads/2022/12/Most-Beautiful-House-in-the-World.jpg',
-    color: gradientBlue,
-  ),
-  TinderCandidateModel(
-    nom: 'Six, 6',
-    carrera: 'Enginyeria Informàtica',
-    zona: 'Sarrià',
-    image:
-        'https://img.staticmb.com/mbcontent//images/uploads/2022/12/Most-Beautiful-House-in-the-World.jpg',
-    color: gradientPurple,
-  ),
-  TinderCandidateModel(
-    nom: 'Five, 5',
-    carrera: 'Enginyeria Informàtica',
-    zona: 'Sarrià',
-    image:
-        'https://img.staticmb.com/mbcontent//images/uploads/2022/12/Most-Beautiful-House-in-the-World.jpg',
-    color: gradientRed,
-  ),
-  TinderCandidateModel(
-    nom: 'Four, 4',
-    carrera: 'Enginyeria Informàtica',
-    zona: 'Sarrià',
-    image:
-        'https://img.staticmb.com/mbcontent//images/uploads/2022/12/Most-Beautiful-House-in-the-World.jpg',
-    color: gradientPink,
-  ),
-  TinderCandidateModel(
-    nom: 'Three, 3',
-    carrera: 'Enginyeria Informàtica',
-    zona: 'Sarrià',
-    image:
-        'https://img.staticmb.com/mbcontent//images/uploads/2022/12/Most-Beautiful-House-in-the-World.jpg',
-    color: gradientBlue,
-  ),
-  TinderCandidateModel(
-    nom: 'Two, 2',
-    carrera: 'Enginyeria Informàtica',
-    zona: 'Sarrià',
-    image:
-        'https://img.staticmb.com/mbcontent//images/uploads/2022/12/Most-Beautiful-House-in-the-World.jpg',
-    color: gradientPurple,
-  ),
-  TinderCandidateModel(
-    nom: 'One, 1',
-    carrera: 'Enginyeria Informàtica',
-    zona: 'Sarrià',
-    image:
-        'https://img.staticmb.com/mbcontent//images/uploads/2022/12/Most-Beautiful-House-in-the-World.jpg',
-    color: gradientPink,
-  ),
-];
+class TinderScreen extends StatefulWidget {
+  @override
+  _TinderScreenState createState() => _TinderScreenState();
+}
+
+class _TinderScreenState extends State<TinderScreen> {
+  List<TinderCandidateModel> candidates = [];
+
+  @override
+  void initState() {
+    super.initState();
+    fetchUsersData().then((data) {
+      setState(() {
+        candidates = data;
+      });
+    });
+  }
+
+  Future<List<TinderCandidateModel>> fetchUsersData() async {
+    List<TinderCandidateModel> candidates = [];
+
+    QuerySnapshot snapshot =
+        await FirebaseFirestore.instance.collection('users').get();
+
+    for (DocumentSnapshot doc in snapshot.docs) {
+      Map<String, dynamic>? userData = doc.data() as Map<String, dynamic>?;
+      String? name = userData?['name'];
+      String? bio = userData?['bio'];
+      String? image = userData?['imageUrl'];
+
+      candidates.add(
+        TinderCandidateModel(
+          name: name,
+          bio: bio,
+          image: image,
+          color: gradientPink,
+        ),
+      );
+    }
+
+    return candidates;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Tinder'),
+      ),
+      body: Center(
+        child: ListView.builder(
+          itemCount: candidates.length,
+          itemBuilder: (context, index) {
+            TinderCandidateModel candidate = candidates[index];
+
+            return Card(
+              child: Column(
+                children: [
+                  Image.network(candidate.image ?? ''),
+                  ListTile(
+                    title: Text(candidate.name ?? ''),
+                    subtitle: Text(candidate.bio ?? ''),
+                  ),
+                ],
+              ),
+            );
+          },
+        ),
+      ),
+    );
+  }
+}
 
 const LinearGradient gradientRed = LinearGradient(
   begin: Alignment.topCenter,

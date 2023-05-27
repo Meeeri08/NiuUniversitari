@@ -18,11 +18,10 @@ class TinderCard extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           SizedBox(height: 20),
-          Text(candidate.nom ?? '',
+          Text(candidate.name ?? '',
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
           SizedBox(height: 10),
-          Text(candidate.carrera ?? ''),
-          Text(candidate.zona ?? ''),
+          Text(candidate.bio ?? ''),
           Expanded(
             child: Container(
               decoration: BoxDecoration(
