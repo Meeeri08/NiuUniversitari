@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:jobapp/utils/add_data.dart';
+import 'package:http/http.dart' as http;
 
 import '../utils/utils.dart';
 
@@ -15,9 +16,48 @@ class Profile extends StatefulWidget {
 }
 
 class _ProfileState extends State<Profile> {
+  Map<String, dynamic>? userData;
+
+  @override
+  void initState() {
+    super.initState();
+    fetchUserData();
+  }
+
+  Future<void> fetchUserData() async {
+    String userId = FirebaseAuth.instance.currentUser!.uid;
+    DocumentSnapshot snapshot =
+        await FirebaseFirestore.instance.collection('users').doc(userId).get();
+
+    if (snapshot.exists) {
+      setState(() {
+        userData = snapshot.data() as Map<String, dynamic>;
+        nameController.text = userData?['name'] ?? '';
+        bioController.text = userData?['bio'] ?? '';
+        // Obtener la URL de la imagen de Firebase Firestore
+        String imageUrl = userData?['imageUrl'] ?? '';
+        // Cargar la imagen desde la URL
+        _loadImage(imageUrl);
+      });
+    }
+  }
+
+  Future<void> _loadImage(String imageUrl) async {
+    if (imageUrl.isNotEmpty) {
+      // Descargar la imagen utilizando la URL
+      http.Response response = await http.get(Uri.parse(imageUrl));
+      if (response.statusCode == 200) {
+        setState(() {
+          _image = response.bodyBytes;
+        });
+      }
+    }
+  }
+
   Uint8List? _image;
   final TextEditingController nameController = TextEditingController();
   final TextEditingController bioController = TextEditingController();
+  final user = FirebaseAuth.instance.currentUser;
 
   void selectImage() async {
     Uint8List img = await pickImage(ImageSource.gallery);
@@ -59,7 +99,10 @@ class _ProfileState extends State<Profile> {
                   _image != null
                       ? CircleAvatar(
                           radius: 64,
-                          backgroundImage: MemoryImage(_image!),
+                          backgroundImage: Image.network(
+                            userData?['imageUrl'] ?? '',
+                            fit: BoxFit.cover,
+                          ).image,
                         )
                       : const CircleAvatar(
                           radius: 64,
@@ -79,12 +122,17 @@ class _ProfileState extends State<Profile> {
               const SizedBox(
                 height: 24,
               ),
-              TextField(
-                controller: nameController,
-                decoration: const InputDecoration(
-                  hintText: 'Enter Name',
-                  contentPadding: EdgeInsets.all(10),
-                  border: OutlineInputBorder(),
+              GestureDetector(
+                onTap: () {
+                  // Navegar a la pantalla de edición y pasar los datos del campo
+                },
+                child: TextField(
+                  controller: nameController,
+                  decoration: const InputDecoration(
+                    hintText: 'Enter Name',
+                    contentPadding: EdgeInsets.all(10),
+                    border: OutlineInputBorder(),
+                  ),
                 ),
               ),
               const SizedBox(
@@ -104,7 +152,15 @@ class _ProfileState extends State<Profile> {
               ElevatedButton(
                 onPressed: saveProfile,
                 child: const Text('Save Profile'),
-              )
+              ),
+              IconButton(
+                onPressed: () {
+                  FirebaseAuth.instance.signOut();
+                },
+                icon: const Icon(Icons.logout),
+                color: const Color(0xff25262b),
+                tooltip: 'Cerrar sesión',
+              ),
             ],
           ),
         ),

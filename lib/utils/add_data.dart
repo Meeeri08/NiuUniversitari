@@ -16,7 +16,7 @@ class StoreData {
   }
 
   Future<String> saveData({
-    required String userId, // Add the user ID parameter
+    required String userId,
     required String name,
     required String bio,
     required Uint8List file,
@@ -28,7 +28,7 @@ class StoreData {
         await _firestore.collection('users').doc(userId).update({
           'name': name,
           'bio': bio,
-          'imageLink': imageUrl,
+          'imageUrl': imageUrl,
         });
 
         resp = 'success';
