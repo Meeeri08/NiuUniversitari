@@ -17,8 +17,7 @@ class Profile extends StatefulWidget {
 
 class _ProfileState extends State<Profile> {
   Map<String, dynamic>? userData;
-  String?
-      imageUrl; // Variable local para almacenar la URL de la imagen seleccionada
+  String? imageUrl;
 
   @override
   void initState() {
@@ -36,19 +35,14 @@ class _ProfileState extends State<Profile> {
         userData = snapshot.data() as Map<String, dynamic>;
         nameController.text = userData?['name'] ?? '';
         bioController.text = userData?['bio'] ?? '';
-        // Obtener la URL de la imagen de Firebase Firestore
-        imageUrl = userData?['imageUrl'] ??
-            ''; // Almacenar la URL en la variable local
-        // Cargar la imagen desde la URL
-        _loadImage(
-            imageUrl!); // Asegurarse de pasar la URL almacenada en la variable local
+        imageUrl = userData?['imageUrl'] ?? '';
+        _loadImage(imageUrl!);
       });
     }
   }
 
   Future<void> _loadImage(String imageUrl) async {
     if (imageUrl.isNotEmpty) {
-      // Descargar la imagen utilizando la URL
       http.Response response = await http.get(Uri.parse(imageUrl));
       if (response.statusCode == 200) {
         setState(() {
@@ -67,13 +61,12 @@ class _ProfileState extends State<Profile> {
     Uint8List img = await pickImage(ImageSource.gallery);
     setState(() {
       _image = img;
-      imageUrl =
-          null; // Establecer la variable de la URL a null para mostrar la imagen seleccionada en lugar de la de Firebase
+      imageUrl = null;
     });
   }
 
   void saveProfile() async {
-    String userId = FirebaseAuth.instance.currentUser!.uid; // Get the user ID
+    String userId = FirebaseAuth.instance.currentUser!.uid;
     String name = nameController.text;
     String bio = bioController.text;
 
