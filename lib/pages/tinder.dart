@@ -22,7 +22,7 @@ class Tinder extends StatefulWidget {
 class _TinderPageState extends State<Tinder> {
   final AppinioSwiperController controller = AppinioSwiperController();
 
-  List<TinderCard> cards = [];
+  List<TinderCandidateModel> cards = [];
 
   @override
   void initState() {
@@ -32,33 +32,40 @@ class _TinderPageState extends State<Tinder> {
   }
 
   void _loadCards() async {
-    String currentUserId = FirebaseAuth
-        .instance.currentUser!.uid; // Obtén el ID del usuario actual
+    String currentUserId = FirebaseAuth.instance.currentUser!.uid;
     QuerySnapshot snapshot =
         await FirebaseFirestore.instance.collection('users').get();
 
-    setState(() {
-      cards = snapshot.docs
-          .where((doc) =>
-              doc.id != currentUserId && // Filtrar el propio perfil del usuario
-              doc.data() != null && // Verificar si el mapa de datos no es nulo
-              (doc.data()! as Map<String, dynamic>)
-                  .containsKey('name') && // Verificar si el campo 'name' existe
-              (doc.data()! as Map<String, dynamic>)
-                  .containsKey('bio') && // Verificar si el campo 'bio' existe
-              (doc.data()! as Map<String, dynamic>).containsKey(
-                  'imageUrl')) // Verificar si el campo 'imageUrl' existe
-          .map((doc) {
-        Map<String, dynamic> data = doc.data()! as Map<String, dynamic>;
-        return TinderCard(
-          candidate: TinderCandidateModel(
-            name: data['name'] as String? ?? '',
-            bio: data['bio'] as String? ?? '',
-            image: data['imageUrl'] as String? ?? '',
-            color: gradientPink,
-          ),
+    List<TinderCandidateModel> loadedCards = [];
+
+    for (DocumentSnapshot doc in snapshot.docs) {
+      if (doc.id == currentUserId) continue;
+
+      Map<String, dynamic>? userData = doc.data() as Map<String, dynamic>?;
+
+      if (userData != null &&
+          userData.containsKey('name') &&
+          userData.containsKey('bio') &&
+          userData.containsKey('imageUrl')) {
+        String name = userData['name'] as String? ?? '';
+        String bio = userData['bio'] as String? ?? '';
+        String imageUrl = userData['imageUrl'] as String? ?? '';
+
+        TinderCandidateModel candidate = TinderCandidateModel(
+          name: name,
+          bio: bio,
+          imageUrl: imageUrl,
         );
-      }).toList();
+
+        loadedCards.add(candidate);
+        print(candidate.imageUrl);
+      }
+    }
+
+    setState(() {
+      //print the value of cards
+
+      cards = loadedCards;
     });
   }
 
@@ -75,22 +82,22 @@ class _TinderPageState extends State<Tinder> {
         !userData.containsKey('name') ||
         !userData.containsKey('bio') ||
         !userData.containsKey('imageUrl')) {
+      // ignore: use_build_context_synchronously
       showDialog(
         context: context,
-        barrierDismissible:
-            false, // No se puede cerrar haciendo clic fuera del diálogo ni presionando el botón de retroceso
+        barrierDismissible: false,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: Text('Configura tu perfil'),
-            content:
-                Text('Por favor, configura tu perfil antes de poder acceder.'),
+            title: const Text('Configura tu perfil'),
+            content: const Text(
+                'Por favor, configura tu perfil antes de poder acceder.'),
             actions: [
               TextButton(
-                child: Text('Configurar perfil'),
+                child: const Text('Configurar perfil'),
                 onPressed: () {
-                  Navigator.pop(context); // Cerrar el diálogo
+                  Navigator.pop(context);
                   Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => Profile()));
+                      MaterialPageRoute(builder: (context) => const Profile()));
                 },
               ),
             ],
@@ -126,7 +133,10 @@ class _TinderPageState extends State<Tinder> {
               onEnd: _onEnd,
               cardsCount: cards.length,
               cardsBuilder: (BuildContext context, int index) {
-                return cards[index];
+                return TinderCard(
+                  candidate: cards[index],
+                  // color: gradientPink,
+                );
               },
             ),
           ),

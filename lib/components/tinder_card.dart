@@ -5,37 +5,22 @@ import 'package:jobapp/components/tinder_candidate_model.dart';
 class TinderCard extends StatelessWidget {
   final TinderCandidateModel candidate;
 
-  const TinderCard({Key? key, required this.candidate}) : super(key: key);
+  const TinderCard({
+    required this.candidate,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        gradient: candidate.color,
-        borderRadius: BorderRadius.circular(10),
-      ),
+    return Card(
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          SizedBox(height: 20),
-          Text(candidate.name ?? '',
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
-          SizedBox(height: 10),
-          Text(candidate.bio ?? ''),
-          Expanded(
-            child: Container(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                image: DecorationImage(
-                  image: NetworkImage(candidate.image ?? ''),
-                  fit: BoxFit.cover,
-                ),
-              ),
-              height: 400,
-              width: 400,
-            ),
+          Image.network(
+            candidate.imageUrl ?? '',
           ),
-          SizedBox(height: 20),
+          ListTile(
+            title: Text(candidate.name ?? ''),
+            subtitle: Text(candidate.bio ?? ''),
+          ),
         ],
       ),
     );

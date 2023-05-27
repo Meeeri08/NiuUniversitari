@@ -127,6 +127,14 @@ class _AccountState extends State<Account> {
               // );
             },
           ),
+          IconButton(
+            onPressed: () {
+              FirebaseAuth.instance.signOut();
+            },
+            icon: const Icon(Icons.logout),
+            color: const Color(0xff25262b),
+            tooltip: 'Cerrar sesión',
+          ),
         ],
       ),
     );

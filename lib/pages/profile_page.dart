@@ -1,9 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:jobapp/utils/add_data.dart';
 import 'package:http/http.dart' as http;
 
 import '../utils/utils.dart';
@@ -65,18 +65,36 @@ class _ProfileState extends State<Profile> {
     });
   }
 
-  void saveProfile() async {
+  Future<void> saveProfile() async {
     String userId = FirebaseAuth.instance.currentUser!.uid;
     String name = nameController.text;
     String bio = bioController.text;
 
-    String resp = await StoreData().saveData(
-      userId: userId,
-      name: name,
-      bio: bio,
-      file: _image!,
-    );
-    print(resp); // Print the response for debugging purposes
+    // Guardar los datos en Firestore
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(userId)
+        .set({'name': name, 'bio': bio});
+
+    // Guardar la imagen en Firebase Storage
+    if (_image != null) {
+      final Reference storageRef =
+          FirebaseStorage.instance.ref().child('$userId.jpg');
+
+      // Subir la imagen al storage
+      UploadTask uploadTask = storageRef.putData(_image!);
+
+      // Obtener la URL de descarga de la imagen
+      String downloadUrl = await (await uploadTask).ref.getDownloadURL();
+
+      // Guardar la URL de la imagen en Firestore
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(userId)
+          .update({'imageUrl': downloadUrl});
+    }
+
+    print('Perfil guardado correctamente');
   }
 
   @override
@@ -171,14 +189,6 @@ class _ProfileState extends State<Profile> {
               ElevatedButton(
                 onPressed: saveProfile,
                 child: const Text('Save Profile'),
-              ),
-              IconButton(
-                onPressed: () {
-                  FirebaseAuth.instance.signOut();
-                },
-                icon: const Icon(Icons.logout),
-                color: const Color(0xff25262b),
-                tooltip: 'Cerrar sesión',
               ),
             ],
           ),
