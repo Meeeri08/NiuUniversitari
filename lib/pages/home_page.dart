@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:jobapp/pages/account_page.dart';
 import 'package:jobapp/pages/filter_screen.dart';
 import 'package:jobapp/pages/house_detail_screen.dart';
 import 'package:jobapp/pages/profile_page.dart';
@@ -357,7 +358,7 @@ class _HomePageState extends State<HomePage> {
                     ),
                     const Tinder(),
                     const Messages(),
-                    const Profile(),
+                    const Account(),
                   ],
                 ),
               ),
