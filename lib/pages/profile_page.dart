@@ -17,6 +17,8 @@ class Profile extends StatefulWidget {
 
 class _ProfileState extends State<Profile> {
   Map<String, dynamic>? userData;
+  String?
+      imageUrl; // Variable local para almacenar la URL de la imagen seleccionada
 
   @override
   void initState() {
@@ -35,9 +37,11 @@ class _ProfileState extends State<Profile> {
         nameController.text = userData?['name'] ?? '';
         bioController.text = userData?['bio'] ?? '';
         // Obtener la URL de la imagen de Firebase Firestore
-        String imageUrl = userData?['imageUrl'] ?? '';
+        imageUrl = userData?['imageUrl'] ??
+            ''; // Almacenar la URL en la variable local
         // Cargar la imagen desde la URL
-        _loadImage(imageUrl);
+        _loadImage(
+            imageUrl!); // Asegurarse de pasar la URL almacenada en la variable local
       });
     }
   }
@@ -63,6 +67,8 @@ class _ProfileState extends State<Profile> {
     Uint8List img = await pickImage(ImageSource.gallery);
     setState(() {
       _image = img;
+      imageUrl =
+          null; // Establecer la variable de la URL a null para mostrar la imagen seleccionada en lugar de la de Firebase
     });
   }
 
@@ -99,16 +105,24 @@ class _ProfileState extends State<Profile> {
                   _image != null
                       ? CircleAvatar(
                           radius: 64,
-                          backgroundImage: Image.network(
-                            userData?['imageUrl'] ?? '',
+                          backgroundImage: Image.memory(
+                            _image!,
                             fit: BoxFit.cover,
                           ).image,
                         )
-                      : const CircleAvatar(
-                          radius: 64,
-                          backgroundImage: NetworkImage(
-                              'https://png.pngitem.com/pimgs/s/421-4212266_transparent-default-avatar-png-default-avatar-images-png.png'),
-                        ),
+                      : imageUrl != null
+                          ? CircleAvatar(
+                              radius: 64,
+                              backgroundImage: Image.network(
+                                imageUrl!,
+                                fit: BoxFit.cover,
+                              ).image,
+                            )
+                          : const CircleAvatar(
+                              radius: 64,
+                              backgroundImage: NetworkImage(
+                                  'https://png.pngitem.com/pimgs/s/421-4212266_transparent-default-avatar-png-default-avatar-images-png.png'),
+                            ),
                   Positioned(
                     bottom: -10,
                     left: 80,
