@@ -59,6 +59,7 @@ dependencies:
   flutter_xlider: ^3.5.0
   image_picker: ^0.8.7+5
   firebase_storage: ^11.2.1
+  images_picker: ^1.2.11
   
 flutter_icons:
   image_path: "lib/images/icon.png"
