@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:jobapp/pages/featured_page.dart';
 import 'package:jobapp/pages/filter_screen.dart';
 import 'package:jobapp/pages/house_detail_screen.dart';
 import 'package:jobapp/pages/map_page.dart';
@@ -287,19 +288,33 @@ class _DashboardState extends State<Dashboard> {
                         ],
                       ),
                     ),
-                    Text(
-                      'Veure tots',
-                      style: GoogleFonts.dmSans(
-                        fontSize: 14,
-                        color: const Color(0xff25262b),
-                      ),
-                    ),
-                    const Padding(
-                      padding: EdgeInsets.only(left: 5.0),
-                      child: Icon(
-                        Icons.arrow_forward_ios,
-                        size: 16,
-                        color: const Color(0xff25262b),
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => Featured(),
+                          ),
+                        );
+                      },
+                      child: Row(
+                        children: [
+                          Text(
+                            'Veure tots',
+                            style: GoogleFonts.dmSans(
+                              fontSize: 14,
+                              color: const Color(0xff25262b),
+                            ),
+                          ),
+                          const Padding(
+                            padding: EdgeInsets.only(left: 5.0),
+                            child: Icon(
+                              Icons.arrow_forward_ios,
+                              size: 16,
+                              color: const Color(0xff25262b),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ],
