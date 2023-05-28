@@ -18,6 +18,12 @@ class _AccountState extends State<Account> {
   late Stream<DocumentSnapshot> userStream;
   DocumentSnapshot? userSnapshot;
 
+  void logout() async {
+    print('Cerrando la sesión...');
+    await FirebaseAuth.instance.signOut();
+    print('Sesión cerrada correctamente.');
+  }
+
   @override
   void initState() {
     super.initState();
@@ -307,7 +313,9 @@ class _AccountState extends State<Account> {
             ),
             title: Text('Tancar la Sessió',
                 style: GoogleFonts.dmSans(fontSize: 18)),
-            onTap: () {},
+            onTap: () {
+              logout();
+            },
           ),
         ),
       ],
