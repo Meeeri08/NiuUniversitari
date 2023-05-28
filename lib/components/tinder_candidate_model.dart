@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 
 class TinderCandidateModel {
+  String id;
   String name;
   String bio;
   String imageUrl;
 
   TinderCandidateModel({
+    required this.id,
     required this.name,
     required this.bio,
     required this.imageUrl,

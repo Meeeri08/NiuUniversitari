@@ -44,27 +44,28 @@ class _TinderPageState extends State<Tinder> {
       Map<String, dynamic>? userData = doc.data() as Map<String, dynamic>?;
 
       if (userData != null &&
+          userData.containsKey(
+              'id') && // Assuming 'id' field exists in the document
           userData.containsKey('name') &&
           userData.containsKey('bio') &&
           userData.containsKey('imageUrl')) {
+        String id = userData['id'] as String? ?? '';
         String name = userData['name'] as String? ?? '';
         String bio = userData['bio'] as String? ?? '';
         String imageUrl = userData['imageUrl'] as String? ?? '';
 
         TinderCandidateModel candidate = TinderCandidateModel(
+          id: id,
           name: name,
           bio: bio,
           imageUrl: imageUrl,
         );
 
         loadedCards.add(candidate);
-        print(candidate.imageUrl);
       }
     }
 
     setState(() {
-      //print the value of cards
-
       cards = loadedCards;
     });
   }
@@ -104,6 +105,19 @@ class _TinderPageState extends State<Tinder> {
           );
         },
       );
+    } else {
+      // Check if the "swipes" document exists for the current user
+      DocumentSnapshot swipeSnapshot = await FirebaseFirestore.instance
+          .collection('swipes')
+          .doc(currentUserId)
+          .get();
+      if (!swipeSnapshot.exists) {
+        // If the "swipes" document doesn't exist, create it
+        await FirebaseFirestore.instance
+            .collection('swipes')
+            .doc(currentUserId)
+            .set({});
+      }
     }
   }
 
@@ -162,8 +176,45 @@ class _TinderPageState extends State<Tinder> {
     );
   }
 
-  void _swipe(int index, AppinioSwiperDirection direction) {
-    log("the card was swiped to the: " + direction.name);
+  void _swipe(int index, AppinioSwiperDirection direction) async {
+    int initialCardsLength = cards.length;
+    int swipedIndex = index - initialCardsLength;
+
+    if (swipedIndex >= 0 && swipedIndex < initialCardsLength) {
+      String currentUserId = FirebaseAuth.instance.currentUser!.uid;
+      String swipedProfileId = cards[swipedIndex].id;
+      String swipeDirection = direction.name;
+
+      // Remove the swiped profile from the cards list
+      setState(() {
+        cards.removeAt(swipedIndex);
+      });
+
+      // Create a Map to represent the swipe data
+      Map<String, dynamic> swipeData = {
+        'profileId': swipedProfileId,
+        'direction': swipeDirection,
+        'timestamp': FieldValue.serverTimestamp(),
+      };
+
+      try {
+        // Store the swiped profile ID and direction in Firebase
+        await FirebaseFirestore.instance
+            .collection('swipes')
+            .doc(currentUserId)
+            .set({
+          'swipedProfiles': FieldValue.arrayUnion([swipeData])
+        }, SetOptions(merge: true));
+
+        log('Swiped profile stored in Firebase: $swipedProfileId ($swipeDirection)');
+      } catch (error) {
+        log('Failed to store swiped profile in Firebase: $error');
+      }
+
+      log('The card was swiped to: $swipeDirection');
+    } else {
+      log('Invalid index value: $index');
+    }
   }
 
   void _unswipe(bool unswiped) {
