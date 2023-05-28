@@ -33,6 +33,9 @@ class _ProfileState extends State<Profile> {
     if (snapshot.exists) {
       setState(() {
         userData = snapshot.data() as Map<String, dynamic>;
+        // Retain the existing email and id values
+        userData!['email'] = userData!['email'] ?? '';
+        userData!['id'] = userData!['id'] ?? '';
         nameController.text = userData?['name'] ?? '';
         bioController.text = userData?['bio'] ?? '';
         imageUrl = userData?['imageUrl'] ?? '';
@@ -70,11 +73,15 @@ class _ProfileState extends State<Profile> {
     String name = nameController.text;
     String bio = bioController.text;
 
+    // Retain the existing email and id values
+    userData!['email'] = userData!['email'] ?? '';
+    userData!['id'] = userData!['id'] ?? '';
+
     // Guardar los datos en Firestore
     await FirebaseFirestore.instance
         .collection('users')
         .doc(userId)
-        .set({'name': name, 'bio': bio});
+        .set({...userData!, 'name': name, 'bio': bio});
 
     // Guardar la imagen en Firebase Storage
     if (_image != null) {
