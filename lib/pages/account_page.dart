@@ -126,7 +126,7 @@ class _AccountState extends State<Account> {
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8),
                       ),
-                      elevation: 2,
+                      elevation: 1,
                       shadowColor: Colors.black,
                       minimumSize: const Size(double.infinity, 50),
                     ),
@@ -157,7 +157,7 @@ class _AccountState extends State<Account> {
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8),
                       ),
-                      elevation: 2,
+                      elevation: 1,
                       shadowColor: Colors.black,
                       minimumSize: const Size(double.infinity, 50),
                     ),
@@ -165,14 +165,12 @@ class _AccountState extends State<Account> {
                 ),
               ],
             ),
-            SizedBox(height: 20),
-            AnimatedCrossFade(
+            SizedBox(height: 30),
+            AnimatedSwitcher(
               duration: Duration(milliseconds: 300),
-              firstChild: buildConfigurationContent(),
-              secondChild: buildFavoritesContent(),
-              crossFadeState: showConfiguration
-                  ? CrossFadeState.showFirst
-                  : CrossFadeState.showSecond,
+              child: showConfiguration
+                  ? buildConfigurationContent()
+                  : buildFavoritesContent(),
             ),
           ],
         ),
@@ -183,38 +181,134 @@ class _AccountState extends State<Account> {
   Widget buildConfigurationContent() {
     return Column(
       children: [
-        ListTile(
-          title: Text('Componente 1'),
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => Profile()),
-            );
-          },
+        Align(
+          alignment: Alignment.centerLeft,
+          child: ListTile(
+            contentPadding: EdgeInsets.zero,
+            leading: Container(
+              width: 50,
+              height: 50,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: Colors.grey.shade200,
+              ),
+              child: Icon(
+                Icons.account_circle_outlined,
+                color: Color(0xff25262b),
+                size: 30,
+              ),
+            ),
+            title: Text('Perfil', style: GoogleFonts.dmSans(fontSize: 18)),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => Profile()),
+              );
+            },
+          ),
         ),
-        ListTile(
-          title: Text('Componente 2'),
-          onTap: () {
-            // Rest of your code
-          },
+        Divider(
+          color: Colors.grey.shade700,
+          thickness: 0.1,
         ),
-        ListTile(
-          title: Text('Componente 3'),
-          onTap: () {
-            // Rest of your code
-          },
+        Align(
+          alignment: Alignment.centerLeft,
+          child: ListTile(
+            contentPadding: EdgeInsets.zero,
+            leading: Container(
+              width: 50,
+              height: 50,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: Colors.grey.shade200,
+              ),
+              child: Icon(
+                Icons.notifications_none_outlined,
+                color: Color(0xff25262b),
+                size: 30,
+              ),
+            ),
+            title:
+                Text('Notificacions', style: GoogleFonts.dmSans(fontSize: 18)),
+            onTap: () {},
+          ),
         ),
-        ListTile(
-          title: Text('Componente 4'),
-          onTap: () {
-            // Rest of your code
-          },
+        Divider(
+          color: Colors.grey.shade700,
+          thickness: 0.1,
         ),
-        ListTile(
-          title: Text('Componente 5'),
-          onTap: () {
-            // Rest of your code
-          },
+        Align(
+          alignment: Alignment.centerLeft,
+          child: ListTile(
+            contentPadding: EdgeInsets.zero,
+            leading: Container(
+              width: 50,
+              height: 50,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: Colors.grey.shade200,
+              ),
+              child: Icon(
+                Icons.info_outline,
+                color: Color(0xff25262b),
+                size: 30,
+              ),
+            ),
+            title: Text('Sobre Nosaltres',
+                style: GoogleFonts.dmSans(fontSize: 18)),
+            onTap: () {},
+          ),
+        ),
+        Divider(
+          color: Colors.grey.shade700,
+          thickness: 0.1,
+        ),
+        Align(
+          alignment: Alignment.centerLeft,
+          child: ListTile(
+            contentPadding: EdgeInsets.zero,
+            leading: Container(
+              width: 50,
+              height: 50,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: Colors.grey.shade200,
+              ),
+              child: Icon(
+                Icons.privacy_tip_outlined,
+                color: Color(0xff25262b),
+                size: 30,
+              ),
+            ),
+            title: Text('Privacitat', style: GoogleFonts.dmSans(fontSize: 18)),
+            onTap: () {},
+          ),
+        ),
+        Divider(
+          color: Colors.grey.shade700,
+          thickness: 0.1,
+        ),
+        Align(
+          alignment: Alignment.centerLeft,
+          child: ListTile(
+            contentPadding: EdgeInsets.zero,
+            leading: Container(
+              width: 50,
+              height: 50,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: Colors.grey.shade200,
+              ),
+              child: Icon(
+                Icons.logout_outlined,
+                color: Color(0xff25262b),
+                size: 30,
+              ),
+            ),
+            title: Text('Tancar la Sessió',
+                style: GoogleFonts.dmSans(fontSize: 18)),
+            onTap: () {},
+          ),
         ),
       ],
     );
@@ -223,35 +317,126 @@ class _AccountState extends State<Account> {
   Widget buildFavoritesContent() {
     return Column(
       children: [
-        ListTile(
-          title: Text('Favorite 1'),
-          onTap: () {
-            // Rest of your code
-          },
+        Align(
+          alignment: Alignment.centerLeft,
+          child: ListTile(
+            contentPadding: EdgeInsets.zero,
+            leading: Container(
+              width: 50,
+              height: 50,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: Colors.grey.shade200,
+              ),
+              child: Icon(
+                Icons.favorite_border_outlined,
+                color: Color(0xff25262b),
+                size: 30,
+              ),
+            ),
+            title: Text('Pis', style: GoogleFonts.dmSans(fontSize: 18)),
+            onTap: () {},
+          ),
         ),
-        ListTile(
-          title: Text('Favorite 2'),
-          onTap: () {
-            // Rest of your code
-          },
+        Divider(
+          color: Colors.grey.shade700,
+          thickness: 0.1,
         ),
-        ListTile(
-          title: Text('Favorite 3'),
-          onTap: () {
-            // Rest of your code
-          },
+        Align(
+          alignment: Alignment.centerLeft,
+          child: ListTile(
+            contentPadding: EdgeInsets.zero,
+            leading: Container(
+              width: 50,
+              height: 50,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: Colors.grey.shade200,
+              ),
+              child: Icon(
+                Icons.favorite_border_outlined,
+                color: Color(0xff25262b),
+                size: 30,
+              ),
+            ),
+            title: Text('Pis', style: GoogleFonts.dmSans(fontSize: 18)),
+            onTap: () {},
+          ),
         ),
-        ListTile(
-          title: Text('Favorite 4'),
-          onTap: () {
-            // Rest of your code
-          },
+        Divider(
+          color: Colors.grey.shade700,
+          thickness: 0.1,
         ),
-        ListTile(
-          title: Text('Favorite 5'),
-          onTap: () {
-            // Rest of your code
-          },
+        Align(
+          alignment: Alignment.centerLeft,
+          child: ListTile(
+            contentPadding: EdgeInsets.zero,
+            leading: Container(
+              width: 50,
+              height: 50,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: Colors.grey.shade200,
+              ),
+              child: Icon(
+                Icons.favorite_border_outlined,
+                color: Color(0xff25262b),
+                size: 30,
+              ),
+            ),
+            title: Text('Pis', style: GoogleFonts.dmSans(fontSize: 18)),
+            onTap: () {},
+          ),
+        ),
+        Divider(
+          color: Colors.grey.shade700,
+          thickness: 0.1,
+        ),
+        Align(
+          alignment: Alignment.centerLeft,
+          child: ListTile(
+            contentPadding: EdgeInsets.zero,
+            leading: Container(
+              width: 50,
+              height: 50,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: Colors.grey.shade200,
+              ),
+              child: Icon(
+                Icons.favorite_border_outlined,
+                color: Color(0xff25262b),
+                size: 30,
+              ),
+            ),
+            title: Text('Pis', style: GoogleFonts.dmSans(fontSize: 18)),
+            onTap: () {},
+          ),
+        ),
+        Divider(
+          color: Colors.grey.shade700,
+          thickness: 0.1,
+        ),
+        Align(
+          alignment: Alignment.centerLeft,
+          child: ListTile(
+            contentPadding: EdgeInsets.zero,
+            leading: Container(
+              width: 50,
+              height: 50,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: Colors.grey.shade200,
+              ),
+              child: Icon(
+                Icons.favorite_border_outlined,
+                color: Color(0xff25262b),
+                size: 30,
+              ),
+            ),
+            title: Text('Pis', style: GoogleFonts.dmSans(fontSize: 18)),
+            onTap: () {},
+          ),
         ),
       ],
     );

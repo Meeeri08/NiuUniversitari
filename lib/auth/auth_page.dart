@@ -10,7 +10,6 @@ class AuthPage extends StatefulWidget {
 }
 
 class _AuthPageState extends State<AuthPage> {
-  //inicialment, show login page
   bool showRegisterPage = true;
   void toggleScreens() {
     setState(() {
