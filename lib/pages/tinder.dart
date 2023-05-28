@@ -114,7 +114,7 @@ class _TinderPageState extends State<Tinder> {
       child: Column(
         children: [
           const SizedBox(
-            height: 50,
+            height: 150,
           ),
           SizedBox(
             height: MediaQuery.of(context).size.height * 0.60,
