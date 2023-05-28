@@ -60,7 +60,7 @@ class _HomePageState extends State<HomePage> {
         notchMargin: 10,
         shadowColor: Colors.white,
         child: Container(
-          height: 60,
+          height: 50,
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: <Widget>[
