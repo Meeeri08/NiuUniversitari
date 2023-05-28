@@ -37,6 +37,7 @@ class _ProfileState extends State<Profile> {
         userData!['email'] = userData!['email'] ?? '';
         userData!['id'] = userData!['id'] ?? '';
         nameController.text = userData?['name'] ?? '';
+        surnameController.text = userData?['surname'] ?? '';
         bioController.text = userData?['bio'] ?? '';
         imageUrl = userData?['imageUrl'] ?? '';
         _loadImage(imageUrl!);
@@ -57,6 +58,7 @@ class _ProfileState extends State<Profile> {
 
   Uint8List? _image;
   final TextEditingController nameController = TextEditingController();
+  final TextEditingController surnameController = TextEditingController();
   final TextEditingController bioController = TextEditingController();
   final user = FirebaseAuth.instance.currentUser;
 
@@ -71,6 +73,7 @@ class _ProfileState extends State<Profile> {
   Future<void> saveProfile() async {
     String userId = FirebaseAuth.instance.currentUser!.uid;
     String name = nameController.text;
+    String surname = surnameController.text;
     String bio = bioController.text;
 
     // Retain the existing email and id values
@@ -81,7 +84,7 @@ class _ProfileState extends State<Profile> {
     await FirebaseFirestore.instance
         .collection('users')
         .doc(userId)
-        .set({...userData!, 'name': name, 'bio': bio});
+        .set({...userData!, 'name': name, 'surname': surname, 'bio': bio});
 
     // Guardar la imagen en Firebase Storage
     if (_image != null) {
@@ -177,6 +180,17 @@ class _ProfileState extends State<Profile> {
                     contentPadding: EdgeInsets.all(10),
                     border: OutlineInputBorder(),
                   ),
+                ),
+              ),
+              const SizedBox(
+                height: 24,
+              ),
+              TextField(
+                controller: surnameController,
+                decoration: const InputDecoration(
+                  hintText: 'Enter Surname',
+                  contentPadding: EdgeInsets.all(10),
+                  border: OutlineInputBorder(),
                 ),
               ),
               const SizedBox(

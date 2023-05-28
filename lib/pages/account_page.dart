@@ -12,11 +12,55 @@ class Account extends StatefulWidget {
 }
 
 class _AccountState extends State<Account> {
+  bool showConfiguration = true;
+  bool showFavorites = false;
+
+  late Stream<DocumentSnapshot> userStream;
+  DocumentSnapshot? userSnapshot;
+
+  @override
+  void initState() {
+    super.initState();
+    userStream = FirebaseFirestore.instance
+        .collection('users')
+        .doc(FirebaseAuth.instance.currentUser!.uid)
+        .snapshots();
+
+    userStream.listen((snapshot) {
+      setState(() {
+        userSnapshot = snapshot;
+      });
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
+    if (userSnapshot == null) {
+      return Scaffold(
+        appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          title: Text(
+            'Compte',
+            style: GoogleFonts.dmSans(
+              fontSize: 18,
+              fontWeight: FontWeight.w500,
+              color: Color(0xff25262b),
+            ),
+          ),
+        ),
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
+
+    final user = userSnapshot!.data() as Map<String, dynamic>;
+    final imageUrl = user['imageUrl'];
+    final name = user['name'];
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.transparent,
+        automaticallyImplyLeading: false,
         elevation: 0,
         title: Text(
           'Compte',
@@ -27,98 +71,189 @@ class _AccountState extends State<Account> {
           ),
         ),
       ),
-      body: StreamBuilder<QuerySnapshot>(
-        stream: FirebaseFirestore.instance.collection('users').snapshots(),
-        builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-          if (snapshot.hasError) {
-            return Text('Error: ${snapshot.error}');
-          }
-
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return CircularProgressIndicator();
-          }
-
-          final users = snapshot.data!.docs;
-
-          // Assuming you have only one user document, you can access the first document like this
-          final user = users.first;
-
-          final imageUrl = user['imageUrl'];
-          final name = user['name'];
-
-          return Column(
-            children: [
-              Row(
-                children: [
-                  CircleAvatar(
-                    radius: 58,
-                    backgroundImage: NetworkImage(imageUrl),
+      body: Padding(
+        padding: const EdgeInsets.only(left: 30, right: 30, top: 30),
+        child: Column(
+          children: [
+            Row(
+              children: [
+                CircleAvatar(
+                  radius: 52,
+                  backgroundImage: NetworkImage(imageUrl),
+                ),
+                SizedBox(width: 10),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        name,
+                        style: GoogleFonts.dmSans(fontSize: 36),
+                      ),
+                      Text(
+                        user['surname'],
+                        style: GoogleFonts.dmSans(fontSize: 36),
+                      ),
+                    ],
                   ),
-                  SizedBox(width: 10),
-                  Expanded(
+                ),
+              ],
+            ),
+            SizedBox(height: 20),
+            Row(
+              children: [
+                Expanded(
+                  child: ElevatedButton(
+                    onPressed: () {
+                      setState(() {
+                        showConfiguration = true;
+                        showFavorites = false;
+                      });
+                    },
                     child: Text(
-                      name,
-                      style: TextStyle(fontSize: 16),
+                      'Configuració',
+                      style: GoogleFonts.dmSans(
+                        color: showConfiguration ? Colors.white : Colors.black,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: showConfiguration
+                          ? const Color(0xFF1FA29E)
+                          : Colors.white,
+                      foregroundColor:
+                          showConfiguration ? Colors.white : Colors.black,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      elevation: 2,
+                      shadowColor: Colors.black,
+                      minimumSize: const Size(double.infinity, 50),
                     ),
                   ),
-                ],
-              ),
-              // Rest of your UI code
-              SizedBox(height: 20),
-              Row(
-                children: [
-                  // Rest of your code
-                ],
-              ),
-              SizedBox(height: 20),
-              ListTile(
-                title: Text('Componente 1'),
-                onTap: () {
-                  // Lógica para ir a la pantalla del Componente 1
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => Profile()),
-                  );
-
-                  // Rest of your code
-                },
-              ),
-              ListTile(
-                title: Text('Componente 2'),
-                onTap: () {
-                  // Rest of your code
-                },
-              ),
-              ListTile(
-                title: Text('Componente 3'),
-                onTap: () {
-                  // Rest of your code
-                },
-              ),
-              ListTile(
-                title: Text('Componente 4'),
-                onTap: () {
-                  // Rest of your code
-                },
-              ),
-              ListTile(
-                title: Text('Componente 5'),
-                onTap: () {
-                  // Rest of your code
-                },
-              ),
-              IconButton(
-                onPressed: () {
-                  FirebaseAuth.instance.signOut();
-                },
-                icon: const Icon(Icons.login_outlined),
-                color: const Color(0xff25262b),
-                tooltip: 'Cerrar sesión',
-              ),
-            ],
-          );
-        },
+                ),
+                SizedBox(width: 10),
+                Expanded(
+                  child: ElevatedButton(
+                    onPressed: () {
+                      setState(() {
+                        showConfiguration = false;
+                        showFavorites = true;
+                      });
+                    },
+                    child: Text(
+                      'Preferits',
+                      style: GoogleFonts.dmSans(
+                        color: showFavorites ? Colors.white : Colors.black,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: showFavorites
+                          ? const Color(0xFF1FA29E)
+                          : Colors.white,
+                      foregroundColor:
+                          showFavorites ? Colors.white : Colors.black,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      elevation: 2,
+                      shadowColor: Colors.black,
+                      minimumSize: const Size(double.infinity, 50),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(height: 20),
+            AnimatedCrossFade(
+              duration: Duration(milliseconds: 300),
+              firstChild: buildConfigurationContent(),
+              secondChild: buildFavoritesContent(),
+              crossFadeState: showConfiguration
+                  ? CrossFadeState.showFirst
+                  : CrossFadeState.showSecond,
+            ),
+          ],
+        ),
       ),
+    );
+  }
+
+  Widget buildConfigurationContent() {
+    return Column(
+      children: [
+        ListTile(
+          title: Text('Componente 1'),
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => Profile()),
+            );
+          },
+        ),
+        ListTile(
+          title: Text('Componente 2'),
+          onTap: () {
+            // Rest of your code
+          },
+        ),
+        ListTile(
+          title: Text('Componente 3'),
+          onTap: () {
+            // Rest of your code
+          },
+        ),
+        ListTile(
+          title: Text('Componente 4'),
+          onTap: () {
+            // Rest of your code
+          },
+        ),
+        ListTile(
+          title: Text('Componente 5'),
+          onTap: () {
+            // Rest of your code
+          },
+        ),
+      ],
+    );
+  }
+
+  Widget buildFavoritesContent() {
+    return Column(
+      children: [
+        ListTile(
+          title: Text('Favorite 1'),
+          onTap: () {
+            // Rest of your code
+          },
+        ),
+        ListTile(
+          title: Text('Favorite 2'),
+          onTap: () {
+            // Rest of your code
+          },
+        ),
+        ListTile(
+          title: Text('Favorite 3'),
+          onTap: () {
+            // Rest of your code
+          },
+        ),
+        ListTile(
+          title: Text('Favorite 4'),
+          onTap: () {
+            // Rest of your code
+          },
+        ),
+        ListTile(
+          title: Text('Favorite 5'),
+          onTap: () {
+            // Rest of your code
+          },
+        ),
+      ],
     );
   }
 }
