@@ -18,6 +18,8 @@ class Profile extends StatefulWidget {
 class _ProfileState extends State<Profile> {
   Map<String, dynamic>? userData;
   String? imageUrl;
+  bool isLoadingImage = false;
+  ImageProvider? profileImageProvider;
 
   @override
   void initState() {
@@ -40,19 +42,31 @@ class _ProfileState extends State<Profile> {
         surnameController.text = userData?['surname'] ?? '';
         bioController.text = userData?['bio'] ?? '';
         imageUrl = userData?['imageUrl'] ?? '';
-        _loadImage(imageUrl!);
+        if (!isLoadingImage) {
+          _loadImage(imageUrl!);
+        }
       });
     }
   }
 
   Future<void> _loadImage(String imageUrl) async {
     if (imageUrl.isNotEmpty) {
+      setState(() {
+        isLoadingImage = true;
+      });
+
       http.Response response = await http.get(Uri.parse(imageUrl));
       if (response.statusCode == 200 && mounted) {
         setState(() {
-          _image = response.bodyBytes;
+          profileImageProvider = MemoryImage(response.bodyBytes);
+          isLoadingImage = false;
         });
       }
+    } else {
+      setState(() {
+        profileImageProvider = null;
+        isLoadingImage = false;
+      });
     }
   }
 
@@ -66,6 +80,7 @@ class _ProfileState extends State<Profile> {
     Uint8List img = await pickImage(ImageSource.gallery);
     setState(() {
       _image = img;
+      profileImageProvider = MemoryImage(_image!);
       imageUrl = null;
     });
   }
@@ -124,38 +139,25 @@ class _ProfileState extends State<Profile> {
       ),
       body: Center(
         child: Container(
-          padding: const EdgeInsets.symmetric(
-            horizontal: 32,
-          ),
+          padding: const EdgeInsets.symmetric(horizontal: 32),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              const SizedBox(
-                height: 24,
-              ),
+              const SizedBox(height: 24),
               Stack(
                 children: [
-                  _image != null
-                      ? CircleAvatar(
-                          radius: 64,
-                          backgroundImage: Image.memory(
-                            _image!,
-                            fit: BoxFit.cover,
-                          ).image,
-                        )
-                      : imageUrl != null
-                          ? CircleAvatar(
-                              radius: 64,
-                              backgroundImage: Image.network(
-                                imageUrl!,
-                                fit: BoxFit.cover,
-                              ).image,
-                            )
-                          : const CircleAvatar(
-                              radius: 64,
-                              backgroundImage: NetworkImage(
-                                  'https://png.pngitem.com/pimgs/s/421-4212266_transparent-default-avatar-png-default-avatar-images-png.png'),
-                            ),
+                  if (profileImageProvider != null)
+                    CircleAvatar(
+                      backgroundColor: Colors.transparent,
+                      radius: 64,
+                      backgroundImage: profileImageProvider,
+                    )
+                  else
+                    CircleAvatar(
+                      backgroundColor: Colors.transparent,
+                      radius: 64,
+                      backgroundImage: AssetImage('assets/default.png'),
+                    ),
                   Positioned(
                     bottom: -10,
                     left: 80,
@@ -163,12 +165,10 @@ class _ProfileState extends State<Profile> {
                       onPressed: selectImage,
                       icon: const Icon(Icons.add_a_photo),
                     ),
-                  )
+                  ),
                 ],
               ),
-              const SizedBox(
-                height: 24,
-              ),
+              const SizedBox(height: 24),
               GestureDetector(
                 onTap: () {
                   // Navegar a la pantalla de edición y pasar los datos del campo
@@ -182,9 +182,7 @@ class _ProfileState extends State<Profile> {
                   ),
                 ),
               ),
-              const SizedBox(
-                height: 24,
-              ),
+              const SizedBox(height: 24),
               TextField(
                 controller: surnameController,
                 decoration: const InputDecoration(
@@ -193,9 +191,7 @@ class _ProfileState extends State<Profile> {
                   border: OutlineInputBorder(),
                 ),
               ),
-              const SizedBox(
-                height: 24,
-              ),
+              const SizedBox(height: 24),
               TextField(
                 controller: bioController,
                 decoration: const InputDecoration(
@@ -204,9 +200,7 @@ class _ProfileState extends State<Profile> {
                   border: OutlineInputBorder(),
                 ),
               ),
-              const SizedBox(
-                height: 24,
-              ),
+              const SizedBox(height: 24),
               ElevatedButton(
                 onPressed: saveProfile,
                 child: const Text('Save Profile'),
