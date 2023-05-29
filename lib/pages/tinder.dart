@@ -23,6 +23,7 @@ class _TinderPageState extends State<Tinder> {
   final AppinioSwiperController controller = AppinioSwiperController();
 
   List<TinderCandidateModel> cards = [];
+  List<Map<String, dynamic>> swipeDataList = [];
 
   @override
   void initState() {
@@ -176,11 +177,11 @@ class _TinderPageState extends State<Tinder> {
     );
   }
 
-  void _swipe(int index, AppinioSwiperDirection direction) async {
+  void _swipe(int index, AppinioSwiperDirection direction) {
     int initialCardsLength = cards.length;
-    int swipedIndex = index - initialCardsLength;
 
-    if (swipedIndex >= 0 && swipedIndex < initialCardsLength) {
+    int swipedIndex = index - (cards.length - initialCardsLength);
+    if (swipedIndex >= 0 && swipedIndex < cards.length) {
       String currentUserId = FirebaseAuth.instance.currentUser!.uid;
       String swipedProfileId = cards[swipedIndex].id;
       String swipeDirection = direction.name;
@@ -194,22 +195,22 @@ class _TinderPageState extends State<Tinder> {
       Map<String, dynamic> swipeData = {
         'profileId': swipedProfileId,
         'direction': swipeDirection,
-        'timestamp': FieldValue.serverTimestamp(),
+        'timestamp': DateTime.now(),
       };
 
-      try {
-        // Store the swiped profile ID and direction in Firebase
-        await FirebaseFirestore.instance
-            .collection('swipes')
-            .doc(currentUserId)
-            .set({
-          'swipedProfiles': FieldValue.arrayUnion([swipeData])
-        }, SetOptions(merge: true));
-
+      // Store the swiped profile ID and direction in Firebase
+      FirebaseFirestore.instance.collection('swipes').doc(currentUserId).set({
+        'swipedProfiles': FieldValue.arrayUnion([swipeData])
+      }, SetOptions(merge: true)).then((_) {
         log('Swiped profile stored in Firebase: $swipedProfileId ($swipeDirection)');
-      } catch (error) {
+
+        // Add the swipe data to the swipeDataList
+        setState(() {
+          swipeDataList.add(swipeData);
+        });
+      }).catchError((error) {
         log('Failed to store swiped profile in Firebase: $error');
-      }
+      });
 
       log('The card was swiped to: $swipeDirection');
     } else {
@@ -219,9 +220,35 @@ class _TinderPageState extends State<Tinder> {
 
   void _unswipe(bool unswiped) {
     if (unswiped) {
-      log("SUCCESS: card was unswiped");
-    } else {
-      log("FAIL: no card left to unswipe");
+      if (cards.isNotEmpty && swipeDataList.isNotEmpty) {
+        String currentUserId = FirebaseAuth.instance.currentUser!.uid;
+
+        // Get the most recent swiped profile ID
+        Map<String, dynamic> lastSwipeData = swipeDataList.last;
+        String swipedProfileId = lastSwipeData['profileId'] as String;
+
+        // Remove the swiped profile record from Firebase
+        FirebaseFirestore.instance
+            .collection('swipes')
+            .doc(currentUserId)
+            .update({
+          'swipedProfiles': FieldValue.arrayRemove([lastSwipeData])
+        }).then((_) {
+          log('Swiped profile removed from Firebase: $swipedProfileId');
+        }).catchError((error) {
+          log('Failed to remove swiped profile from Firebase: $error');
+        });
+
+        // Remove the swiped profile from the cards list and swipeDataList
+        setState(() {
+          cards.removeLast();
+          swipeDataList.removeLast();
+        });
+
+        log("SUCCESS: Card was unswiped");
+      } else {
+        log("FAIL: No card left to unswipe");
+      }
     }
   }
 
