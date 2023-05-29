@@ -48,7 +48,7 @@ class _ProfileState extends State<Profile> {
   Future<void> _loadImage(String imageUrl) async {
     if (imageUrl.isNotEmpty) {
       http.Response response = await http.get(Uri.parse(imageUrl));
-      if (response.statusCode == 200) {
+      if (response.statusCode == 200 && mounted) {
         setState(() {
           _image = response.bodyBytes;
         });
