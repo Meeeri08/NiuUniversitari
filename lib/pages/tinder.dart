@@ -185,9 +185,7 @@ class _TinderPageState extends State<Tinder> {
   }
 
   void _swipe(int index, AppinioSwiperDirection direction) {
-    int initialCardsLength = cards.length;
-
-    int swipedIndex = index - (cards.length - initialCardsLength);
+    int swipedIndex = index % cards.length;
     if (swipedIndex >= 0 && swipedIndex < cards.length) {
       String currentUserId = FirebaseAuth.instance.currentUser!.uid;
       String swipedProfileId = cards[swipedIndex].id;
@@ -209,11 +207,7 @@ class _TinderPageState extends State<Tinder> {
         // Add the swipe data to the swipeDataList
         setState(() {
           swipeDataList.add(swipeData);
-        });
-
-        // Update the visibleCardsCount
-        setState(() {
-          visibleCardsCount = visibleCardsCount - 1;
+          visibleCardsCount = cards.length - swipeDataList.length;
         });
       }).catchError((error) {
         log('Failed to store swiped profile in Firebase: $error');
@@ -226,52 +220,47 @@ class _TinderPageState extends State<Tinder> {
   }
 
   void _unswipe(bool unswiped) {
-    if (unswiped) {
-      if (cards.isNotEmpty && swipeDataList.isNotEmpty) {
-        String currentUserId = FirebaseAuth.instance.currentUser!.uid;
+    if (unswiped && cards.isNotEmpty && swipeDataList.isNotEmpty) {
+      String currentUserId = FirebaseAuth.instance.currentUser!.uid;
 
-        // Get the most recent swiped profile ID
-        Map<String, dynamic> lastSwipeData = swipeDataList.last;
-        String swipedProfileId = lastSwipeData['profileId'] as String;
+      // Get the most recent swiped profile ID
+      Map<String, dynamic> lastSwipeData = swipeDataList.last;
+      String swipedProfileId = lastSwipeData['profileId'] as String;
 
-        // Remove the swiped profile record from Firebase
-        FirebaseFirestore.instance
-            .collection('swipes')
-            .doc(currentUserId)
-            .update({
-          'swipedProfiles': FieldValue.arrayRemove([lastSwipeData])
-        }).then((_) {
-          log('Swiped profile removed from Firebase: $swipedProfileId');
+      // Remove the swiped profile record from Firebase
+      FirebaseFirestore.instance
+          .collection('swipes')
+          .doc(currentUserId)
+          .update({
+        'swipedProfiles': FieldValue.arrayRemove([lastSwipeData])
+      }).then((_) {
+        log('Swiped profile removed from Firebase: $swipedProfileId');
 
-          // Remove the swiped profile from the swipeDataList
-          setState(() {
-            swipeDataList.removeLast();
-          });
-
-          // Retrieve the corresponding swiped card from swipedCards list
-          TinderCandidateModel swipedCard = swipedCards.last;
-
-          // Determine the index to insert the unswiped card
-          int insertIndex = cards.length - swipeDataList.length;
-
-          // Add the unswiped card back to the cards list
-          setState(() {
-            cards.insert(insertIndex, swipedCard);
-            visibleCardsCount = visibleCardsCount + 1;
-          });
-
-          log("SUCCESS: Card was unswiped");
-
-          // Remove the swiped card from the swipedCards list
-          setState(() {
-            swipedCards.removeLast();
-          });
-        }).catchError((error) {
-          log('Failed to remove swiped profile from Firebase: $error');
+        // Remove the swiped profile from the swipeDataList
+        setState(() {
+          swipeDataList.removeLast();
+          visibleCardsCount = cards.length - swipeDataList.length;
         });
-      } else {
-        log("FAIL: No card left to unswipe");
-      }
+
+        // Retrieve the corresponding swiped card from the swipedCards list
+        TinderCandidateModel swipedCard = swipedCards.last;
+
+        // Add the unswiped card back to the cards list
+        setState(() {
+          cards.add(swipedCard);
+        });
+
+        log("SUCCESS: Card was unswiped");
+
+        // Remove the swiped card from the swipedCards list
+        setState(() {
+          swipedCards.removeLast();
+        });
+      }).catchError((error) {
+        log('Failed to remove swiped profile from Firebase: $error');
+      });
+    } else {
+      log("FAIL: No card left to unswipe");
     }
   }
 
