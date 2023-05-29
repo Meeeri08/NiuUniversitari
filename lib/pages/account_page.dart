@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:jobapp/pages/house_detail_screen.dart';
 import 'package:jobapp/pages/profile_page.dart';
 
 class Account extends StatefulWidget {
@@ -330,130 +331,89 @@ class _AccountState extends State<Account> {
   }
 
   Widget buildFavoritesContent() {
-    return Column(
-      children: [
-        Align(
-          alignment: Alignment.centerLeft,
-          child: ListTile(
-            contentPadding: EdgeInsets.zero,
-            leading: Container(
-              width: 50,
-              height: 50,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: Colors.grey.shade200,
+    return StreamBuilder<DocumentSnapshot>(
+      stream: FirebaseFirestore.instance
+          .collection('savedhouses')
+          .doc(FirebaseAuth.instance.currentUser!.uid)
+          .snapshots(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Center(child: CircularProgressIndicator());
+        }
+        if (!snapshot.hasData) {
+          return Text('No saved houses found');
+        }
+        final savedHouses = snapshot.data!.data() as Map<String, dynamic>;
+        final houseIds = savedHouses['houseIds'] as List<dynamic>;
+        return Column(
+          children: [
+            for (var houseId in houseIds)
+              FutureBuilder<DocumentSnapshot>(
+                future: FirebaseFirestore.instance
+                    .collection('houses')
+                    .doc(houseId)
+                    .get(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => HouseDetailScreen(
+                              houseId: houseId,
+                            ),
+                          ),
+                        );
+                      },
+                      child: ListTile(
+                        leading: CircularProgressIndicator(),
+                      ),
+                    );
+                  }
+                  if (!snapshot.hasData) {
+                    return ListTile(
+                      title: Text('House not found'),
+                    );
+                  }
+                  final houseData =
+                      snapshot.data!.data() as Map<String, dynamic>;
+                  final title = houseData['title'] as String?;
+                  return GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => HouseDetailScreen(
+                            houseId: houseId,
+                          ),
+                        ),
+                      );
+                    },
+                    child: ListTile(
+                      contentPadding: EdgeInsets.zero,
+                      leading: Container(
+                        width: 50,
+                        height: 50,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: Colors.grey.shade200,
+                        ),
+                        child: Icon(
+                          Icons.favorite_border_outlined,
+                          color: Color(0xff25262b),
+                          size: 30,
+                        ),
+                      ),
+                      title: Text(title ?? 'Untitled',
+                          style: GoogleFonts.dmSans(fontSize: 18)),
+                    ),
+                  );
+                },
               ),
-              child: Icon(
-                Icons.favorite_border_outlined,
-                color: Color(0xff25262b),
-                size: 30,
-              ),
-            ),
-            title: Text('Pis', style: GoogleFonts.dmSans(fontSize: 18)),
-            onTap: () {},
-          ),
-        ),
-        Divider(
-          color: Colors.grey.shade700,
-          thickness: 0.1,
-        ),
-        Align(
-          alignment: Alignment.centerLeft,
-          child: ListTile(
-            contentPadding: EdgeInsets.zero,
-            leading: Container(
-              width: 50,
-              height: 50,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: Colors.grey.shade200,
-              ),
-              child: Icon(
-                Icons.favorite_border_outlined,
-                color: Color(0xff25262b),
-                size: 30,
-              ),
-            ),
-            title: Text('Pis', style: GoogleFonts.dmSans(fontSize: 18)),
-            onTap: () {},
-          ),
-        ),
-        Divider(
-          color: Colors.grey.shade700,
-          thickness: 0.1,
-        ),
-        Align(
-          alignment: Alignment.centerLeft,
-          child: ListTile(
-            contentPadding: EdgeInsets.zero,
-            leading: Container(
-              width: 50,
-              height: 50,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: Colors.grey.shade200,
-              ),
-              child: Icon(
-                Icons.favorite_border_outlined,
-                color: Color(0xff25262b),
-                size: 30,
-              ),
-            ),
-            title: Text('Pis', style: GoogleFonts.dmSans(fontSize: 18)),
-            onTap: () {},
-          ),
-        ),
-        Divider(
-          color: Colors.grey.shade700,
-          thickness: 0.1,
-        ),
-        Align(
-          alignment: Alignment.centerLeft,
-          child: ListTile(
-            contentPadding: EdgeInsets.zero,
-            leading: Container(
-              width: 50,
-              height: 50,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: Colors.grey.shade200,
-              ),
-              child: Icon(
-                Icons.favorite_border_outlined,
-                color: Color(0xff25262b),
-                size: 30,
-              ),
-            ),
-            title: Text('Pis', style: GoogleFonts.dmSans(fontSize: 18)),
-            onTap: () {},
-          ),
-        ),
-        Divider(
-          color: Colors.grey.shade700,
-          thickness: 0.1,
-        ),
-        Align(
-          alignment: Alignment.centerLeft,
-          child: ListTile(
-            contentPadding: EdgeInsets.zero,
-            leading: Container(
-              width: 50,
-              height: 50,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: Colors.grey.shade200,
-              ),
-              child: Icon(
-                Icons.favorite_border_outlined,
-                color: Color(0xff25262b),
-                size: 30,
-              ),
-            ),
-            title: Text('Pis', style: GoogleFonts.dmSans(fontSize: 18)),
-            onTap: () {},
-          ),
-        ),
-      ],
+          ],
+        );
+      },
     );
   }
 }
