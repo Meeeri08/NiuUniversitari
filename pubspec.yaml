@@ -95,6 +95,7 @@ flutter:
    - assets/map_style.json
    - assets/map_style2.json
    - assets/marker_icon.png
+   - assets/default.png
 
   #   - images/a_dot_ham.jpeg
 

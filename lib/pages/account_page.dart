@@ -87,7 +87,12 @@ class _AccountState extends State<Account> {
               children: [
                 CircleAvatar(
                   radius: 52,
-                  backgroundImage: NetworkImage(imageUrl),
+                  backgroundColor: Colors.transparent,
+                  backgroundImage: imageUrl != null
+                      ? NetworkImage(imageUrl)
+                      : AssetImage(
+                          'assets/default.png',
+                        ) as ImageProvider<Object>,
                 ),
                 SizedBox(width: 10),
                 Expanded(
@@ -95,11 +100,11 @@ class _AccountState extends State<Account> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        name,
+                        name != null ? name : '',
                         style: GoogleFonts.dmSans(fontSize: 36),
                       ),
                       Text(
-                        user['surname'],
+                        user['surname'] != null ? user['surname'] : '',
                         style: GoogleFonts.dmSans(fontSize: 36),
                       ),
                     ],
