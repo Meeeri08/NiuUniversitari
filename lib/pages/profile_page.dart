@@ -20,6 +20,13 @@ class _ProfileState extends State<Profile> {
   String? imageUrl;
   bool isLoadingImage = false;
   ImageProvider? profileImageProvider;
+  bool _isDisposed = false;
+
+  @override
+  void dispose() {
+    _isDisposed = true;
+    super.dispose();
+  }
 
   @override
   void initState() {
@@ -34,15 +41,15 @@ class _ProfileState extends State<Profile> {
 
     if (snapshot.exists) {
       setState(() {
-        userData = snapshot.data() as Map<String, dynamic>;
+        userData = snapshot.data() as Map<String, dynamic>?;
         // Retain the existing email and id values
-        userData!['email'] = userData!['email'] ?? '';
-        userData!['id'] = userData!['id'] ?? '';
+        userData!['email'] ??= '';
+        userData!['id'] ??= '';
         nameController.text = userData?['name'] ?? '';
         surnameController.text = userData?['surname'] ?? '';
         bioController.text = userData?['bio'] ?? '';
         imageUrl = userData?['imageUrl'] ?? '';
-        if (!isLoadingImage) {
+        if (imageUrl != null && imageUrl!.isNotEmpty) {
           _loadImage(imageUrl!);
         }
       });
@@ -50,13 +57,13 @@ class _ProfileState extends State<Profile> {
   }
 
   Future<void> _loadImage(String imageUrl) async {
-    if (imageUrl.isNotEmpty) {
+    if (imageUrl.isNotEmpty && !_isDisposed) {
       setState(() {
         isLoadingImage = true;
       });
 
       http.Response response = await http.get(Uri.parse(imageUrl));
-      if (response.statusCode == 200 && mounted) {
+      if (response.statusCode == 200 && !_isDisposed) {
         setState(() {
           profileImageProvider = MemoryImage(response.bodyBytes);
           isLoadingImage = false;
@@ -77,23 +84,29 @@ class _ProfileState extends State<Profile> {
   final user = FirebaseAuth.instance.currentUser;
 
   void selectImage() async {
-    Uint8List img = await pickImage(ImageSource.gallery);
-    setState(() {
-      _image = img;
-      profileImageProvider = MemoryImage(_image!);
-      imageUrl = null;
-    });
+    Uint8List? img = await pickImage(ImageSource.gallery);
+    if (img != null && !_isDisposed) {
+      setState(() {
+        _image = img;
+        profileImageProvider = MemoryImage(_image!);
+        imageUrl = null;
+      });
+    }
   }
 
   Future<void> saveProfile() async {
+    if (_isDisposed) {
+      return;
+    }
+
     String userId = FirebaseAuth.instance.currentUser!.uid;
     String name = nameController.text;
     String surname = surnameController.text;
     String bio = bioController.text;
 
     // Retain the existing email and id values
-    userData!['email'] = userData!['email'] ?? '';
-    userData!['id'] = userData!['id'] ?? '';
+    userData!['email'] ??= '';
+    userData!['id'] ??= '';
 
     // Guardar los datos en Firestore
     await FirebaseFirestore.instance
@@ -110,7 +123,8 @@ class _ProfileState extends State<Profile> {
       UploadTask uploadTask = storageRef.putData(_image!);
 
       // Obtener la URL de descarga de la imagen
-      String downloadUrl = await (await uploadTask).ref.getDownloadURL();
+      TaskSnapshot snapshot = await uploadTask;
+      String downloadUrl = await snapshot.ref.getDownloadURL();
 
       // Guardar la URL de la imagen en Firestore
       await FirebaseFirestore.instance
