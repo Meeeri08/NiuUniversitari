@@ -150,14 +150,14 @@ class _TinderPageState extends State<Tinder> {
               cardsCount: cards.length,
               cardsBuilder: (BuildContext context, int index) {
                 final int visibleIndex = index % (visibleCardsCount + 1);
-                final bool isSwipedCard = visibleIndex == visibleCardsCount;
+                final bool isSwipedCard = visibleIndex == 0;
 
                 if (isSwipedCard) {
-                  return const SizedBox.shrink();
-                } else {
                   return TinderCard(
-                    candidate: cards[visibleIndex],
+                    candidate: cards[index],
                   );
+                } else {
+                  return const SizedBox.shrink();
                 }
               },
             ),
