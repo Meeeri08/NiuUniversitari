@@ -21,9 +21,10 @@ class Tinder extends StatefulWidget {
 
 class _TinderPageState extends State<Tinder> {
   final AppinioSwiperController controller = AppinioSwiperController();
-
+  int visibleCardsCount = 3;
   List<TinderCandidateModel> cards = [];
   List<Map<String, dynamic>> swipeDataList = [];
+  List<TinderCandidateModel> swipedCards = [];
 
   @override
   void initState() {
@@ -148,10 +149,16 @@ class _TinderPageState extends State<Tinder> {
               onEnd: _onEnd,
               cardsCount: cards.length,
               cardsBuilder: (BuildContext context, int index) {
-                return TinderCard(
-                  candidate: cards[index],
-                  // color: gradientPink,
-                );
+                final int visibleIndex = index % (visibleCardsCount + 1);
+                final bool isSwipedCard = visibleIndex == visibleCardsCount;
+
+                if (isSwipedCard) {
+                  return const SizedBox.shrink();
+                } else {
+                  return TinderCard(
+                    candidate: cards[visibleIndex],
+                  );
+                }
               },
             ),
           ),
@@ -204,11 +211,9 @@ class _TinderPageState extends State<Tinder> {
           swipeDataList.add(swipeData);
         });
 
-        // Wait for the swipe animation to complete before removing the card
-        Future.delayed(Duration(milliseconds: 500), () {
-          setState(() {
-            cards.removeAt(swipedIndex);
-          });
+        // Update the visibleCardsCount
+        setState(() {
+          visibleCardsCount = visibleCardsCount - 1;
         });
       }).catchError((error) {
         log('Failed to store swiped profile in Firebase: $error');
@@ -238,19 +243,29 @@ class _TinderPageState extends State<Tinder> {
         }).then((_) {
           log('Swiped profile removed from Firebase: $swipedProfileId');
 
-          // Remove the swiped profile from the cards list and swipeDataList
+          // Remove the swiped profile from the swipeDataList
           setState(() {
-            cards.removeLast();
             swipeDataList.removeLast();
+          });
+
+          // Retrieve the corresponding swiped card from swipedCards list
+          TinderCandidateModel swipedCard = swipedCards.last;
+
+          // Determine the index to insert the unswiped card
+          int insertIndex = cards.length - swipeDataList.length;
+
+          // Add the unswiped card back to the cards list
+          setState(() {
+            cards.insert(insertIndex, swipedCard);
+            visibleCardsCount = visibleCardsCount + 1;
           });
 
           log("SUCCESS: Card was unswiped");
 
-          // Check if there are any cards left
-          if (cards.isEmpty) {
-            // Load more cards when there are no cards left
-            _loadCards();
-          }
+          // Remove the swiped card from the swipedCards list
+          setState(() {
+            swipedCards.removeLast();
+          });
         }).catchError((error) {
           log('Failed to remove swiped profile from Firebase: $error');
         });
