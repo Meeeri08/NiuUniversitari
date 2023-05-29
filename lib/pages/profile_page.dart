@@ -24,6 +24,7 @@ class _ProfileState extends State<Profile> {
 
   @override
   void dispose() {
+    print('dispose() called');
     _isDisposed = true;
     super.dispose();
   }
@@ -31,6 +32,7 @@ class _ProfileState extends State<Profile> {
   @override
   void initState() {
     super.initState();
+    print('initState() called');
     fetchUserData();
   }
 
@@ -57,13 +59,13 @@ class _ProfileState extends State<Profile> {
   }
 
   Future<void> _loadImage(String imageUrl) async {
-    if (imageUrl.isNotEmpty && !_isDisposed) {
+    if (imageUrl.isNotEmpty && !_isDisposed && mounted) {
       setState(() {
         isLoadingImage = true;
       });
 
       http.Response response = await http.get(Uri.parse(imageUrl));
-      if (response.statusCode == 200 && !_isDisposed) {
+      if (response.statusCode == 200 && !_isDisposed && mounted) {
         setState(() {
           profileImageProvider = MemoryImage(response.bodyBytes);
           isLoadingImage = false;
@@ -96,6 +98,7 @@ class _ProfileState extends State<Profile> {
 
   Future<void> saveProfile() async {
     if (_isDisposed) {
+      print('Attempted to save profile after dispose');
       return;
     }
 
@@ -138,6 +141,7 @@ class _ProfileState extends State<Profile> {
 
   @override
   Widget build(BuildContext context) {
+    print('build() called');
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.transparent,

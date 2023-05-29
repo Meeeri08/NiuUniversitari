@@ -83,7 +83,21 @@ class _HouseDetailScreenState extends State<HouseDetailScreen> {
 
     if (user != null) {
       userId = user.uid;
+
+      final CollectionReference savedHousesRef =
+          FirebaseFirestore.instance.collection('savedhouses');
+      savedHousesRef.doc(userId).get().then((docSnapshot) {
+        if (docSnapshot.exists) {
+          // El documento del usuario ya existe en la colección
+          List<dynamic> houseIds = docSnapshot.get('houseIds');
+
+          setState(() {
+            isSaved = houseIds.contains(widget.houseId);
+          });
+        }
+      });
     }
+
     _loadMarkerIcon();
 
     super.initState();
