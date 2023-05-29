@@ -14,8 +14,12 @@ class TinderCard extends StatelessWidget {
     return Card(
       child: Column(
         children: [
-          Image.network(
-            candidate.imageUrl ?? '',
+          AspectRatio(
+            aspectRatio: 16 / 9,
+            child: Image.network(
+              candidate.imageUrl ?? '',
+              fit: BoxFit.cover,
+            ),
           ),
           ListTile(
             title: Text(candidate.name ?? ''),

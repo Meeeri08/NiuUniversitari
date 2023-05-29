@@ -186,11 +186,6 @@ class _TinderPageState extends State<Tinder> {
       String swipedProfileId = cards[swipedIndex].id;
       String swipeDirection = direction.name;
 
-      // Remove the swiped profile from the cards list
-      setState(() {
-        cards.removeAt(swipedIndex);
-      });
-
       // Create a Map to represent the swipe data
       Map<String, dynamic> swipeData = {
         'profileId': swipedProfileId,
@@ -207,6 +202,13 @@ class _TinderPageState extends State<Tinder> {
         // Add the swipe data to the swipeDataList
         setState(() {
           swipeDataList.add(swipeData);
+        });
+
+        // Wait for the swipe animation to complete before removing the card
+        Future.delayed(Duration(milliseconds: 500), () {
+          setState(() {
+            cards.removeAt(swipedIndex);
+          });
         });
       }).catchError((error) {
         log('Failed to store swiped profile in Firebase: $error');
@@ -235,17 +237,23 @@ class _TinderPageState extends State<Tinder> {
           'swipedProfiles': FieldValue.arrayRemove([lastSwipeData])
         }).then((_) {
           log('Swiped profile removed from Firebase: $swipedProfileId');
+
+          // Remove the swiped profile from the cards list and swipeDataList
+          setState(() {
+            cards.removeLast();
+            swipeDataList.removeLast();
+          });
+
+          log("SUCCESS: Card was unswiped");
+
+          // Check if there are any cards left
+          if (cards.isEmpty) {
+            // Load more cards when there are no cards left
+            _loadCards();
+          }
         }).catchError((error) {
           log('Failed to remove swiped profile from Firebase: $error');
         });
-
-        // Remove the swiped profile from the cards list and swipeDataList
-        setState(() {
-          cards.removeLast();
-          swipeDataList.removeLast();
-        });
-
-        log("SUCCESS: Card was unswiped");
       } else {
         log("FAIL: No card left to unswipe");
       }

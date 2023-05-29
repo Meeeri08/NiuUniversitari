@@ -46,6 +46,7 @@ class _AccountState extends State<Account> {
         appBar: AppBar(
           backgroundColor: Colors.transparent,
           elevation: 0,
+          centerTitle: true,
           title: Text(
             'Compte',
             style: GoogleFonts.dmSans(
@@ -68,6 +69,7 @@ class _AccountState extends State<Account> {
         backgroundColor: Colors.transparent,
         automaticallyImplyLeading: false,
         elevation: 0,
+        centerTitle: true,
         title: Text(
           'Compte',
           style: GoogleFonts.dmSans(
