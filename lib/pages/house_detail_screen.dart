@@ -8,6 +8,7 @@ import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:photo_view/photo_view.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class HouseDetailScreen extends StatefulWidget {
   final String houseId;
@@ -25,6 +26,8 @@ class _HouseDetailScreenState extends State<HouseDetailScreen> {
   int price = 0;
   late BitmapDescriptor _markerIcon;
   bool isSaved = false;
+  late String userId = '';
+
   Future<void> _loadMarkerIcon() async {
     final BitmapDescriptor markerIcon = await _createMarkerIcon();
 
@@ -41,8 +44,46 @@ class _HouseDetailScreenState extends State<HouseDetailScreen> {
     return BitmapDescriptor.fromBytes(markerIconBytes);
   }
 
+  void toggleBookmark(String houseId) {
+    final CollectionReference savedHousesRef =
+        FirebaseFirestore.instance.collection('savedhouses');
+
+    savedHousesRef.doc(userId).get().then((docSnapshot) {
+      if (docSnapshot.exists) {
+        // El documento del usuario ya existe en la colección
+        // Se obtiene el array de ids de las houses bookmarked
+        List<dynamic> houseIds = docSnapshot.get('houseIds');
+
+        if (isSaved) {
+          // Agregar el houseId al array si aún no está presente
+          if (!houseIds.contains(houseId)) {
+            houseIds.add(houseId);
+          }
+        } else {
+          // Eliminar el houseId del array
+          houseIds.remove(houseId);
+        }
+
+        // Actualizar el array en el documento
+        savedHousesRef.doc(userId).update({'houseIds': houseIds});
+      } else {
+        // El documento del usuario no existe en la colección
+        // Crear un nuevo documento con el userId y el array de houseIds
+        List<String> houseIds = [houseId];
+
+        savedHousesRef.doc(userId).set({'houseIds': houseIds});
+      }
+    });
+  }
+
   @override
   void initState() {
+    final FirebaseAuth auth = FirebaseAuth.instance;
+    final User? user = auth.currentUser;
+
+    if (user != null) {
+      userId = user.uid;
+    }
     _loadMarkerIcon();
 
     super.initState();
@@ -189,19 +230,19 @@ class _HouseDetailScreenState extends State<HouseDetailScreen> {
                       padding: const EdgeInsets.only(right: 12),
                       child: Builder(
                         builder: (BuildContext context) {
-                          return IconButton(
-                            icon: Icon(
-                              isSaved ? Icons.bookmark : Icons.bookmark_border,
-                            ),
-                            iconSize: 26,
-                            color: Color(0xff25262b),
-                            onPressed: () {
+                          return InkWell(
+                            onTap: () {
                               setState(() {
                                 isSaved = !isSaved;
                               });
 
-                              // Handle favorite button press
+                              toggleBookmark(widget.houseId);
                             },
+                            child: Icon(
+                              isSaved ? Icons.bookmark : Icons.bookmark_border,
+                              size: 26,
+                              color: Color(0xff25262b),
+                            ),
                           );
                         },
                       ),

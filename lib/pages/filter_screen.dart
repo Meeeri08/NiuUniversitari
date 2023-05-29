@@ -594,7 +594,7 @@ class _FilterScreenState extends State<FilterScreen> {
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 15),
                   child: Text(
-                    'Estat',
+                    'Tipus',
                     style: TextStyle(
                       fontFamily: 'DM Sans',
                       fontSize: 18,
