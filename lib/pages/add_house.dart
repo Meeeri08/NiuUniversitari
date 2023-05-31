@@ -239,49 +239,69 @@ class _AddHousePageState extends State<AddHousePage> {
               child: Padding(
                 padding: const EdgeInsets.only(left: 10),
                 child: Text(
-                  'Property Images:',
+                  'Imatges de la Propietat:',
                   style: GoogleFonts.dmSans(
-                      fontSize: 16, fontWeight: FontWeight.bold),
+                      fontSize: 16,
+                      fontWeight: FontWeight.w200,
+                      color: Colors.grey),
                 ),
               ),
             ),
             SizedBox(height: 16),
-            GestureDetector(
-              onTap: _selectImages,
-              child: Container(
-                height: 140,
-                width: 140,
-                child: CustomPaint(
-                  painter: DottedBorderPainter(
-                    color: Colors.teal,
-                    strokeWidth: 2.0,
-                    dottedLength: 8.0,
-                    spaceLength: 8.0,
-                  ),
-                  child: Center(
-                    child: Icon(
-                      Icons.add,
-                      size: 60,
-                      color: Colors.teal,
+            Row(
+              children: [
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 10, right: 10),
+                    child: GridView.count(
+                      crossAxisCount: 2,
+                      shrinkWrap: true,
+                      physics: NeverScrollableScrollPhysics(),
+                      crossAxisSpacing: 16,
+                      mainAxisSpacing: 16,
+                      children: [
+                        GestureDetector(
+                          onTap: _selectImages,
+                          child: Container(
+                            height: 120,
+                            width: 160,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(8.0),
+                              border: Border.all(
+                                color: Colors.teal,
+                                width: 2.0,
+                                style: BorderStyle.solid,
+                              ),
+                            ),
+                            child: Center(
+                              child: Icon(
+                                Icons.add,
+                                size: 60,
+                                color: Colors.teal,
+                              ),
+                            ),
+                          ),
+                        ),
+                        ..._selectedImages.map((image) {
+                          return Container(
+                            height: 120,
+                            width: 160,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(8.0),
+                              image: DecorationImage(
+                                image: FileImage(image),
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                          );
+                        }).toList(),
+                      ],
                     ),
                   ),
                 ),
-              ),
+              ],
             ),
             SizedBox(height: 16),
-            SizedBox(height: 16),
-            Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children: _selectedImages.map((image) {
-                return Container(
-                  height: 80,
-                  width: 80,
-                  child: Image.file(image),
-                );
-              }).toList(),
-            ),
-            const SizedBox(height: 16),
           ],
         ),
         isActive: _currentStep >= 0,
@@ -485,55 +505,28 @@ class DottedBorderPainter extends CustomPainter {
 
     final dashWidth = dottedLength;
     final dashSpace = spaceLength;
-    final dashes = (size.width / (dashWidth + dashSpace)).floor();
+    final dashes =
+        ((size.width - strokeWidth) / (dashWidth + dashSpace)).floor();
     final offset = strokeWidth / 2;
-    final borderRadius = BorderRadius.circular(8.0);
 
-    // Draw the top line with dots
-    for (var i = 0; i < dashes; i++) {
-      final startX = i * (dashWidth + dashSpace) + offset;
-      final endX = startX + dashWidth;
-      final path = Path()
-        ..moveTo(startX, offset)
-        ..lineTo(endX, offset);
-      canvas.drawPath(path, paint);
-    }
+    final borderRadius =
+        BorderRadius.circular(8.0); // Adjust the corner radius as needed
 
-    // Draw the right line with dots
-    for (var i = 0; i < dashes; i++) {
-      final startY = i * (dashWidth + dashSpace) + offset;
-      final endY = startY + dashWidth;
-      final path = Path()
-        ..moveTo(size.width - offset, startY)
-        ..lineTo(size.width - offset, endY);
-      canvas.drawPath(path, paint);
-    }
+    final rect = Rect.fromLTWH(
+        offset, offset, size.width - 2 * offset, size.height - 2 * offset);
+    final roundedRect = RRect.fromRectAndCorners(
+      rect,
+      topLeft: borderRadius.topLeft,
+      topRight: borderRadius.topRight,
+      bottomRight: borderRadius.bottomRight,
+      bottomLeft: borderRadius.bottomLeft,
+    );
 
-    // Draw the bottom line with dots
-    for (var i = 0; i < dashes; i++) {
-      final startX = size.width - (i * (dashWidth + dashSpace) + offset);
-      final endX = startX - dashWidth;
-      final path = Path()
-        ..moveTo(startX, size.height - offset)
-        ..lineTo(endX, size.height - offset);
-      canvas.drawPath(path, paint);
-    }
-
-    // Draw the left line with dots
-    for (var i = 0; i < dashes; i++) {
-      final startY = size.height - (i * (dashWidth + dashSpace) + offset);
-      final endY = startY - dashWidth;
-      final path = Path()
-        ..moveTo(offset, startY)
-        ..lineTo(offset, endY);
-      canvas.drawPath(path, paint);
-    }
+    canvas.drawRRect(roundedRect, paint);
   }
 
   @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) {
-    return false;
-  }
+  bool shouldRepaint(DottedBorderPainter oldDelegate) => false;
 }
 
 class MapSelectionPage extends StatelessWidget {
