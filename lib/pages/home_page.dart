@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:jobapp/pages/account_page.dart';
+import 'package:jobapp/pages/add_house.dart';
 import 'package:jobapp/pages/dashboard.dart';
 import 'package:jobapp/pages/tinder.dart';
 import 'messages_page.dart';
@@ -22,8 +23,6 @@ class _HomePageState extends State<HomePage> {
   final PageStorageBucket bucket = PageStorageBucket();
   Widget currentScreen = Dashboard();
 
-  //List<DocumentSnapshot>? filteredHouses;
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -31,28 +30,26 @@ class _HomePageState extends State<HomePage> {
         child: currentScreen,
         bucket: bucket,
       ),
-      floatingActionButton: Container(
-        width: 56,
-        height: 56,
-        decoration: const BoxDecoration(
-          shape: BoxShape.circle,
+      floatingActionButton: FloatingActionButton(
+        child: const Icon(
+          Icons.add,
+          size: 32,
         ),
-        child: FloatingActionButton(
-          child: const Icon(
-            Icons.add,
-            size: 32,
-          ),
-          backgroundColor: const Color(0xFF1FA29E),
-          shape: RoundedRectangleBorder(
-            side: const BorderSide(
-                color: Colors.white,
-                width: 3,
-                strokeAlign: BorderSide.strokeAlignCenter),
-            borderRadius: BorderRadius.circular(50),
-          ),
-          elevation: 1,
-          onPressed: () {},
+        backgroundColor: const Color(0xFF1FA29E),
+        shape: RoundedRectangleBorder(
+          side: const BorderSide(
+              color: Colors.white,
+              width: 3,
+              strokeAlign: BorderSide.strokeAlignCenter),
+          borderRadius: BorderRadius.circular(50),
         ),
+        elevation: 1,
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => AddHousePage()),
+          );
+        },
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       bottomNavigationBar: BottomAppBar(
