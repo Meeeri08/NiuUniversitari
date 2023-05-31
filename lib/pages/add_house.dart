@@ -30,7 +30,6 @@ class _AddHousePageState extends State<AddHousePage> {
   List<DateTime> _selectedDates = [];
 
   DateTime? _initialDate;
-  DateTime? _finalDate;
   LatLng? _selectedLocation;
 
   int _currentStep = 0;
@@ -100,28 +99,18 @@ class _AddHousePageState extends State<AddHousePage> {
     return '';
   }
 
-  void _selectDates() async {
-    DateTime? initialDate = await showDatePicker(
+  void _selectDate() async {
+    DateTime? selectedDate = await showDatePicker(
       context: context,
       initialDate: _initialDate ?? DateTime.now(),
       firstDate: DateTime.now().subtract(Duration(days: 365)),
       lastDate: DateTime.now().add(Duration(days: 365)),
     );
 
-    if (initialDate != null) {
-      DateTime? finalDate = await showDatePicker(
-        context: context,
-        initialDate: _finalDate ?? initialDate,
-        firstDate: _initialDate ?? initialDate, // Update here
-        lastDate: DateTime.now().add(Duration(days: 365)),
-      );
-
-      if (finalDate != null) {
-        setState(() {
-          _initialDate = initialDate;
-          _finalDate = finalDate;
-        });
-      }
+    if (selectedDate != null) {
+      setState(() {
+        _initialDate = selectedDate;
+      });
     }
   }
 
@@ -162,7 +151,6 @@ class _AddHousePageState extends State<AddHousePage> {
       'propietari_url': propietariUrl,
       'datainici':
           _initialDate != null ? Timestamp.fromDate(_initialDate!) : null,
-      'datafinal': _finalDate != null ? Timestamp.fromDate(_finalDate!) : null,
       'n_rooms': numberOfRooms,
       'n_bathroom': numberOfBathrooms,
       'price': price,
@@ -215,35 +203,77 @@ class _AddHousePageState extends State<AddHousePage> {
                 ),
               ),
             ),
-            const SizedBox(height: 16),
-            Text(
-              'Main Image:',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-            ),
-            _selectedImages.isNotEmpty
-                ? Container(
-                    height: 200,
-                    width: 200,
-                    child: Image.file(_selectedImages[0]),
-                  )
-                : Container(
-                    height: 200,
-                    width: 200,
-                    color: Colors.grey.shade300,
-                    child: const Icon(Icons.add_photo_alternate),
+            const SizedBox(height: 30),
+            Container(
+              width: 325,
+              child: TextFormField(
+                readOnly: true,
+                controller: TextEditingController(
+                  text: _initialDate != null
+                      ? '${_initialDate!.day}/${_initialDate!.month}/${_initialDate!.year}'
+                      : '',
+                ),
+                decoration: InputDecoration(
+                  labelText: 'Disponible a partir de',
+                  suffixIcon: Icon(Icons.calendar_today, color: Colors.grey),
+                  border: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.grey.shade300),
+                    borderRadius: BorderRadius.circular(12),
                   ),
-            const SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: _selectImages,
-              child: const Text('Select Images'),
+                  filled: true,
+                  fillColor: Colors.white,
+                  labelStyle: TextStyle(
+                    color: Colors.grey,
+                  ),
+                  floatingLabelBehavior: FloatingLabelBehavior.always,
+                ),
+                onTap: _selectDate,
+                style: TextStyle(
+                  color: Colors.black,
+                ),
+              ),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 30),
+            Align(
+              alignment: Alignment.topLeft,
+              child: Padding(
+                padding: const EdgeInsets.only(left: 10),
+                child: Text(
+                  'Property Images:',
+                  style: GoogleFonts.dmSans(
+                      fontSize: 16, fontWeight: FontWeight.bold),
+                ),
+              ),
+            ),
+            SizedBox(height: 16),
+            GestureDetector(
+              onTap: _selectImages,
+              child: Container(
+                height: 140,
+                width: 140,
+                child: CustomPaint(
+                  painter: DottedBorderPainter(
+                    color: Colors.teal,
+                    strokeWidth: 2.0,
+                    dottedLength: 8.0,
+                    spaceLength: 8.0,
+                  ),
+                  child: Center(
+                    child: Icon(
+                      Icons.add,
+                      size: 60,
+                      color: Colors.teal,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            SizedBox(height: 16),
+            SizedBox(height: 16),
             Wrap(
               spacing: 8,
               runSpacing: 8,
-              children: _selectedImages
-                  .skip(1) // Skipping the first image as it's the main picture
-                  .map((image) {
+              children: _selectedImages.map((image) {
                 return Container(
                   height: 80,
                   width: 80,
@@ -251,31 +281,7 @@ class _AddHousePageState extends State<AddHousePage> {
                 );
               }).toList(),
             ),
-            TextFormField(
-              readOnly: true,
-              controller: TextEditingController(
-                text: _initialDate != null
-                    ? '${_initialDate!.day}/${_initialDate!.month}/${_initialDate!.year}'
-                    : '',
-              ),
-              decoration: const InputDecoration(
-                labelText: 'Initial Date',
-              ),
-              onTap: _selectDates,
-            ),
             const SizedBox(height: 16),
-            TextFormField(
-              readOnly: true,
-              controller: TextEditingController(
-                text: _finalDate != null
-                    ? '${_finalDate!.day}/${_finalDate!.month}/${_finalDate!.year}'
-                    : '',
-              ),
-              decoration: const InputDecoration(
-                labelText: 'Final Date',
-              ),
-              onTap: _selectDates,
-            ),
           ],
         ),
         isActive: _currentStep >= 0,
@@ -383,14 +389,11 @@ class _AddHousePageState extends State<AddHousePage> {
       setState(() {
         _currentStep++;
         if (_currentStep == _buildSteps().length - 1) {
-          // Last step
-          _stepperType =
-              StepperType.horizontal; // Change stepper type to horizontal
+          _stepperType = StepperType.horizontal;
         }
       });
     } else {
-      // Last step
-      _addHouseToFirebase(); // Call the method to add the house data to Firebase
+      _addHouseToFirebase();
     }
   }
 
@@ -430,7 +433,6 @@ class _AddHousePageState extends State<AddHousePage> {
       ),
       body: Theme(
         data: ThemeData(
-          // Establecer el color del checkmark en rojo
           primarySwatch: Colors.teal,
         ),
         child: Stepper(
@@ -458,6 +460,79 @@ class _AddHousePageState extends State<AddHousePage> {
         ),
       ),
     );
+  }
+}
+
+class DottedBorderPainter extends CustomPainter {
+  final Color color;
+  final double strokeWidth;
+  final double dottedLength;
+  final double spaceLength;
+
+  DottedBorderPainter({
+    required this.color,
+    required this.strokeWidth,
+    required this.dottedLength,
+    required this.spaceLength,
+  });
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = color
+      ..strokeWidth = strokeWidth
+      ..style = PaintingStyle.stroke;
+
+    final dashWidth = dottedLength;
+    final dashSpace = spaceLength;
+    final dashes = (size.width / (dashWidth + dashSpace)).floor();
+    final offset = strokeWidth / 2;
+    final borderRadius = BorderRadius.circular(8.0);
+
+    // Draw the top line with dots
+    for (var i = 0; i < dashes; i++) {
+      final startX = i * (dashWidth + dashSpace) + offset;
+      final endX = startX + dashWidth;
+      final path = Path()
+        ..moveTo(startX, offset)
+        ..lineTo(endX, offset);
+      canvas.drawPath(path, paint);
+    }
+
+    // Draw the right line with dots
+    for (var i = 0; i < dashes; i++) {
+      final startY = i * (dashWidth + dashSpace) + offset;
+      final endY = startY + dashWidth;
+      final path = Path()
+        ..moveTo(size.width - offset, startY)
+        ..lineTo(size.width - offset, endY);
+      canvas.drawPath(path, paint);
+    }
+
+    // Draw the bottom line with dots
+    for (var i = 0; i < dashes; i++) {
+      final startX = size.width - (i * (dashWidth + dashSpace) + offset);
+      final endX = startX - dashWidth;
+      final path = Path()
+        ..moveTo(startX, size.height - offset)
+        ..lineTo(endX, size.height - offset);
+      canvas.drawPath(path, paint);
+    }
+
+    // Draw the left line with dots
+    for (var i = 0; i < dashes; i++) {
+      final startY = size.height - (i * (dashWidth + dashSpace) + offset);
+      final endY = startY - dashWidth;
+      final path = Path()
+        ..moveTo(offset, startY)
+        ..lineTo(offset, endY);
+      canvas.drawPath(path, paint);
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) {
+    return false;
   }
 }
 
