@@ -146,13 +146,16 @@ class _ProfileState extends State<Profile> {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios),
-          iconSize: 22,
-          color: Color(0xff25262b),
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
+        leading: Padding(
+          padding: EdgeInsets.only(left: 15.0),
+          child: IconButton(
+            icon: Icon(Icons.arrow_back_ios),
+            iconSize: 22,
+            color: Color(0xff25262b),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+          ),
         ),
       ),
       body: Center(
