@@ -1172,50 +1172,106 @@ class _AddHousePageState extends State<AddHousePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          'Publica el teu habitatge',
-          style: GoogleFonts.dmSans(
-            fontSize: 18,
-            fontWeight: FontWeight.w500,
-            color: Color(0xff25262b),
+    return WillPopScope(
+      onWillPop: () async {
+        bool? confirm = await showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text('Are you sure?'),
+              content: Text('Your progress will be lost.'),
+              actions: <Widget>[
+                TextButton(
+                  child: Text('Cancel'),
+                  onPressed: () {
+                    Navigator.of(context).pop(false);
+                  },
+                ),
+                TextButton(
+                  child: Text('Leave'),
+                  onPressed: () {
+                    Navigator.of(context).pop(true);
+                  },
+                ),
+              ],
+            );
+          },
+        );
+
+        if (confirm != null && confirm) {
+          return true;
+        } else {
+          return false;
+        }
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(
+            'Publica el teu habitatge',
+            style: GoogleFonts.dmSans(
+              fontSize: 18,
+              fontWeight: FontWeight.w500,
+              color: Color(0xff25262b),
+            ),
+          ),
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          leading: Padding(
+            padding: EdgeInsets.only(left: 15.0),
+            child: IconButton(
+              icon: Icon(Icons.arrow_back_ios),
+              iconSize: 22,
+              color: Color(0xff25262b),
+              onPressed: () {
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return AlertDialog(
+                      title: Text('N\'estas Segur?'),
+                      content: Text('Perdràs tot el progrés.'),
+                      actions: <Widget>[
+                        TextButton(
+                          child: Text('Cancel·la'),
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
+                        ),
+                        TextButton(
+                          child: Text('Vull sortir'),
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                            Navigator.of(context).pop();
+                          },
+                        ),
+                      ],
+                    );
+                  },
+                );
+              },
+            ),
           ),
         ),
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        leading: Padding(
-          padding: EdgeInsets.only(left: 15.0),
-          child: IconButton(
-            icon: Icon(Icons.arrow_back_ios),
-            iconSize: 22,
-            color: Color(0xff25262b),
-            onPressed: () {
-              Navigator.of(context).pop();
+        body: Theme(
+          data: ThemeData(
+            primarySwatch: Colors.teal,
+          ),
+          child: Stepper(
+            controlsBuilder: (context, controller) {
+              return const SizedBox.shrink();
             },
+            type: _stepperType,
+            currentStep: _currentStep,
+            onStepContinue: () {
+              setState(() {
+                if (_currentStep < _buildSteps().length - 1) {
+                  _currentStep += 1;
+                } else {
+                  _addHouseToFirebase();
+                }
+              });
+            },
+            steps: _buildSteps(),
           ),
-        ),
-      ),
-      body: Theme(
-        data: ThemeData(
-          primarySwatch: Colors.teal,
-        ),
-        child: Stepper(
-          controlsBuilder: (context, controller) {
-            return const SizedBox.shrink();
-          },
-          type: _stepperType,
-          currentStep: _currentStep,
-          onStepContinue: () {
-            setState(() {
-              if (_currentStep < _buildSteps().length - 1) {
-                _currentStep += 1;
-              } else {
-                _addHouseToFirebase();
-              }
-            });
-          },
-          steps: _buildSteps(),
         ),
       ),
     );
