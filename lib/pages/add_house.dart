@@ -72,13 +72,13 @@ class _AddHousePageState extends State<AddHousePage> {
     });
   }
 
-  void validatePrice(double value) {
+  void validatePrice(int value) {
     setState(() {
       isPriceValid = value > 0;
     });
   }
 
-  void validateDeposit(double value) {
+  void validateDeposit(int value) {
     setState(() {
       isDepositValid = value > 0;
     });
@@ -303,7 +303,6 @@ class _AddHousePageState extends State<AddHousePage> {
     int maximumStay = maxStay;
     String zone = _zoneController.text;
     String type = _typeController.text;
-    String characteristics = _characteristicsController.text;
     String title = _titleController.text;
     List<String> imageUrls = await _uploadImages();
     bool isFeatured = false;
@@ -333,7 +332,6 @@ class _AddHousePageState extends State<AddHousePage> {
       'tipus': type,
       'pet_policy': petPolicy,
       'dimensions': dimensions,
-      'estat': characteristics,
       'latlng': _selectedLocation != null
           ? GeoPoint(_selectedLocation!.latitude, _selectedLocation!.longitude)
           : null,
@@ -369,7 +367,11 @@ class _AddHousePageState extends State<AddHousePage> {
                 ),
                 onChanged: (value) {
                   setState(() {
-                    validatePrice(double.parse(value));
+                    if (value.isNotEmpty) {
+                      validatePrice(int.parse(value));
+                    } else {
+                      validatePrice(0);
+                    }
                     _validateForm1();
                   });
                 },
@@ -401,7 +403,11 @@ class _AddHousePageState extends State<AddHousePage> {
                 ),
                 onChanged: (value) {
                   setState(() {
-                    validateDeposit(double.parse(value));
+                    if (value.isNotEmpty) {
+                      validatePrice(int.parse(value));
+                    } else {
+                      validatePrice(0);
+                    }
                     _validateForm1();
                   });
                 },
