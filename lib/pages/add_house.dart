@@ -290,8 +290,8 @@ class _AddHousePageState extends State<AddHousePage> {
     int numberOfBathrooms = int.tryParse(_bathroomsController.text) ?? 0;
     int price = int.tryParse(_priceController.text) ?? 0;
     int deposit = int.tryParse(_depositController.text) ?? 0;
-    int minimumStay = int.tryParse(_minimumstayController.text) ?? 0;
-    int maximumStay = int.tryParse(_maximumstayController.text) ?? 0;
+    int minimumStay = minStay;
+    int maximumStay = maxStay;
     String type = _typeController.text;
     bool petPolicy = false;
     String dimensions = _dimensionsController.text;
@@ -461,6 +461,7 @@ class _AddHousePageState extends State<AddHousePage> {
                   onTap: () {
                     setState(() {
                       selectedContainer = index;
+                      _typeController.text = containerNames[index];
                       validateTipo(containerNames[index]);
                       _validateForm1();
                     });
