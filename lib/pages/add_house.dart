@@ -146,7 +146,7 @@ class _AddHousePageState extends State<AddHousePage> {
   }
 
   int minStay = 0;
-  int maxStay = 12;
+  int maxStay = 13;
 
   List<String> containerNames = [
     'Casa',
@@ -285,27 +285,6 @@ class _AddHousePageState extends State<AddHousePage> {
     }
   }
 
-  bool _validateFields() {
-    // Validate each field and return false if any field is empty
-    if (_titleController.text.isEmpty ||
-        _initialDate == null ||
-        _selectedImages.isEmpty ||
-        _roomsController.text.isEmpty ||
-        _bathroomsController.text.isEmpty ||
-        _priceController.text.isEmpty ||
-        _minimumstayController.text.isEmpty ||
-        _maximumstayController.text.isEmpty ||
-        _depositController.text.isEmpty ||
-        _typeController.text.isEmpty ||
-        _dimensionsController.text.isEmpty ||
-        _characteristicsController.text.isEmpty ||
-        _zoneController.text.isEmpty ||
-        _descriptionController.text.isEmpty) {
-      return false;
-    }
-    return true;
-  }
-
   void _addHouseToFirebase() async {
     int numberOfRooms = int.tryParse(_roomsController.text) ?? 0;
     int numberOfBathrooms = int.tryParse(_bathroomsController.text) ?? 0;
@@ -336,6 +315,7 @@ class _AddHousePageState extends State<AddHousePage> {
       'n_rooms': numberOfRooms,
       'n_bathroom': numberOfBathrooms,
       'price': price,
+      'deposit': deposit,
       'minimum_stay': minimumStay,
       'maximum_stay': maximumStay,
       'tipus': type,
@@ -535,11 +515,11 @@ class _AddHousePageState extends State<AddHousePage> {
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20),
                   child: Text(
-                    minStay == 0 && maxStay == 12
+                    minStay == 0 && maxStay == 13
                         ? 'Sense mínima - 12+ mesos'
                         : minStay == 0
                             ? 'No mínim - $maxStay mesos'
-                            : maxStay == 12
+                            : maxStay == 13
                                 ? '$minStay - 12+ mesos'
                                 : '$minStay - $maxStay mesos',
                     style: TextStyle(
@@ -560,7 +540,7 @@ class _AddHousePageState extends State<AddHousePage> {
                 values: [minStay.toDouble(), maxStay.toDouble()],
                 rangeSlider: true,
                 min: 0,
-                max: 12,
+                max: 13,
                 step: FlutterSliderStep(step: 1),
                 onDragging: (handlerIndex, lowerValue, upperValue) {
                   setState(() {
