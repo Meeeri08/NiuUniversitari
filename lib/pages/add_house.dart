@@ -21,8 +21,6 @@ class _AddHousePageState extends State<AddHousePage> {
   final TextEditingController _roomsController = TextEditingController();
   final TextEditingController _bathroomsController = TextEditingController();
   final TextEditingController _priceController = TextEditingController();
-  final TextEditingController _minimumstayController = TextEditingController();
-  final TextEditingController _maximumstayController = TextEditingController();
   final TextEditingController _typeController = TextEditingController();
   final TextEditingController _dimensionsController = TextEditingController();
   final TextEditingController _characteristicsController =
@@ -47,6 +45,8 @@ class _AddHousePageState extends State<AddHousePage> {
 
   bool isBathroomsValid = false;
   bool isDimensionsValid = false;
+
+  bool isFeatured = false;
 
   void _validateForm1() {
     setState(() {
@@ -98,7 +98,13 @@ class _AddHousePageState extends State<AddHousePage> {
 
   void validateFeature(String value) {
     setState(() {
-      isFeatureSelected = featuredContainers.contains(true);
+      if (featuredContainers.contains(true)) {
+        if (!selectedFeatures.contains(value)) {
+          selectedFeatures.add(value);
+        }
+      } else {
+        selectedFeatures.remove(value);
+      }
     });
   }
 
@@ -147,6 +153,9 @@ class _AddHousePageState extends State<AddHousePage> {
 
   int minStay = 0;
   int maxStay = 13;
+  String zone = '';
+  String description = '';
+  double dimensions = 0.0;
 
   List<String> containerNames = [
     'Casa',
@@ -292,12 +301,12 @@ class _AddHousePageState extends State<AddHousePage> {
     int deposit = int.tryParse(_depositController.text) ?? 0;
     int minimumStay = minStay;
     int maximumStay = maxStay;
+    String zone = _zoneController.text;
     String type = _typeController.text;
-    bool petPolicy = false;
-    String dimensions = _dimensionsController.text;
     String characteristics = _characteristicsController.text;
     String title = _titleController.text;
     List<String> imageUrls = await _uploadImages();
+    bool isFeatured = false;
     String propietari = await _getCurrentUserName();
     String propietariId = await _getCurrentUserId();
     String propietariUrl = await _getCurrentUserImageUrl();
@@ -305,17 +314,20 @@ class _AddHousePageState extends State<AddHousePage> {
     Map<String, dynamic> houseData = {
       'title': title,
       'image_url': imageUrls.isNotEmpty ? imageUrls[0] : '',
-      'images': imageUrls
-          .sublist(1), // Excluding the first image as it's the main picture
+      'imatges': imageUrls.sublist(1),
       'propietari': propietari,
+      'featured': isFeatured,
       'propietari_id': propietariId,
       'propietari_url': propietariUrl,
+      'barri': zone,
       'datainici':
           _initialDate != null ? Timestamp.fromDate(_initialDate!) : null,
       'n_rooms': numberOfRooms,
       'n_bathroom': numberOfBathrooms,
       'price': price,
       'deposit': deposit,
+      'description': description,
+      'selected_features': selectedFeatures,
       'minimum_stay': minimumStay,
       'maximum_stay': maximumStay,
       'tipus': type,
@@ -365,7 +377,7 @@ class _AddHousePageState extends State<AddHousePage> {
                   color: Colors.black,
                 ),
                 inputFormatters: [
-                  FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,2}')),
+                  FilteringTextInputFormatter.digitsOnly,
                 ],
               ),
             ),
@@ -397,7 +409,7 @@ class _AddHousePageState extends State<AddHousePage> {
                   color: Colors.black,
                 ),
                 inputFormatters: [
-                  FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,2}')),
+                  FilteringTextInputFormatter.digitsOnly,
                 ],
               ),
             ),
@@ -672,31 +684,16 @@ class _AddHousePageState extends State<AddHousePage> {
               width: 325,
               child: TextFormField(
                 controller: _dimensionsController,
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.grey.shade300),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  filled: true,
-                  fillColor: Colors.white,
-                  labelText: 'Dimensions (m\u00B2)',
-                  labelStyle: TextStyle(
-                    color: Colors.grey,
-                  ),
-                  floatingLabelBehavior: FloatingLabelBehavior.always,
+                keyboardType: TextInputType.numberWithOptions(
+                    decimal: true), // Enable decimal input
+                decoration: const InputDecoration(
+                  labelText: 'Dimensions',
                 ),
                 onChanged: (value) {
                   setState(() {
-                    validateDimensions(double.parse(value));
-                    _validateForm2();
+                    dimensions = double.tryParse(value) ?? 0.0;
                   });
                 },
-                style: TextStyle(
-                  color: Colors.black,
-                ),
-                inputFormatters: [
-                  FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,2}')),
-                ],
               ),
             ),
             const SizedBox(height: 30),
@@ -890,6 +887,11 @@ class _AddHousePageState extends State<AddHousePage> {
               decoration: const InputDecoration(
                 labelText: 'Zone',
               ),
+              onChanged: (value) {
+                setState(() {
+                  zone = value;
+                });
+              },
             ),
             ElevatedButton(
               onPressed: _selectLocation,
@@ -903,6 +905,11 @@ class _AddHousePageState extends State<AddHousePage> {
               decoration: const InputDecoration(
                 labelText: 'Description',
               ),
+              onChanged: (value) {
+                setState(() {
+                  description = value;
+                });
+              },
             ),
             Align(
               alignment: Alignment.topLeft,
