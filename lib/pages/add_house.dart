@@ -1,3 +1,4 @@
+import 'dart:ffi';
 import 'dart:io';
 import 'dart:math';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -24,24 +25,50 @@ class _AddHousePageState extends State<AddHousePage> {
   final TextEditingController _maximumstayController = TextEditingController();
   final TextEditingController _typeController = TextEditingController();
   final TextEditingController _dimensionsController = TextEditingController();
-  final TextEditingController _conditionController = TextEditingController();
+  final TextEditingController _characteristicsController =
+      TextEditingController();
   final TextEditingController _zoneController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
   final TextEditingController _depositController = TextEditingController();
+  final TextEditingController _petpolicyController = TextEditingController();
 
   bool isPriceValid = false;
   bool isDepositValid = false;
   bool isTipoSelected = false;
+  bool isFeatureSelected = false;
+  bool isPetSelected = false;
+
   bool isDateValid = false;
 
   bool isFormValid = false;
+  bool isForm2Valid = false;
 
-  void _validateForm() {
+  bool isRoomsValid = false;
+
+  bool isBathroomsValid = false;
+  bool isDimensionsValid = false;
+
+  void _validateForm1() {
     setState(() {
       isFormValid = _priceController.text.isNotEmpty &&
           _depositController.text.isNotEmpty &&
           _initialDate != null &&
           isTipoSelected;
+    });
+  }
+
+  void _validateForm2() {
+    setState(() {
+      isRoomsValid = _roomsController.text.isNotEmpty;
+      isBathroomsValid = _bathroomsController.text.isNotEmpty;
+      isDimensionsValid = _dimensionsController.text.isNotEmpty;
+      isFeatureSelected = featuredContainers.contains(true);
+      isPetSelected = petPolicy != null;
+      isForm2Valid = isRoomsValid &&
+          isBathroomsValid &&
+          isDimensionsValid &&
+          isFeatureSelected &&
+          isPetSelected;
     });
   }
 
@@ -61,10 +88,6 @@ class _AddHousePageState extends State<AddHousePage> {
     setState(() {
       isDateValid = value != null;
     });
-
-    if (isDateValid) {
-      print('Date is validated'); // Add log when date is validated
-    }
   }
 
   void validateTipo(String value) {
@@ -73,10 +96,44 @@ class _AddHousePageState extends State<AddHousePage> {
     });
   }
 
-  void goToNextStep() {
+  void validateFeature(String value) {
     setState(() {
-      _currentStep++;
+      isFeatureSelected = featuredContainers.contains(true);
     });
+  }
+
+  void validatePet(bool value) {
+    setState(() {
+      isPetSelected = value;
+    });
+  }
+
+  void validateRooms(int value) {
+    setState(() {
+      isRoomsValid = value.toString().isNotEmpty;
+    });
+  }
+
+  void validateBathrooms(int value) {
+    setState(() {
+      isBathroomsValid = value.toString().isNotEmpty;
+    });
+  }
+
+  void validateDimensions(double value) {
+    setState(() {
+      isDimensionsValid = value.toString().isNotEmpty;
+    });
+  }
+
+  void goToNextStep() {
+    if (_currentStep < 2) {
+      setState(() {
+        _currentStep++;
+      });
+    } else {
+      _addHouseToFirebase();
+    }
   }
 
   List<bool> selectedContainers = [false, false, false, false];
@@ -98,17 +155,35 @@ class _AddHousePageState extends State<AddHousePage> {
     'Estudi',
   ];
 
+  List<bool> featuredContainers = [false, false, false, false, false];
+
+  void featuredContainer(int containerIndex) {
+    setState(() {
+      featuredContainers = List<bool>.generate(
+          featuredContainers.length, (index) => index == containerIndex);
+    });
+  }
+
+  List<String> featureNames = [
+    'Moblat',
+    'Nou',
+    'Acabat de Reformar',
+    'Servei de Neteja',
+    'Parking',
+  ];
   @override
   void initState() {
     super.initState();
     selectedContainer = -1;
-    _validateForm();
+    _validateForm1();
+    _validateForm2();
+    _petpolicyController.text = petPolicy ? 'Yes' : 'No';
   }
 
   bool petPolicy = false;
 
   List<File> _selectedImages = [];
-  List<DateTime> _selectedDates = [];
+  List<String> selectedFeatures = [];
 
   DateTime? _initialDate;
   LatLng? _selectedLocation;
@@ -223,7 +298,7 @@ class _AddHousePageState extends State<AddHousePage> {
         _depositController.text.isEmpty ||
         _typeController.text.isEmpty ||
         _dimensionsController.text.isEmpty ||
-        _conditionController.text.isEmpty ||
+        _characteristicsController.text.isEmpty ||
         _zoneController.text.isEmpty ||
         _descriptionController.text.isEmpty) {
       return false;
@@ -232,15 +307,6 @@ class _AddHousePageState extends State<AddHousePage> {
   }
 
   void _addHouseToFirebase() async {
-    if (!_validateFields()) {
-      final snackBar = SnackBar(
-        content: Text('Si us plau, emplena tots els camps'),
-        duration: Duration(seconds: 2),
-      );
-      ScaffoldMessenger.of(context).showSnackBar(snackBar);
-      return;
-    }
-
     int numberOfRooms = int.tryParse(_roomsController.text) ?? 0;
     int numberOfBathrooms = int.tryParse(_bathroomsController.text) ?? 0;
     int price = int.tryParse(_priceController.text) ?? 0;
@@ -250,7 +316,7 @@ class _AddHousePageState extends State<AddHousePage> {
     String type = _typeController.text;
     bool petPolicy = false;
     String dimensions = _dimensionsController.text;
-    String condition = _conditionController.text;
+    String characteristics = _characteristicsController.text;
     String title = _titleController.text;
     List<String> imageUrls = await _uploadImages();
     String propietari = await _getCurrentUserName();
@@ -275,7 +341,7 @@ class _AddHousePageState extends State<AddHousePage> {
       'tipus': type,
       'pet_policy': petPolicy,
       'dimensions': dimensions,
-      'estat': condition,
+      'estat': characteristics,
       'latlng': _selectedLocation != null
           ? GeoPoint(_selectedLocation!.latitude, _selectedLocation!.longitude)
           : null,
@@ -312,14 +378,14 @@ class _AddHousePageState extends State<AddHousePage> {
                 onChanged: (value) {
                   setState(() {
                     validatePrice(double.parse(value));
-                    _validateForm();
+                    _validateForm1();
                   });
                 },
                 style: TextStyle(
                   color: Colors.black,
                 ),
                 inputFormatters: [
-                  FilteringTextInputFormatter.digitsOnly,
+                  FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,2}')),
                 ],
               ),
             ),
@@ -344,14 +410,14 @@ class _AddHousePageState extends State<AddHousePage> {
                 onChanged: (value) {
                   setState(() {
                     validateDeposit(double.parse(value));
-                    _validateForm();
+                    _validateForm1();
                   });
                 },
                 style: TextStyle(
                   color: Colors.black,
                 ),
                 inputFormatters: [
-                  FilteringTextInputFormatter.digitsOnly,
+                  FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,2}')),
                 ],
               ),
             ),
@@ -387,7 +453,7 @@ class _AddHousePageState extends State<AddHousePage> {
                   setState(() {
                     _initialDate = DateTime.parse(value);
                     validateDate(_initialDate);
-                    _validateForm();
+                    _validateForm1();
                   });
                 },
               ),
@@ -416,7 +482,7 @@ class _AddHousePageState extends State<AddHousePage> {
                     setState(() {
                       selectedContainer = index;
                       validateTipo(containerNames[index]);
-                      _validateForm();
+                      _validateForm1();
                     });
                   },
                   child: Container(
@@ -540,10 +606,11 @@ class _AddHousePageState extends State<AddHousePage> {
             ElevatedButton(
               onPressed: isFormValid ? () => goToNextStep() : null,
               style: ElevatedButton.styleFrom(
-                primary: isFormValid ? Colors.teal : Colors.grey,
+                backgroundColor: isFormValid ? Colors.teal : Colors.grey,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
+                //minimumSize: Size(300, 60),
               ),
               child: Text('Continua'),
             )
@@ -556,97 +623,249 @@ class _AddHousePageState extends State<AddHousePage> {
         title: Text('Etapa 2'),
         content: Column(
           children: [
-            TextFormField(
-              controller: _roomsController,
-              decoration: InputDecoration(
-                border: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.grey.shade300),
-                  borderRadius: BorderRadius.circular(12),
+            Container(
+              width: 325,
+              child: TextFormField(
+                controller: _roomsController,
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.grey.shade300),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  filled: true,
+                  fillColor: Colors.white,
+                  labelText: 'Nombre d\'habitacions',
+                  labelStyle: TextStyle(
+                    color: Colors.grey,
+                  ),
+                  floatingLabelBehavior: FloatingLabelBehavior.always,
                 ),
-                filled: true,
-                fillColor: Colors.white,
-                labelText: 'Nombre d\'habitacions',
-                labelStyle: TextStyle(
-                  color: Colors.grey,
+                onChanged: (value) {
+                  setState(() {
+                    validateRooms(int.parse(value));
+                    _validateForm2();
+                  });
+                },
+                style: TextStyle(
+                  color: Colors.black,
                 ),
-                floatingLabelBehavior: FloatingLabelBehavior.always,
+                inputFormatters: [
+                  FilteringTextInputFormatter.digitsOnly,
+                ],
               ),
-              onChanged: (value) {
-                setState(() {});
-              },
-              style: TextStyle(
-                color: Colors.black,
+            ),
+            const SizedBox(height: 30),
+            Container(
+              width: 325,
+              child: TextFormField(
+                controller: _bathroomsController,
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.grey.shade300),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  filled: true,
+                  fillColor: Colors.white,
+                  labelText: 'Nombre de banys',
+                  labelStyle: TextStyle(
+                    color: Colors.grey,
+                  ),
+                  floatingLabelBehavior: FloatingLabelBehavior.always,
+                ),
+                onChanged: (value) {
+                  setState(() {
+                    validateBathrooms(int.parse(value));
+                    _validateForm2();
+                  });
+                },
+                style: TextStyle(
+                  color: Colors.black,
+                ),
+                inputFormatters: [
+                  FilteringTextInputFormatter.digitsOnly,
+                ],
               ),
-              inputFormatters: [
-                FilteringTextInputFormatter.digitsOnly,
+            ),
+            SizedBox(height: 30),
+            Container(
+              width: 325,
+              child: TextFormField(
+                controller: _dimensionsController,
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.grey.shade300),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  filled: true,
+                  fillColor: Colors.white,
+                  labelText: 'Dimensions (m\u00B2)',
+                  labelStyle: TextStyle(
+                    color: Colors.grey,
+                  ),
+                  floatingLabelBehavior: FloatingLabelBehavior.always,
+                ),
+                onChanged: (value) {
+                  setState(() {
+                    validateDimensions(double.parse(value));
+                    _validateForm2();
+                  });
+                },
+                style: TextStyle(
+                  color: Colors.black,
+                ),
+                inputFormatters: [
+                  FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,2}')),
+                ],
+              ),
+            ),
+            const SizedBox(height: 30),
+            Row(
+              children: [
+                Align(
+                  alignment: Alignment.topLeft,
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 10),
+                    child: Text(
+                      'Mascotes Permeses',
+                      style: GoogleFonts.dmSans(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w200,
+                          color: Colors.grey),
+                    ),
+                  ),
+                ),
+                SizedBox(width: 10),
+                GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      petPolicy = true;
+                      _petpolicyController.text = 'Sí';
+                      validatePet(petPolicy);
+                      _validateForm2();
+                    });
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 30),
+                    child: Container(
+                      width: 60,
+                      height: 40,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(20),
+                        color: petPolicy == true
+                            ? Colors.teal
+                            : Colors.transparent,
+                        border: Border.all(
+                          color: petPolicy == true ? Colors.teal : Colors.grey,
+                        ),
+                      ),
+                      child: Center(
+                        child: Text(
+                          'Sí',
+                          style: TextStyle(
+                            color:
+                                petPolicy == true ? Colors.white : Colors.black,
+                            fontSize: 16,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                SizedBox(width: 10),
+                GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      petPolicy = false;
+                    });
+                  },
+                  child: Container(
+                    width: 60,
+                    height: 40,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(20),
+                      color:
+                          petPolicy == false ? Colors.teal : Colors.transparent,
+                      border: Border.all(
+                        color: petPolicy == false ? Colors.teal : Colors.grey,
+                      ),
+                    ),
+                    child: Center(
+                      child: Text(
+                        'No',
+                        style: TextStyle(
+                          color:
+                              petPolicy == false ? Colors.white : Colors.black,
+                          fontSize: 16,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
               ],
+            ),
+            SizedBox(height: 30),
+            Align(
+              alignment: Alignment.topLeft,
+              child: Padding(
+                padding: const EdgeInsets.only(left: 10),
+                child: Text(
+                  'Característiques',
+                  style: GoogleFonts.dmSans(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w200,
+                      color: Colors.grey),
+                ),
+              ),
             ),
             SizedBox(height: 16),
-            TextFormField(
-              controller: _bathroomsController,
-              decoration: InputDecoration(
-                border: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.grey.shade300),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                filled: true,
-                fillColor: Colors.white,
-                labelText: 'Nombre de banys',
-                labelStyle: TextStyle(
-                  color: Colors.grey,
-                ),
-                floatingLabelBehavior: FloatingLabelBehavior.always,
-              ),
-              onChanged: (value) {
-                setState(() {});
-              },
-              style: TextStyle(
-                color: Colors.black,
-              ),
-              inputFormatters: [
-                FilteringTextInputFormatter.digitsOnly,
-              ],
+            Wrap(
+              spacing: 8,
+              runSpacing: 12,
+              children: List.generate(4, (index) {
+                return GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      featuredContainers[index] = !featuredContainers[index];
+                      validateFeature(featureNames[index]);
+                      _validateForm2();
+                    });
+                  },
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: featuredContainers[index]
+                          ? Colors.teal
+                          : Colors.white,
+                      borderRadius: BorderRadius.circular(30),
+                      border: Border.all(color: Colors.grey.shade300),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 12, horizontal: 16),
+                      child: Text(
+                        featureNames[index],
+                        style: GoogleFonts.dmSans(
+                          color: featuredContainers[index]
+                              ? Colors.white
+                              : Colors.black,
+                        ),
+                      ),
+                    ),
+                  ),
+                );
+              }),
             ),
             SizedBox(height: 16),
-            TextFormField(
-              controller: _typeController,
-              decoration: const InputDecoration(
-                labelText: 'Type',
-              ),
-            ),
-            DropdownButtonFormField<bool>(
-              value: petPolicy,
-              decoration: const InputDecoration(
-                labelText: 'Pet Policy',
-              ),
-              items: [
-                DropdownMenuItem<bool>(
-                  value: true,
-                  child: const Text('Yes'),
+            ElevatedButton(
+              onPressed: isForm2Valid ? () => goToNextStep() : null,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: isForm2Valid ? Colors.teal : Colors.grey,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
                 ),
-                DropdownMenuItem<bool>(
-                  value: false,
-                  child: const Text('No'),
-                ),
-              ],
-              onChanged: (bool? value) {
-                setState(() {
-                  petPolicy = value ?? false;
-                });
-              },
-            ),
-            TextFormField(
-              controller: _dimensionsController,
-              decoration: const InputDecoration(
-                labelText: 'Dimensions',
+                //  minimumSize: Size(300, 60),
               ),
-            ),
-            TextFormField(
-              controller: _conditionController,
-              decoration: const InputDecoration(
-                labelText: 'Condition',
-              ),
-            ),
+              child: Text('Continua'),
+            )
           ],
         ),
         isActive: _currentStep >= 1,
@@ -771,6 +990,18 @@ class _AddHousePageState extends State<AddHousePage> {
                 ),
               ],
             ),
+            SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: isForm2Valid ? () => goToNextStep() : null,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: isForm2Valid ? Colors.teal : Colors.grey,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                //  minimumSize: Size(300, 60),
+              ),
+              child: Text('Continua'),
+            )
           ],
         ),
         isActive: _currentStep >= 2,
