@@ -28,6 +28,13 @@
 	<string>Example usage description</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Example usage description</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Getting Adress from LatLong Marker</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>Getting Adress from LatLong Marker</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>Getting Adress from LatLong Marker</string>
+
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>

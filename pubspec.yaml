@@ -61,6 +61,9 @@ dependencies:
   firebase_storage: ^11.2.1
   images_picker: ^1.2.11
   flutter_date_pickers: ^0.4.2
+  flutter_typeahead: ^4.6.0
+  geocoding: ^2.1.0
+
   
 flutter_icons:
   image_path: "lib/images/icon.png"

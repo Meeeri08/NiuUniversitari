@@ -4,12 +4,15 @@ import 'dart:math';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:flutter_xlider/flutter_xlider.dart';
+import 'package:geocoding/geocoding.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:jobapp/components/zone_data.dart';
 
 class AddHousePage extends StatefulWidget {
   @override
@@ -23,30 +26,35 @@ class _AddHousePageState extends State<AddHousePage> {
   final TextEditingController _priceController = TextEditingController();
   final TextEditingController _typeController = TextEditingController();
   final TextEditingController _dimensionsController = TextEditingController();
-  final TextEditingController _characteristicsController =
-      TextEditingController();
   final TextEditingController _zoneController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
   final TextEditingController _depositController = TextEditingController();
   final TextEditingController _petpolicyController = TextEditingController();
 
+  bool isFeatured = false;
+
+  bool isFormValid = false;
   bool isPriceValid = false;
   bool isDepositValid = false;
   bool isTipoSelected = false;
-  bool isFeatureSelected = false;
-  bool isPetSelected = false;
-
   bool isDateValid = false;
 
-  bool isFormValid = false;
   bool isForm2Valid = false;
-
   bool isRoomsValid = false;
-
   bool isBathroomsValid = false;
   bool isDimensionsValid = false;
+  bool isPetSelected = false;
+  bool isFeatureSelected = false;
 
-  bool isFeatured = false;
+  bool isForm3Valid = false;
+  bool isTitleValid = false;
+  bool isZoneValid = false;
+  bool isDescriptionValid = false;
+  bool isLocalizationValid = false;
+  List<File> _selectedImages = [];
+  bool areImagesSelected = false;
+
+  String _selectedAddress = '';
 
   void _validateForm1() {
     setState(() {
@@ -69,6 +77,22 @@ class _AddHousePageState extends State<AddHousePage> {
           isDimensionsValid &&
           isFeatureSelected &&
           isPetSelected;
+    });
+  }
+
+  void _validateForm3() {
+    setState(() {
+      isTitleValid = _titleController.text.isNotEmpty;
+      isZoneValid = _zoneController.text.isNotEmpty;
+      isDescriptionValid = _descriptionController.text.isNotEmpty;
+      isLocalizationValid = _selectedAddress.isNotEmpty;
+      areImagesSelected = _selectedImages.isNotEmpty;
+
+      isForm3Valid = isTitleValid &&
+          isZoneValid &&
+          isDescriptionValid &&
+          isLocalizationValid &&
+          areImagesSelected;
     });
   }
 
@@ -186,12 +210,12 @@ class _AddHousePageState extends State<AddHousePage> {
     selectedContainer = -1;
     _validateForm1();
     _validateForm2();
+    _validateForm3();
     _petpolicyController.text = petPolicy ? 'Yes' : 'No';
   }
 
   bool petPolicy = false;
 
-  List<File> _selectedImages = [];
   List<String> selectedFeatures = [];
 
   DateTime? _initialDate;
@@ -211,6 +235,7 @@ class _AddHousePageState extends State<AddHousePage> {
     if (images != null) {
       setState(() {
         _selectedImages = images.map((image) => File(image.path)).toList();
+        _validateForm3();
       });
     }
   }
@@ -288,9 +313,20 @@ class _AddHousePageState extends State<AddHousePage> {
     );
 
     if (selectedLocation != null) {
-      setState(() {
-        _selectedLocation = selectedLocation;
-      });
+      final List<Placemark> placemarks = await placemarkFromCoordinates(
+        selectedLocation.latitude,
+        selectedLocation.longitude,
+      );
+
+      if (placemarks.isNotEmpty) {
+        final Placemark placemark = placemarks.first;
+        final String address = placemark.street ?? placemark.name ?? '';
+        setState(() {
+          _selectedLocation = selectedLocation;
+          _selectedAddress = address;
+          _validateForm3();
+        });
+      }
     }
   }
 
@@ -641,7 +677,11 @@ class _AddHousePageState extends State<AddHousePage> {
                 ),
                 onChanged: (value) {
                   setState(() {
-                    validateRooms(int.parse(value));
+                    if (value.isNotEmpty) {
+                      validateRooms(int.parse(value));
+                    } else {
+                      validateRooms(0);
+                    }
                     _validateForm2();
                   });
                 },
@@ -673,7 +713,11 @@ class _AddHousePageState extends State<AddHousePage> {
                 ),
                 onChanged: (value) {
                   setState(() {
-                    validateBathrooms(int.parse(value));
+                    if (value.isNotEmpty) {
+                      validateBathrooms(int.parse(value));
+                    } else {
+                      validateBathrooms(0);
+                    }
                     _validateForm2();
                   });
                 },
@@ -690,16 +734,33 @@ class _AddHousePageState extends State<AddHousePage> {
               width: 325,
               child: TextFormField(
                 controller: _dimensionsController,
-                keyboardType: TextInputType.numberWithOptions(
-                    decimal: true), // Enable decimal input
-                decoration: const InputDecoration(
+                keyboardType: TextInputType.numberWithOptions(decimal: true),
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.grey.shade300),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  filled: true,
+                  fillColor: Colors.white,
                   labelText: 'Dimensions',
+                  labelStyle: TextStyle(
+                    color: Colors.grey,
+                  ),
+                  floatingLabelBehavior: FloatingLabelBehavior.always,
                 ),
                 onChanged: (value) {
                   setState(() {
-                    dimensions = double.tryParse(value) ?? 0.0;
+                    if (value.isNotEmpty) {
+                      dimensions = double.tryParse(value) ?? 0.0;
+                    } else {
+                      validateDimensions(0);
+                    }
+                    _validateForm2();
                   });
                 },
+                style: TextStyle(
+                  color: Colors.black,
+                ),
               ),
             ),
             const SizedBox(height: 30),
@@ -867,6 +928,7 @@ class _AddHousePageState extends State<AddHousePage> {
               ),
               child: TextFormField(
                 controller: _titleController,
+                maxLength: 30,
                 decoration: InputDecoration(
                   border: OutlineInputBorder(
                     borderSide: BorderSide(color: Colors.grey.shade300),
@@ -879,43 +941,126 @@ class _AddHousePageState extends State<AddHousePage> {
                     color: Colors.grey,
                   ),
                   floatingLabelBehavior: FloatingLabelBehavior.always,
+                  counterText: '',
                 ),
                 onChanged: (value) {
-                  setState(() {});
+                  setState(() {
+                    _validateForm3();
+                  });
                 },
                 style: TextStyle(
                   color: Colors.black,
                 ),
               ),
             ),
-            TextFormField(
-              controller: _zoneController,
-              decoration: const InputDecoration(
-                labelText: 'Zone',
+            SizedBox(height: 30),
+            Container(
+              width: 325,
+              decoration: BoxDecoration(
+                color: Color(0xFFF5F5F5),
+                borderRadius: BorderRadius.circular(12),
               ),
-              onChanged: (value) {
-                setState(() {
-                  zone = value;
-                });
-              },
-            ),
-            ElevatedButton(
-              onPressed: _selectLocation,
-              child: const Text('Select Location'),
-            ),
-            if (_selectedLocation != null)
-              Text(
-                  'Selected Location: ${_selectedLocation!.latitude}, ${_selectedLocation!.longitude}'),
-            TextFormField(
-              controller: _descriptionController,
-              decoration: const InputDecoration(
-                labelText: 'Description',
+              child: TypeAheadFormField(
+                textFieldConfiguration: TextFieldConfiguration(
+                  controller: _zoneController,
+                  maxLength: 30,
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.grey.shade300),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    filled: true,
+                    fillColor: Colors.white,
+                    labelText: 'Barri',
+                    labelStyle: TextStyle(
+                      color: Colors.grey,
+                    ),
+                    floatingLabelBehavior: FloatingLabelBehavior.always,
+                    counterText: '',
+                  ),
+                ),
+                suggestionsCallback: (pattern) async {
+                  return zoneList.where((zone) =>
+                      zone.toLowerCase().contains(pattern.toLowerCase()));
+                },
+                itemBuilder: (context, suggestion) {
+                  return ListTile(
+                    title: Text(suggestion),
+                  );
+                },
+                onSuggestionSelected: (suggestion) {
+                  setState(() {
+                    _zoneController.text = suggestion;
+                    _validateForm3();
+                  });
+                },
               ),
-              onChanged: (value) {
-                setState(() {
-                  description = value;
-                });
-              },
+            ),
+            SizedBox(height: 30),
+            Container(
+              width: 325,
+              decoration: BoxDecoration(
+                color: Color(0xFFF5F5F5),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: TextFormField(
+                controller: _descriptionController,
+                maxLength: 1000,
+                maxLines: 5,
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.grey.shade300),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  filled: true,
+                  fillColor: Colors.white,
+                  labelText: 'Descripció',
+                  labelStyle: TextStyle(
+                    color: Colors.grey,
+                  ),
+                  floatingLabelBehavior: FloatingLabelBehavior.always,
+                  counterText: '',
+                ),
+                onChanged: (value) {
+                  setState(() {
+                    description = value;
+                    _validateForm3();
+                  });
+                },
+                style: TextStyle(
+                  color: Colors.black,
+                ),
+              ),
+            ),
+            SizedBox(height: 30),
+            Container(
+              width: 325,
+              decoration: BoxDecoration(
+                color: Color(0xFFF5F5F5),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: TextFormField(
+                readOnly: true,
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.grey.shade300),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  filled: true,
+                  fillColor: Colors.white,
+                  labelText: 'Ubicació',
+                  labelStyle: TextStyle(
+                    color: Colors.grey,
+                  ),
+                  floatingLabelBehavior: FloatingLabelBehavior.always,
+                ),
+                onTap: _selectLocation,
+                controller: TextEditingController(
+                    text: _selectedAddress), // Add this line
+                style: TextStyle(
+                  color: Colors.black,
+                ),
+              ),
             ),
             Align(
               alignment: Alignment.topLeft,
@@ -986,16 +1131,16 @@ class _AddHousePageState extends State<AddHousePage> {
             ),
             SizedBox(height: 16),
             ElevatedButton(
-              onPressed: isForm2Valid ? () => goToNextStep() : null,
+              onPressed: isForm3Valid ? () => goToNextStep() : null,
               style: ElevatedButton.styleFrom(
-                backgroundColor: isForm2Valid ? Colors.teal : Colors.grey,
+                backgroundColor: isForm3Valid ? Colors.teal : Colors.grey,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
                 //  minimumSize: Size(300, 60),
               ),
               child: Text('Continua'),
-            )
+            ),
           ],
         ),
         isActive: _currentStep >= 2,
@@ -1067,15 +1212,6 @@ class _AddHousePageState extends State<AddHousePage> {
                 _currentStep += 1;
               } else {
                 _addHouseToFirebase();
-              }
-            });
-          },
-          onStepCancel: () {
-            setState(() {
-              if (_currentStep > 0) {
-                _currentStep -= 1;
-              } else {
-                _currentStep = 0;
               }
             });
           },
