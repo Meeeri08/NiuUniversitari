@@ -191,29 +191,24 @@ class _ProfileState extends State<Profile> {
                 ],
               ),
               const SizedBox(height: 24),
-              GestureDetector(
-                onTap: () {
-                  // Navegar a la pantalla de edición y pasar los datos del campo
-                },
-                child: TextField(
-                  controller: nameController,
-                  decoration: InputDecoration(
-                    border: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.grey.shade300),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    filled: true,
-                    fillColor: Colors.white,
-                    labelText: 'Nom',
-                    labelStyle: TextStyle(
-                      color: Colors.grey,
-                    ),
-                    contentPadding: EdgeInsets.all(10),
-                    floatingLabelBehavior: FloatingLabelBehavior.always,
+              TextField(
+                controller: nameController,
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.grey.shade300),
+                    borderRadius: BorderRadius.circular(12),
                   ),
-                  style: TextStyle(
-                    color: Colors.black,
+                  filled: true,
+                  fillColor: Colors.white,
+                  labelText: 'Nom',
+                  labelStyle: TextStyle(
+                    color: Colors.grey,
                   ),
+                  contentPadding: EdgeInsets.all(10),
+                  floatingLabelBehavior: FloatingLabelBehavior.always,
+                ),
+                style: TextStyle(
+                  color: Colors.black,
                 ),
               ),
               const SizedBox(height: 24),

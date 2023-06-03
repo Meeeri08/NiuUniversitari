@@ -1,17 +1,16 @@
-import 'dart:convert';
+import 'dart:developer';
 
+import 'package:appinio_swiper/appinio_swiper.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:appinio_swiper/appinio_swiper.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/scheduler.dart';
+import 'package:google_fonts/google_fonts.dart';
+
 import 'package:jobapp/pages/profile_page.dart';
-import 'dart:developer';
 
 import '../components/tinder_buttons.dart';
 import '../components/tinder_candidate_model.dart';
-import '../components/tinder_card.dart';
 
 class Tinder extends StatefulWidget {
   const Tinder({
@@ -128,20 +127,7 @@ class _TinderPageState extends State<Tinder> {
           );
         },
       );
-    } else {
-      // Check if the "swipes" document exists for the current user
-      // DocumentSnapshot swipeSnapshot = await FirebaseFirestore.instance
-      //     .collection('swipes')
-      //     .doc(currentUserId)
-      //     .get();
-      // if (!swipeSnapshot.exists) {
-      //   // If the "swipes" document doesn't exist, create it
-      //   await FirebaseFirestore.instance
-      //       .collection('swipes')
-      //       .doc(currentUserId)
-      //       .set({});
-      // }
-    }
+    } else {}
   }
 
   void handleSwipe(int index, AppinioSwiperDirection direction) async {
@@ -152,13 +138,6 @@ class _TinderPageState extends State<Tinder> {
     if (index >= 0 && index < userList.length) {
       String directionString =
           direction == AppinioSwiperDirection.left ? 'left' : 'right';
-
-      // Print debug information
-      print('UserList length: ${userList.length}');
-      print('Current index: $index');
-      print('Current user ID: $currentUserId');
-      print('Direction: $directionString');
-      print('Profile ID: $profileId');
 
       // Get the current user's document
       DocumentReference userDoc = swipeDataCollection.doc(profileId);
@@ -214,15 +193,6 @@ class _TinderPageState extends State<Tinder> {
   }
 
   Future<void> handleOnEnd() async {
-    // final currentUserId = FirebaseAuth.instance.currentUser!.uid;
-    // DocumentReference userDoc = swipeDataCollection.doc(currentUserId);
-
-    // // Clear all swipe data for the current user
-    // await userDoc.update({'swipeData': []});
-
-    // setState(() {
-    //   currentIndex = 0;
-    // });
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -278,7 +248,7 @@ class _TinderPageState extends State<Tinder> {
           const SizedBox(
             height: 150,
           ),
-          userList.isEmpty
+          userList.length == 0
               ? const Center(
                   child: CircularProgressIndicator(),
                 )
@@ -343,23 +313,45 @@ class _TinderPageState extends State<Tinder> {
                     onEnd: handleOnEnd,
                     cardsCount: userList.length - 1,
                     cardsBuilder: (BuildContext context, int index) {
-                      //final int visibleIndex = index % (visibleCardsCount + 1);
-                      // final bool isSwipedCard = visibleIndex == 0;
-
                       return Card(
                         child: Column(
                           children: [
-                            // if (index >= 0 && index < userList.length)
                             AspectRatio(
                               aspectRatio: 4 / 3,
                               child: Image.network(
                                 userList[index].get('imageUrl'),
                               ),
                             ),
-
-                            // if (index >= 0 && index < userList.length)
-                            Text(
-                              userList[index].get('name'),
+                            Padding(
+                              padding: const EdgeInsets.only(left: 10.0),
+                              child: Row(
+                                children: [
+                                  Text(
+                                    userList[index].get('name'),
+                                    style: GoogleFonts.dmSans(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.w200,
+                                    ),
+                                  ),
+                                  Text(
+                                    ',',
+                                    style: GoogleFonts.dmSans(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.w200,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.all(10.0),
+                              child: Text(
+                                userList[index].get('bio'),
+                                style: GoogleFonts.dmSans(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w200,
+                                ),
+                              ),
                             ),
                           ],
                         ),
@@ -459,84 +451,7 @@ class _TinderPageState extends State<Tinder> {
     }
   }
 
-  // void _swipe(int index, AppinioSwiperDirection direction) {
-  //   int swipedIndex = index % cards.length;
-  //   if (swipedIndex >= 0 && swipedIndex < cards.length) {
-  //     String currentUserId = FirebaseAuth.instance.currentUser!.uid;
-  //     String swipedProfileId = cards[swipedIndex].id;
-  //     String swipeDirection = direction.name;
-
-  //     // Create a Map to represent the swipe data
-  //     Map<String, dynamic> swipeData = {
-  //       'profileId': swipedProfileId,
-  //       'direction': swipeDirection,
-  //       'timestamp': DateTime.now(),
-  //     };
-
-  //     // Store the swiped profile ID and direction in Firebase
-  //     FirebaseFirestore.instance.collection('swipes').doc(currentUserId).set({
-  //       'swipedProfiles': FieldValue.arrayUnion([swipeData])
-  //     }, SetOptions(merge: true)).then((_) {
-  //       log('Swiped profile stored in Firebase: $swipedProfileId ($swipeDirection)');
-
-  //       // Add the swipe data to the swipeDataList
-  //       setState(() {
-  //         swipeDataList.add(swipeData);
-  //         visibleCardsCount = cards.length - swipeDataList.length;
-  //       });
-  //     }).catchError((error) {
-  //       log('Failed to store swiped profile in Firebase: $error');
-  //     });
-
-  //     log('The card was swiped to: $swipeDirection');
-  //   } else {
-  //     log('Invalid index value: $index');
-  //   }
-  // }
-
   void _unswipe(bool unswiped) async {
-    // if (unswiped && cards.isNotEmpty && swipeDataList.isNotEmpty) {
-    //   String currentUserId = FirebaseAuth.instance.currentUser!.uid;
-
-    //   // Get the most recent swiped profile ID
-    //   Map<String, dynamic> lastSwipeData = swipeDataList.last;
-    //   String swipedProfileId = lastSwipeData['profileId'] as String;
-
-    //   // Remove the swiped profile record from Firebase
-    //   FirebaseFirestore.instance
-    //       .collection('swipes')
-    //       .doc(currentUserId)
-    //       .update({
-    //     'swipedProfiles': FieldValue.arrayRemove([lastSwipeData])
-    //   }).then((_) {
-    //     log('Swiped profile removed from Firebase: $swipedProfileId');
-
-    //     // Remove the swiped profile from the swipeDataList
-    //     setState(() {
-    //       swipeDataList.removeLast();
-    //       visibleCardsCount = cards.length - swipeDataList.length;
-    //     });
-
-    //     // Retrieve the corresponding swiped card from the swipedCards list
-    //     TinderCandidateModel swipedCard = swipedCards.last;
-
-    //     // Add the unswiped card back to the cards list
-    //     setState(() {
-    //       cards.add(swipedCard);
-    //     });
-
-    //     log("SUCCESS: Card was unswiped");
-
-    //     // Remove the swiped card from the swipedCards list
-    //     setState(() {
-    //       swipedCards.removeLast();
-    //     });
-    //   }).catchError((error) {
-    //     log('Failed to remove swiped profile from Firebase: $error');
-    //   });
-    // } else {
-    //   log("FAIL: No card left to unswipe");
-    // }
     DocumentSnapshot currentUser = userList[currentIndex];
     await usersCollection.doc(currentUser.id).update({
       'direction': 'left',
