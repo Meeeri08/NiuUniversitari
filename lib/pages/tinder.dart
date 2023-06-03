@@ -46,7 +46,11 @@ class _TinderPageState extends State<Tinder> {
   // testing
 
   Future<void> loadUsers() async {
-    QuerySnapshot querySnapshot = await usersCollection.get();
+    String currentUserId = FirebaseAuth.instance.currentUser!.uid;
+    QuerySnapshot querySnapshot = await usersCollection
+        .where(FieldPath.documentId, isNotEqualTo: currentUserId)
+        .get();
+
     setState(() {
       userList = querySnapshot.docs;
     });
