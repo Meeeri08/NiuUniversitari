@@ -34,19 +34,12 @@ class _TinderPageState extends State<Tinder> {
   List<Map<String, dynamic>> swipedUsers = [];
   int currentIndex = 0;
 
-  // to hold users
   List<TinderCandidateModel> userProfiles = [];
-  // int currentIndex = 0; // index of the current card to be displayed
 
   @override
   void initState() {
     _checkUserProfile();
-    // _loadCards();
-    //fetchUsers();
-
-    // testing
     loadUsers();
-
     super.initState();
   }
 
@@ -147,7 +140,6 @@ class _TinderPageState extends State<Tinder> {
     }
   }
 
-  // // for handling swip
   void handleSwipe(int index, AppinioSwiperDirection direction) async {
     DocumentSnapshot currentUser = userList[index];
     final currentUserId = FirebaseAuth.instance.currentUser!.uid;

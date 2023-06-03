@@ -53,6 +53,8 @@ class _ProfileState extends State<Profile> {
         surnameController.text = userData?['surname'] ?? '';
         bioController.text = userData?['bio'] ?? '';
         imageUrl = userData?['imageUrl'] ?? '';
+        selectedRole = userData?['role'] ?? '';
+
         if (imageUrl != null && imageUrl!.isNotEmpty) {
           _loadImage(imageUrl!);
         }
@@ -112,7 +114,7 @@ class _ProfileState extends State<Profile> {
     String name = nameController.text;
     String surname = surnameController.text;
     String bio = bioController.text;
-    String role = roleController.text;
+    String role = selectedRole ?? '';
 
     // Retain the existing email and id values
     userData!['email'] ??= '';
@@ -173,7 +175,7 @@ class _ProfileState extends State<Profile> {
                       backgroundImage: profileImageProvider,
                     )
                   else
-                    CircleAvatar(
+                    const CircleAvatar(
                       backgroundColor: Colors.transparent,
                       radius: 64,
                       backgroundImage: AssetImage('assets/default.png'),
@@ -195,41 +197,77 @@ class _ProfileState extends State<Profile> {
                 },
                 child: TextField(
                   controller: nameController,
-                  decoration: const InputDecoration(
-                    hintText: 'Enter Name',
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.grey.shade300),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    filled: true,
+                    fillColor: Colors.white,
+                    labelText: 'Nom',
+                    labelStyle: TextStyle(
+                      color: Colors.grey,
+                    ),
                     contentPadding: EdgeInsets.all(10),
-                    border: OutlineInputBorder(),
+                    floatingLabelBehavior: FloatingLabelBehavior.always,
+                  ),
+                  style: TextStyle(
+                    color: Colors.black,
                   ),
                 ),
               ),
               const SizedBox(height: 24),
               TextField(
                 controller: surnameController,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.grey.shade300),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  filled: true,
+                  fillColor: Colors.white,
                   hintText: 'Enter Surname',
+                  hintStyle: TextStyle(
+                    color: Colors.grey,
+                  ),
                   contentPadding: EdgeInsets.all(10),
-                  border: OutlineInputBorder(),
+                ),
+                style: TextStyle(
+                  color: Colors.black,
                 ),
               ),
               const SizedBox(height: 24),
               TextField(
                 controller: bioController,
-                decoration: const InputDecoration(
+                maxLines: 4,
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.grey.shade300),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  filled: true,
+                  fillColor: Colors.white,
                   hintText: 'Enter Bio',
-                  contentPadding: EdgeInsets.all(10),
-                  border: OutlineInputBorder(),
+                  hintStyle: TextStyle(
+                    color: Colors.grey,
+                  ),
+                  contentPadding:
+                      EdgeInsets.symmetric(vertical: 16, horizontal: 10),
+                ),
+                style: TextStyle(
+                  color: Colors.black,
                 ),
               ),
               const SizedBox(height: 24),
               const SizedBox(height: 24),
-              Text(
+              const Text(
                 'Choose your role',
                 style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w200,
                     color: Colors.grey),
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -261,7 +299,7 @@ class _ProfileState extends State<Profile> {
                       ),
                     ),
                   ),
-                  SizedBox(width: 16),
+                  const SizedBox(width: 16),
                   GestureDetector(
                     onTap: () {
                       setState(() {
@@ -295,10 +333,12 @@ class _ProfileState extends State<Profile> {
               const SizedBox(height: 24),
               ElevatedButton(
                 onPressed: () {
-                  saveProfile();
-                  Navigator.of(context).pushReplacement(
-                    MaterialPageRoute(builder: (context) => HomePage()),
-                  );
+                  if (mounted) {
+                    saveProfile();
+                    Navigator.of(context).pushReplacement(
+                      MaterialPageRoute(builder: (context) => const HomePage()),
+                    );
+                  }
                 },
                 child: const Text('Save Profile'),
               ),

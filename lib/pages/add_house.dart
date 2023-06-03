@@ -638,17 +638,20 @@ class _AddHousePageState extends State<AddHousePage> {
               ),
             ),
             SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: isFormValid ? () => goToNextStep() : null,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: isFormValid ? Colors.teal : Colors.grey,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
+            Container(
+              width: 300, // Adjust the width as needed
+              height: 60, // Adjust the height as needed
+              child: ElevatedButton(
+                onPressed: isFormValid ? () => goToNextStep() : null,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: isFormValid ? Colors.teal : Colors.grey,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                 ),
-                //minimumSize: Size(300, 60),
+                child: Text('Continua'),
               ),
-              child: Text('Continua'),
-            )
+            ),
           ],
         ),
         isActive: _currentStep >= 0,
@@ -900,16 +903,20 @@ class _AddHousePageState extends State<AddHousePage> {
               }),
             ),
             SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: isForm2Valid ? () => goToNextStep() : null,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: isForm2Valid ? Colors.teal : Colors.grey,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
+            Container(
+              width: 300,
+              height: 60,
+              child: ElevatedButton(
+                onPressed: isForm2Valid ? () => goToNextStep() : null,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: isForm2Valid ? Colors.teal : Colors.grey,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  //  minimumSize: Size(300, 60),
                 ),
-                //  minimumSize: Size(300, 60),
+                child: Text('Continua'),
               ),
-              child: Text('Continua'),
             )
           ],
         ),
@@ -1130,16 +1137,19 @@ class _AddHousePageState extends State<AddHousePage> {
               ],
             ),
             SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: isForm3Valid ? () => goToNextStep() : null,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: isForm3Valid ? Colors.teal : Colors.grey,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
+            Container(
+              width: 300,
+              height: 60,
+              child: ElevatedButton(
+                onPressed: isForm3Valid ? () => goToNextStep() : null,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: isForm3Valid ? Colors.teal : Colors.grey,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                 ),
-                //  minimumSize: Size(300, 60),
+                child: Text('Continua'),
               ),
-              child: Text('Continua'),
             ),
           ],
         ),
