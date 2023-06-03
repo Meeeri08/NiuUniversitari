@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
+import 'package:jobapp/pages/home_page.dart';
 
 import '../utils/utils.dart';
 
@@ -21,6 +22,7 @@ class _ProfileState extends State<Profile> {
   bool isLoadingImage = false;
   ImageProvider? profileImageProvider;
   bool _isDisposed = false;
+  String? selectedRole;
 
   @override
   void dispose() {
@@ -72,10 +74,12 @@ class _ProfileState extends State<Profile> {
         });
       }
     } else {
-      setState(() {
-        profileImageProvider = null;
-        isLoadingImage = false;
-      });
+      if (!_isDisposed && mounted) {
+        setState(() {
+          profileImageProvider = null;
+          isLoadingImage = false;
+        });
+      }
     }
   }
 
@@ -83,6 +87,8 @@ class _ProfileState extends State<Profile> {
   final TextEditingController nameController = TextEditingController();
   final TextEditingController surnameController = TextEditingController();
   final TextEditingController bioController = TextEditingController();
+  final TextEditingController roleController = TextEditingController();
+
   final user = FirebaseAuth.instance.currentUser;
 
   void selectImage() async {
@@ -106,16 +112,20 @@ class _ProfileState extends State<Profile> {
     String name = nameController.text;
     String surname = surnameController.text;
     String bio = bioController.text;
+    String role = roleController.text;
 
     // Retain the existing email and id values
     userData!['email'] ??= '';
     userData!['id'] ??= '';
 
     // Guardar los datos en Firestore
-    await FirebaseFirestore.instance
-        .collection('users')
-        .doc(userId)
-        .set({...userData!, 'name': name, 'surname': surname, 'bio': bio});
+    await FirebaseFirestore.instance.collection('users').doc(userId).set({
+      ...userData!,
+      'name': name,
+      'surname': surname,
+      'bio': bio,
+      'role': role
+    });
 
     // Guardar la imagen en Firebase Storage
     if (_image != null) {
@@ -146,17 +156,6 @@ class _ProfileState extends State<Profile> {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        leading: Padding(
-          padding: EdgeInsets.only(left: 15.0),
-          child: IconButton(
-            icon: Icon(Icons.arrow_back_ios),
-            iconSize: 22,
-            color: Color(0xff25262b),
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-          ),
-        ),
       ),
       body: Center(
         child: Container(
@@ -222,8 +221,85 @@ class _ProfileState extends State<Profile> {
                 ),
               ),
               const SizedBox(height: 24),
+              const SizedBox(height: 24),
+              Text(
+                'Choose your role',
+                style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w200,
+                    color: Colors.grey),
+              ),
+              SizedBox(height: 16),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        selectedRole = 'Estudiant';
+                      });
+                    },
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: selectedRole == 'Estudiant'
+                            ? Colors.teal
+                            : Colors.white,
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(color: Colors.grey.shade300),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 12, horizontal: 16),
+                        child: Text(
+                          'Estudiant',
+                          style: TextStyle(
+                            color: selectedRole == 'Estudiant'
+                                ? Colors.white
+                                : Colors.black,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  SizedBox(width: 16),
+                  GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        selectedRole = 'Propietari';
+                      });
+                    },
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: selectedRole == 'Propietari'
+                            ? Colors.teal
+                            : Colors.white,
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(color: Colors.grey.shade300),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 12, horizontal: 16),
+                        child: Text(
+                          'Propietari',
+                          style: TextStyle(
+                            color: selectedRole == 'Propietari'
+                                ? Colors.white
+                                : Colors.black,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 24),
               ElevatedButton(
-                onPressed: saveProfile,
+                onPressed: () {
+                  saveProfile();
+                  Navigator.of(context).pushReplacement(
+                    MaterialPageRoute(builder: (context) => HomePage()),
+                  );
+                },
                 child: const Text('Save Profile'),
               ),
             ],
