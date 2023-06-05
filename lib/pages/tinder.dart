@@ -6,6 +6,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:jobapp/pages/filtermatches_page.dart';
 
 import 'package:jobapp/pages/profile_page.dart';
 
@@ -245,180 +246,204 @@ class _TinderPageState extends State<Tinder> {
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
       backgroundColor: const Color(0xfffafafa),
-      child: Column(
+      child: Stack(
         children: [
-          const SizedBox(
-            height: 150,
-          ),
-          userList.length == 0
-              ? const Center(
-                  child: CircularProgressIndicator(),
-                )
-              : SizedBox(
-                  height: MediaQuery.of(context).size.height * 0.60,
-                  child: AppinioSwiper(
-                    swipeOptions: AppinioSwipeOptions.horizontal,
-                    unlimitedUnswipe: true,
-                    controller: controller,
-                    unswipe: (bool isSwiped) async {
-                      if (isSwiped) {
-                        if (currentIndex <= 0) {
-                          return;
-                        }
-                        final Map<String, dynamic> lastSwippedData =
-                            swipedUsers.last;
-                        await swipeDataCollection
-                            .doc(FirebaseAuth.instance.currentUser!.uid)
-                            .set({
-                          'profiles': FieldValue.arrayRemove([lastSwippedData]),
-                        }, SetOptions(merge: true));
-                        swipedUsers.removeLast();
-                        setState(() {
-                          currentIndex--;
-                        });
-                      } else {
-                        print('Error');
-                      }
-                    },
-                    onSwipe: (i, direction) async {
-                      if (currentIndex >= userList.length) {
-                        return;
-                      }
-                      String directionString =
-                          direction == AppinioSwiperDirection.left
-                              ? 'left'
-                              : 'right';
-                      final swappedData = {
-                        'profileId': userList[currentIndex]['id'],
-                        'direction': directionString.toString().split('.').last,
-                        'timestamp': DateTime.now()
-                      };
-                      swipedUsers.add(swappedData);
-
-                      await swipeDataCollection
-                          .doc(FirebaseAuth.instance.currentUser!.uid)
-                          .set({
-                        'profiles': FieldValue.arrayUnion(
-                          [swappedData],
-                        ),
-                      }, SetOptions(merge: true));
-                      setState(() {
-                        currentIndex++;
-                      });
-                    },
-                    padding: const EdgeInsets.only(
-                      left: 25,
-                      right: 25,
-                      top: 20,
-                      bottom: 40,
-                    ),
-                    onEnd: handleOnEnd,
-                    cardsCount: userList.length - 1,
-                    cardsBuilder: (BuildContext context, int index) {
-                      return Card(
-                        child: Column(
-                          children: [
-                            AspectRatio(
-                              aspectRatio: 4 / 3,
-                              child: Image.network(
-                                userList[index].get('imageUrl'),
-                                fit: BoxFit.cover,
-                              ),
-                            ),
-                            Padding(
-                              padding:
-                                  const EdgeInsets.only(left: 14.0, top: 10),
-                              child: Row(
-                                children: [
-                                  Text(
-                                    userList[index].get('name'),
-                                    style: GoogleFonts.dmSans(
-                                      fontSize: 22,
-                                      fontWeight: FontWeight.w200,
-                                    ),
-                                  ),
-                                  Text(
-                                    ', ',
-                                    style: GoogleFonts.dmSans(
-                                      fontSize: 22,
-                                      fontWeight: FontWeight.w200,
-                                    ),
-                                  ),
-                                  Text(
-                                    userList[index].get('age'),
-                                    style: GoogleFonts.dmSans(
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.w200,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.all(14.0),
-                              child: Container(
-                                alignment: Alignment.centerLeft,
-                                child: Text(
-                                  userList[index].get('degree'),
-                                  style: GoogleFonts.dmSans(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w200,
-                                  ),
-                                ),
-                              ),
-                            ),
-                            SizedBox(height: 10),
-                            Padding(
-                              padding:
-                                  const EdgeInsets.only(left: 10.0, right: 10),
-                              child: Wrap(
-                                spacing: 8.0,
-                                runSpacing: 8.0,
-                                children: userList[index]
-                                    .get('aficions')
-                                    .map<Widget>((aficion) {
-                                  return Container(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 8, vertical: 4),
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(20),
-                                      color: Colors.teal.withOpacity(0.2),
-                                    ),
-                                    child: Text(
-                                      aficion,
-                                      style: GoogleFonts.dmSans(
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.w200,
-                                        color: Colors.teal,
-                                      ),
-                                    ),
-                                  );
-                                }).toList(),
-                              ),
-                            ),
-                          ],
-                        ),
-                      );
-                    },
-                  ),
-                ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
+          Column(
             children: [
               const SizedBox(
-                width: 80,
+                height: 150,
               ),
-              swipeLeftButton(controller),
-              const SizedBox(
-                width: 20,
+              userList.length == 0
+                  ? const Center(
+                      child: CircularProgressIndicator(),
+                    )
+                  : SizedBox(
+                      height: MediaQuery.of(context).size.height * 0.60,
+                      child: AppinioSwiper(
+                        swipeOptions: AppinioSwipeOptions.horizontal,
+                        unlimitedUnswipe: true,
+                        controller: controller,
+                        unswipe: (bool isSwiped) async {
+                          if (isSwiped) {
+                            if (currentIndex <= 0) {
+                              return;
+                            }
+                            final Map<String, dynamic> lastSwippedData =
+                                swipedUsers.last;
+                            await swipeDataCollection
+                                .doc(FirebaseAuth.instance.currentUser!.uid)
+                                .set({
+                              'profiles':
+                                  FieldValue.arrayRemove([lastSwippedData]),
+                            }, SetOptions(merge: true));
+                            swipedUsers.removeLast();
+                            setState(() {
+                              currentIndex--;
+                            });
+                          } else {
+                            print('Error');
+                          }
+                        },
+                        onSwipe: (i, direction) async {
+                          if (currentIndex >= userList.length) {
+                            return;
+                          }
+                          String directionString =
+                              direction == AppinioSwiperDirection.left
+                                  ? 'left'
+                                  : 'right';
+                          final swappedData = {
+                            'profileId': userList[currentIndex]['id'],
+                            'direction':
+                                directionString.toString().split('.').last,
+                            'timestamp': DateTime.now()
+                          };
+                          swipedUsers.add(swappedData);
+
+                          await swipeDataCollection
+                              .doc(FirebaseAuth.instance.currentUser!.uid)
+                              .set({
+                            'profiles': FieldValue.arrayUnion(
+                              [swappedData],
+                            ),
+                          }, SetOptions(merge: true));
+                          setState(() {
+                            currentIndex++;
+                          });
+                        },
+                        padding: const EdgeInsets.only(
+                          left: 25,
+                          right: 25,
+                          top: 20,
+                          bottom: 40,
+                        ),
+                        onEnd: handleOnEnd,
+                        cardsCount: userList.length - 1,
+                        cardsBuilder: (BuildContext context, int index) {
+                          return Card(
+                            child: Column(
+                              children: [
+                                AspectRatio(
+                                  aspectRatio: 4 / 3,
+                                  child: Image.network(
+                                    userList[index].get('imageUrl'),
+                                    fit: BoxFit.cover,
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.only(
+                                      left: 14.0, top: 10),
+                                  child: Row(
+                                    children: [
+                                      Text(
+                                        userList[index].get('name'),
+                                        style: GoogleFonts.dmSans(
+                                          fontSize: 22,
+                                          fontWeight: FontWeight.w200,
+                                        ),
+                                      ),
+                                      Text(
+                                        ', ',
+                                        style: GoogleFonts.dmSans(
+                                          fontSize: 22,
+                                          fontWeight: FontWeight.w200,
+                                        ),
+                                      ),
+                                      Text(
+                                        userList[index].get('age'),
+                                        style: GoogleFonts.dmSans(
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.w200,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.all(14.0),
+                                  child: Container(
+                                    alignment: Alignment.centerLeft,
+                                    child: Text(
+                                      userList[index].get('degree'),
+                                      style: GoogleFonts.dmSans(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w200,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                SizedBox(height: 10),
+                                Padding(
+                                  padding: const EdgeInsets.only(
+                                      left: 10.0, right: 10),
+                                  child: Wrap(
+                                    spacing: 8.0,
+                                    runSpacing: 8.0,
+                                    children: userList[index]
+                                        .get('aficions')
+                                        .map<Widget>((aficion) {
+                                      return Container(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 8, vertical: 4),
+                                        decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(20),
+                                          color: Colors.teal.withOpacity(0.2),
+                                        ),
+                                        child: Text(
+                                          aficion,
+                                          style: GoogleFonts.dmSans(
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.w200,
+                                            color: Colors.teal,
+                                          ),
+                                        ),
+                                      );
+                                    }).toList(),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const SizedBox(
+                    width: 80,
+                  ),
+                  swipeLeftButton(controller),
+                  const SizedBox(
+                    width: 20,
+                  ),
+                  swipeRightButton(controller),
+                  const SizedBox(
+                    width: 20,
+                  ),
+                  unswipeButton(controller),
+                ],
               ),
-              swipeRightButton(controller),
-              const SizedBox(
-                width: 20,
-              ),
-              unswipeButton(controller),
             ],
-          )
+          ),
+          Positioned(
+            top: 59,
+            left: 327,
+            child: IconButton(
+              icon: const Icon(Icons.list_sharp),
+              color: Colors.grey.shade600,
+              iconSize: 30,
+              onPressed: () async {
+                await Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const FilterMatching(),
+                  ),
+                );
+              },
+            ),
+          ),
         ],
       ),
     );
