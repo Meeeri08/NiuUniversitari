@@ -103,7 +103,9 @@ class _TinderPageState extends State<Tinder> {
 
     if (userData == null ||
         !userData.containsKey('name') ||
-        !userData.containsKey('bio') ||
+        !userData.containsKey('degree') ||
+        !userData.containsKey('age') ||
+        !userData.containsKey('aficions') ||
         !userData.containsKey('imageUrl')) {
       // ignore: use_build_context_synchronously
       showDialog(
@@ -111,9 +113,9 @@ class _TinderPageState extends State<Tinder> {
         barrierDismissible: false,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: const Text('Configura tu perfil'),
+            title: const Text('Configura el teu perfil'),
             content: const Text(
-                'Por favor, configura tu perfil antes de poder acceder.'),
+                'Si us plau, configureu el vostre perfil abans de poder accedir-hi.'),
             actions: [
               TextButton(
                 child: const Text('Configurar perfil'),
@@ -320,21 +322,30 @@ class _TinderPageState extends State<Tinder> {
                               aspectRatio: 4 / 3,
                               child: Image.network(
                                 userList[index].get('imageUrl'),
+                                fit: BoxFit.cover,
                               ),
                             ),
                             Padding(
-                              padding: const EdgeInsets.only(left: 10.0),
+                              padding:
+                                  const EdgeInsets.only(left: 14.0, top: 10),
                               child: Row(
                                 children: [
                                   Text(
                                     userList[index].get('name'),
                                     style: GoogleFonts.dmSans(
-                                      fontSize: 20,
+                                      fontSize: 22,
                                       fontWeight: FontWeight.w200,
                                     ),
                                   ),
                                   Text(
-                                    ',',
+                                    ', ',
+                                    style: GoogleFonts.dmSans(
+                                      fontSize: 22,
+                                      fontWeight: FontWeight.w200,
+                                    ),
+                                  ),
+                                  Text(
+                                    userList[index].get('age'),
                                     style: GoogleFonts.dmSans(
                                       fontSize: 20,
                                       fontWeight: FontWeight.w200,
@@ -344,13 +355,45 @@ class _TinderPageState extends State<Tinder> {
                               ),
                             ),
                             Padding(
-                              padding: const EdgeInsets.all(10.0),
-                              child: Text(
-                                userList[index].get('bio'),
-                                style: GoogleFonts.dmSans(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w200,
+                              padding: const EdgeInsets.all(14.0),
+                              child: Container(
+                                alignment: Alignment.centerLeft,
+                                child: Text(
+                                  userList[index].get('degree'),
+                                  style: GoogleFonts.dmSans(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w200,
+                                  ),
                                 ),
+                              ),
+                            ),
+                            SizedBox(height: 10),
+                            Padding(
+                              padding:
+                                  const EdgeInsets.only(left: 10.0, right: 10),
+                              child: Wrap(
+                                spacing: 8.0,
+                                runSpacing: 8.0,
+                                children: userList[index]
+                                    .get('aficions')
+                                    .map<Widget>((aficion) {
+                                  return Container(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 8, vertical: 4),
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(20),
+                                      color: Colors.teal.withOpacity(0.2),
+                                    ),
+                                    child: Text(
+                                      aficion,
+                                      style: GoogleFonts.dmSans(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w200,
+                                        color: Colors.teal,
+                                      ),
+                                    ),
+                                  );
+                                }).toList(),
                               ),
                             ),
                           ],

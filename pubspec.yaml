@@ -63,6 +63,8 @@ dependencies:
   flutter_date_pickers: ^0.4.2
   flutter_typeahead: ^4.6.0
   geocoding: ^2.1.0
+  multiselect: ^0.1.0
+  multi_select_flutter: ^4.1.3
 
   
 flutter_icons:

@@ -49,12 +49,3 @@ const LinearGradient gradientPink = LinearGradient(
     Color(0xFFFFB92F),
   ],
 );
-
-const LinearGradient kNewFeedCardColorsIdentityGradient = LinearGradient(
-  begin: Alignment.topCenter,
-  end: Alignment.bottomCenter,
-  colors: [
-    Color(0xFF7960F1),
-    Color(0xFFE1A5C9),
-  ],
-);

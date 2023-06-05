@@ -1,0 +1,18 @@
+List<String> aficionsList = [
+  'Futbol',
+  'Bàsquet',
+  'Videojocs',
+  'Cinema',
+  'Música',
+  'Lectura',
+  'Manga',
+  'Cultura',
+  'Teatre',
+  'Ballar',
+  'Córrer',
+  'Ciclisme',
+  'Política',
+  'Fotografia',
+  'Twitch',
+  'Cantar',
+];
