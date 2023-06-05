@@ -3,10 +3,11 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
 import 'package:jobapp/pages/home_page.dart';
-
+import 'package:jobapp/components/carreres.dart';
 import '../utils/utils.dart';
 
 class Profile extends StatefulWidget {
@@ -23,6 +24,7 @@ class _ProfileState extends State<Profile> {
   ImageProvider? profileImageProvider;
   bool _isDisposed = false;
   String? selectedRole;
+  String? selectedDegree;
 
   @override
   void dispose() {
@@ -54,6 +56,7 @@ class _ProfileState extends State<Profile> {
         bioController.text = userData?['bio'] ?? '';
         imageUrl = userData?['imageUrl'] ?? '';
         selectedRole = userData?['role'] ?? '';
+        degreeController.text = userData?['degree'] ?? '';
 
         if (imageUrl != null && imageUrl!.isNotEmpty) {
           _loadImage(imageUrl!);
@@ -90,6 +93,7 @@ class _ProfileState extends State<Profile> {
   final TextEditingController surnameController = TextEditingController();
   final TextEditingController bioController = TextEditingController();
   final TextEditingController roleController = TextEditingController();
+  final TextEditingController degreeController = TextEditingController();
 
   final user = FirebaseAuth.instance.currentUser;
 
@@ -115,6 +119,7 @@ class _ProfileState extends State<Profile> {
     String surname = surnameController.text;
     String bio = bioController.text;
     String role = selectedRole ?? '';
+    String degree = degreeController.text;
 
     // Retain the existing email and id values
     userData!['email'] ??= '';
@@ -126,7 +131,8 @@ class _ProfileState extends State<Profile> {
       'name': name,
       'surname': surname,
       'bio': bio,
-      'role': role
+      'role': role,
+      'degree': degree
     });
 
     // Guardar la imagen en Firebase Storage
@@ -155,17 +161,13 @@ class _ProfileState extends State<Profile> {
   Widget build(BuildContext context) {
     print('build() called');
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-      ),
       body: Center(
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 32),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              const SizedBox(height: 24),
+              const SizedBox(height: 64),
               Stack(
                 children: [
                   if (profileImageProvider != null)
@@ -221,7 +223,7 @@ class _ProfileState extends State<Profile> {
                   ),
                   filled: true,
                   fillColor: Colors.white,
-                  hintText: 'Enter Surname',
+                  labelText: 'Cognom',
                   hintStyle: TextStyle(
                     color: Colors.grey,
                   ),
@@ -242,7 +244,7 @@ class _ProfileState extends State<Profile> {
                   ),
                   filled: true,
                   fillColor: Colors.white,
-                  hintText: 'Enter Bio',
+                  labelText: 'Bio',
                   hintStyle: TextStyle(
                     color: Colors.grey,
                   ),
@@ -254,12 +256,54 @@ class _ProfileState extends State<Profile> {
                 ),
               ),
               const SizedBox(height: 24),
+              Container(
+                width: 325,
+                decoration: BoxDecoration(
+                  color: Color(0xFFF5F5F5),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: TypeAheadFormField(
+                  textFieldConfiguration: TextFieldConfiguration(
+                    controller: degreeController,
+                    maxLength: 30,
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.grey.shade300),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      filled: true,
+                      fillColor: Colors.white,
+                      labelText: 'Grau',
+                      labelStyle: TextStyle(
+                        color: Colors.grey,
+                      ),
+                      floatingLabelBehavior: FloatingLabelBehavior.always,
+                      counterText: '',
+                    ),
+                  ),
+                  suggestionsCallback: (pattern) async {
+                    return degreeList.where((degrees) =>
+                        degrees.toLowerCase().contains(pattern.toLowerCase()));
+                  },
+                  itemBuilder: (context, suggestion) {
+                    return ListTile(
+                      title: Text(suggestion),
+                    );
+                  },
+                  onSuggestionSelected: (suggestion) {
+                    setState(() {
+                      degreeController.text = suggestion;
+                      selectedDegree = suggestion;
+                    });
+                  },
+                ),
+              ),
               const SizedBox(height: 24),
               const Text(
-                'Choose your role',
+                'Escull el teu Rol',
                 style: TextStyle(
                     fontSize: 16,
-                    fontWeight: FontWeight.w200,
+                    fontWeight: FontWeight.w300,
                     color: Colors.grey),
               ),
               const SizedBox(height: 16),

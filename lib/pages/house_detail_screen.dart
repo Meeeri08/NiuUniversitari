@@ -82,9 +82,8 @@ class _HouseDetailScreenState extends State<HouseDetailScreen> {
     Navigator.push(
       context,
       MaterialPageRoute(
-          builder: (context) => ChatScreen(
-                propietariId: '',
-              )),
+        builder: (context) => ChatScreen(propietariId: propietariId),
+      ),
     );
   }
 
@@ -552,7 +551,10 @@ class _HouseDetailScreenState extends State<HouseDetailScreen> {
                                                             color: Color(
                                                                 0xff25262b),
                                                           ),
-                                                          onPressed: () {},
+                                                          onPressed: () {
+                                                            redirectToChatScreen(
+                                                                propietari);
+                                                          },
                                                         ),
                                                       ),
                                                     ),

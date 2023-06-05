@@ -13,23 +13,16 @@ class ChatScreen extends StatefulWidget {
 }
 
 class _ChatScreenState extends State<ChatScreen> {
-  String? propietariName;
+  void saveChatMessage(String message) async {
+    final user = FirebaseAuth.instance.currentUser;
+    final chatRef = FirebaseFirestore.instance.collection('chats');
 
-  @override
-  void initState() {
-    super.initState();
-    fetchPropietariName();
-  }
-
-  void fetchPropietariName() async {
-    final snapshot = await FirebaseFirestore.instance
-        .collection('users')
-        .doc(widget.propietariId)
-        .get();
-    if (snapshot.exists) {
-      final data = snapshot.data();
-      setState(() {
-        propietariName = data?['name'];
+    if (user != null) {
+      await chatRef.add({
+        'senderId': user.uid,
+        'receiverId': widget.propietariId,
+        'message': message,
+        'timestamp': Timestamp.now(),
       });
     }
   }
@@ -38,10 +31,10 @@ class _ChatScreenState extends State<ChatScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(propietariName ?? 'Chat'),
+        title: Text('Chat'),
       ),
       body: Center(
-        child: Text('Chat with ${propietariName ?? 'Unknown User'}'),
+        child: Text('Chat with ${widget.propietariId}'),
       ),
     );
   }
