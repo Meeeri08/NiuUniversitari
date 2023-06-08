@@ -179,13 +179,26 @@ class _ProfileState extends State<Profile> {
   Widget build(BuildContext context) {
     print('build() called');
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        centerTitle: true,
+        title: Text(
+          'Perfil',
+          style: GoogleFonts.dmSans(
+            fontSize: 18,
+            fontWeight: FontWeight.w500,
+            color: Color(0xff25262b),
+          ),
+        ),
+      ),
       body: SingleChildScrollView(
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 32),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              const SizedBox(height: 64),
+              const SizedBox(height: 32),
               Stack(
                 children: [
                   if (profileImageProvider != null)

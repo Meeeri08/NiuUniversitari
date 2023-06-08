@@ -24,8 +24,7 @@ class Tinder extends StatefulWidget {
 
 class _TinderPageState extends State<Tinder> {
   final AppinioSwiperController controller = AppinioSwiperController();
-  //testing
-
+  List<int>? filteredIndices;
   final CollectionReference usersCollection =
       FirebaseFirestore.instance.collection('users');
   final CollectionReference swipeDataCollection =
@@ -36,14 +35,26 @@ class _TinderPageState extends State<Tinder> {
 
   List<TinderCandidateModel> userProfiles = [];
 
+  FirebaseFirestore firestore = FirebaseFirestore.instance;
+  List<DocumentSnapshot>? filteredMatches;
+
   @override
   void initState() {
     _checkUserProfile();
     loadUsers();
+    _updateFilteredIndices();
+
     super.initState();
   }
 
-  // testing
+  void _updateFilteredIndices() {
+    if (filteredMatches != null) {
+      filteredIndices =
+          filteredMatches!.map<int>((doc) => userList.indexOf(doc)).toList();
+    } else {
+      filteredIndices = null;
+    }
+  }
 
   Future<void> loadUsers() async {
     String currentUserId = FirebaseAuth.instance.currentUser!.uid;
@@ -318,15 +329,20 @@ class _TinderPageState extends State<Tinder> {
                           bottom: 40,
                         ),
                         onEnd: handleOnEnd,
-                        cardsCount: userList.length - 1,
+                        cardsCount: filteredIndices != null
+                            ? filteredIndices!.length
+                            : userList.length,
                         cardsBuilder: (BuildContext context, int index) {
+                          final int userListIndex = filteredIndices != null
+                              ? filteredIndices![index]
+                              : index;
                           return Card(
                             child: Column(
                               children: [
                                 AspectRatio(
                                   aspectRatio: 4 / 3,
                                   child: Image.network(
-                                    userList[index].get('imageUrl'),
+                                    userList[userListIndex].get('imageUrl'),
                                     fit: BoxFit.cover,
                                   ),
                                 ),
@@ -336,7 +352,7 @@ class _TinderPageState extends State<Tinder> {
                                   child: Row(
                                     children: [
                                       Text(
-                                        userList[index].get('name'),
+                                        userList[userListIndex].get('name'),
                                         style: GoogleFonts.dmSans(
                                           fontSize: 22,
                                           fontWeight: FontWeight.w200,
@@ -350,7 +366,7 @@ class _TinderPageState extends State<Tinder> {
                                         ),
                                       ),
                                       Text(
-                                        userList[index].get('age'),
+                                        userList[userListIndex].get('age'),
                                         style: GoogleFonts.dmSans(
                                           fontSize: 20,
                                           fontWeight: FontWeight.w200,
@@ -364,7 +380,7 @@ class _TinderPageState extends State<Tinder> {
                                   child: Container(
                                     alignment: Alignment.centerLeft,
                                     child: Text(
-                                      userList[index].get('degree'),
+                                      userList[userListIndex].get('degree'),
                                       style: GoogleFonts.dmSans(
                                         fontSize: 16,
                                         fontWeight: FontWeight.w200,
@@ -379,7 +395,7 @@ class _TinderPageState extends State<Tinder> {
                                   child: Wrap(
                                     spacing: 8.0,
                                     runSpacing: 8.0,
-                                    children: userList[index]
+                                    children: userList[userListIndex]
                                         .get('aficions')
                                         .map<Widget>((aficion) {
                                       return Container(
@@ -429,18 +445,29 @@ class _TinderPageState extends State<Tinder> {
           ),
           Positioned(
             top: 59,
-            left: 327,
+            left: 334,
             child: IconButton(
-              icon: const Icon(Icons.list_sharp),
+              icon: const Icon(Icons.search),
               color: Colors.grey.shade600,
               iconSize: 30,
               onPressed: () async {
-                await Navigator.push(
+                List<DocumentSnapshot>? result = await Navigator.push(
                   context,
-                  MaterialPageRoute(
-                    builder: (context) => const FilterMatching(),
-                  ),
+                  MaterialPageRoute(builder: (context) {
+                    return FilterMatching(
+                      onFilterApplied: (users) {
+                        setState(() {
+                          filteredMatches = users;
+                        });
+                      },
+                    );
+                  }),
                 );
+                if (result != null) {
+                  setState(() {
+                    filteredMatches = result;
+                  });
+                }
               },
             ),
           ),
