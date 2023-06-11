@@ -27,7 +27,7 @@ class MessagesScreen extends StatelessWidget {
       body: StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance
             .collection('chats')
-            .where('receiverId', isEqualTo: currentUser?.uid)
+            .where('users', arrayContains: currentUser?.uid)
             .orderBy('lastMessageTimestamp', descending: true)
             .snapshots(),
         builder: (context, snapshot) {
@@ -45,26 +45,14 @@ class MessagesScreen extends StatelessWidget {
 
           final chatDocs = snapshot.data!.docs;
 
-          final filteredChatDocs = chatDocs
-              .where((doc) =>
-                  doc['receiverId'] == currentUser?.uid ||
-                  doc['senderId'] == currentUser?.uid)
-              .toList();
-
           return ListView.builder(
-            itemCount: filteredChatDocs.length,
+            itemCount: chatDocs.length,
             itemBuilder: (context, index) {
-              final chatData =
-                  filteredChatDocs[index].data() as Map<String, dynamic>;
-              final receiverId = chatData['receiverId'] as String;
-              final senderId = chatData['senderId'] as String;
-              final lastMessage = chatData['lastMessage'] as String;
-              final lastMessageTimestamp =
-                  chatData['lastMessageTimestamp'] as Timestamp;
-
-              final chatId = filteredChatDocs[index].id;
-              final otherUserId =
-                  currentUser?.uid == senderId ? receiverId : senderId;
+              final chatData = chatDocs[index].data() as Map<String, dynamic>;
+              final users = chatData['users'] as List<dynamic>;
+              final otherUserId = users.firstWhere(
+                (userId) => userId != currentUser?.uid,
+              ) as String;
 
               return FutureBuilder<DocumentSnapshot>(
                 future: FirebaseFirestore.instance
@@ -82,6 +70,9 @@ class MessagesScreen extends StatelessWidget {
                       userSnapshot.data!.data() as Map<String, dynamic>?;
                   final receiverName = userData?['name'] as String?;
                   final receiverImageUrl = userData?['imageUrl'] as String?;
+                  final lastMessage = chatData['lastMessage'] as String;
+                  final lastMessageTimestamp =
+                      chatData['lastMessageTimestamp'] as Timestamp;
 
                   return ListTile(
                     leading: CircleAvatar(
@@ -106,7 +97,7 @@ class MessagesScreen extends StatelessWidget {
                         MaterialPageRoute(
                           builder: (context) => ChatScreen(
                             propietariId: otherUserId,
-                            chatId: chatId,
+                            chatId: chatDocs[index].id,
                           ),
                         ),
                       );

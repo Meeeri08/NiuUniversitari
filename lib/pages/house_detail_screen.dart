@@ -84,9 +84,8 @@ class _HouseDetailScreenState extends State<HouseDetailScreen> {
     try {
       final QuerySnapshot snapshot = await FirebaseFirestore.instance
           .collection('chats')
-          .where('receiverId', isEqualTo: propietariId)
-          .where('senderId', isEqualTo: FirebaseAuth.instance.currentUser!.uid)
-          .get();
+          .where('participants',
+              arrayContainsAny: [propietariId, userId]).get();
 
       if (snapshot.docs.isNotEmpty) {
         final chatDoc = snapshot.docs.first;
@@ -102,7 +101,24 @@ class _HouseDetailScreenState extends State<HouseDetailScreen> {
           ),
         );
       } else {
-        print('Failed to find the chat.');
+        // Create a new chat
+        final newChat =
+            await FirebaseFirestore.instance.collection('chats').add({
+          'participants': [propietariId, userId],
+          'createdAt': FieldValue.serverTimestamp(),
+        });
+
+        final newChatId = newChat.id;
+
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ChatScreen(
+              propietariId: propietariId,
+              chatId: newChatId,
+            ),
+          ),
+        );
       }
     } catch (e) {
       print('Error retrieving chat ID: $e');
