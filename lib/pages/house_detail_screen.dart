@@ -81,16 +81,43 @@ class _HouseDetailScreenState extends State<HouseDetailScreen> {
   }
 
   void redirectToChatScreen(String propietariId) async {
+    final FirebaseAuth auth = FirebaseAuth.instance;
+    final User? user = auth.currentUser;
+    final String currentUserId = user?.uid ?? '';
+
+    if (currentUserId == propietariId) {
+      // Display a message that you can't chat with yourself
+      showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: Text('Error'),
+            content: Text('No pots xatejar amb tu mateix!'),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: Text('OK'),
+              ),
+            ],
+          );
+        },
+      );
+      return;
+    }
+
     try {
-      final QuerySnapshot snapshot = await FirebaseFirestore.instance
+      final participants = [propietariId, currentUserId];
+      participants.sort(); // Sort the participants' IDs alphabetically
+      final chatId = participants.join('_'); // Generate a unique chat ID
+
+      final chatDoc = await FirebaseFirestore.instance
           .collection('chats')
-          .where('participants',
-              arrayContainsAny: [propietariId, userId]).get();
+          .doc(chatId)
+          .get();
 
-      if (snapshot.docs.isNotEmpty) {
-        final chatDoc = snapshot.docs.first;
-        final chatId = chatDoc.id;
-
+      if (chatDoc.exists) {
         Navigator.push(
           context,
           MaterialPageRoute(
@@ -102,26 +129,23 @@ class _HouseDetailScreenState extends State<HouseDetailScreen> {
         );
       } else {
         // Create a new chat
-        final newChat =
-            await FirebaseFirestore.instance.collection('chats').add({
-          'participants': [propietariId, userId],
+        await FirebaseFirestore.instance.collection('chats').doc(chatId).set({
+          'users': participants,
           'createdAt': FieldValue.serverTimestamp(),
         });
-
-        final newChatId = newChat.id;
 
         Navigator.push(
           context,
           MaterialPageRoute(
             builder: (context) => ChatScreen(
               propietariId: propietariId,
-              chatId: newChatId,
+              chatId: chatId,
             ),
           ),
         );
       }
     } catch (e) {
-      print('Error retrieving chat ID: $e');
+      print('Error retrieving chat document: $e');
     }
   }
 

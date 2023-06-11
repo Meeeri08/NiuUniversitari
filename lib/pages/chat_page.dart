@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class ChatScreen extends StatefulWidget {
   final String propietariId;
@@ -130,8 +131,12 @@ class _ChatScreenState extends State<ChatScreen> {
                         messageDocs[index].data() as Map<String, dynamic>;
                     final senderId = messageData['senderId'] as String;
                     final message = messageData['message'] as String;
+                    final timestamp = messageData['timestamp'] as Timestamp;
 
                     final isMe = senderId == currentUserId;
+
+                    final messageTime =
+                        DateFormat.Hm().format(timestamp.toDate());
 
                     return Container(
                       margin: EdgeInsets.symmetric(
@@ -151,11 +156,24 @@ class _ChatScreenState extends State<ChatScreen> {
                             vertical: 8.0,
                             horizontal: 16.0,
                           ),
-                          child: Text(
-                            message,
-                            style: TextStyle(
-                              color: isMe ? Colors.white : Colors.black,
-                            ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                message,
+                                style: TextStyle(
+                                  color: isMe ? Colors.white : Colors.black,
+                                ),
+                              ),
+                              SizedBox(height: 4.0),
+                              Text(
+                                messageTime,
+                                style: TextStyle(
+                                  fontSize: 12.0,
+                                  color: isMe ? Colors.white : Colors.black,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                       ),

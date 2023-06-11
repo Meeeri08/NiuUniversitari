@@ -16,7 +16,7 @@ class MessagesScreen extends StatelessWidget {
         elevation: 0,
         centerTitle: true,
         title: Text(
-          'Messages',
+          'Missatges',
           style: GoogleFonts.dmSans(
             fontSize: 18,
             fontWeight: FontWeight.w500,
@@ -50,62 +50,70 @@ class MessagesScreen extends StatelessWidget {
             itemBuilder: (context, index) {
               final chatData = chatDocs[index].data() as Map<String, dynamic>;
               final users = chatData['users'] as List<dynamic>;
-              final otherUserId = users.firstWhere(
-                (userId) => userId != currentUser?.uid,
-              ) as String;
 
-              return FutureBuilder<DocumentSnapshot>(
-                future: FirebaseFirestore.instance
-                    .collection('users')
-                    .doc(otherUserId)
-                    .get(),
-                builder: (context, userSnapshot) {
-                  if (userSnapshot.connectionState == ConnectionState.waiting) {
-                    return const ListTile(
-                      title: Text('Loading...'),
-                    );
-                  }
+              if (users.contains(currentUser?.uid)) {
+                final otherUserId = users.firstWhere(
+                  (userId) => userId != currentUser?.uid,
+                  orElse: () => '',
+                ) as String;
 
-                  final userData =
-                      userSnapshot.data!.data() as Map<String, dynamic>?;
-                  final receiverName = userData?['name'] as String?;
-                  final receiverImageUrl = userData?['imageUrl'] as String?;
-                  final lastMessage = chatData['lastMessage'] as String;
-                  final lastMessageTimestamp = chatData['lastMessageTimestamp'];
-
-                  final lastMessageTime = lastMessageTimestamp != null
-                      ? DateFormat.Hm().format(lastMessageTimestamp.toDate())
-                      : '';
-
-                  return ListTile(
-                    leading: CircleAvatar(
-                      backgroundImage: NetworkImage(receiverImageUrl ?? ''),
-                    ),
-                    title: Text(receiverName ?? ''),
-                    subtitle: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          lastMessage,
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                        Text(lastMessageTime),
-                      ],
-                    ),
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => ChatScreen(
-                            propietariId: otherUserId,
-                            chatId: chatDocs[index].id,
-                          ),
-                        ),
+                return FutureBuilder<DocumentSnapshot>(
+                  future: FirebaseFirestore.instance
+                      .collection('users')
+                      .doc(otherUserId)
+                      .get(),
+                  builder: (context, userSnapshot) {
+                    if (userSnapshot.connectionState ==
+                        ConnectionState.waiting) {
+                      return const ListTile(
+                        title: Text('Loading...'),
                       );
-                    },
-                  );
-                },
-              );
+                    }
+
+                    final userData =
+                        userSnapshot.data!.data() as Map<String, dynamic>?;
+                    final receiverName = userData?['name'] as String?;
+                    final receiverImageUrl = userData?['imageUrl'] as String?;
+                    final lastMessage = chatData['lastMessage'] as String;
+                    final lastMessageTimestamp =
+                        chatData['lastMessageTimestamp'];
+
+                    final lastMessageTime = lastMessageTimestamp != null
+                        ? DateFormat.Hm().format(lastMessageTimestamp.toDate())
+                        : '';
+
+                    return ListTile(
+                      leading: CircleAvatar(
+                        backgroundImage: NetworkImage(receiverImageUrl ?? ''),
+                      ),
+                      title: Text(receiverName ?? ''),
+                      subtitle: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            lastMessage,
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                          Text(lastMessageTime),
+                        ],
+                      ),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => ChatScreen(
+                              propietariId: otherUserId,
+                              chatId: chatDocs[index].id,
+                            ),
+                          ),
+                        );
+                      },
+                    );
+                  },
+                );
+              } else {
+                return Container();
+              }
             },
           );
         },
