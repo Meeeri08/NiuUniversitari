@@ -71,8 +71,11 @@ class MessagesScreen extends StatelessWidget {
                   final receiverName = userData?['name'] as String?;
                   final receiverImageUrl = userData?['imageUrl'] as String?;
                   final lastMessage = chatData['lastMessage'] as String;
-                  final lastMessageTimestamp =
-                      chatData['lastMessageTimestamp'] as Timestamp;
+                  final lastMessageTimestamp = chatData['lastMessageTimestamp'];
+
+                  final lastMessageTime = lastMessageTimestamp != null
+                      ? DateFormat.Hm().format(lastMessageTimestamp.toDate())
+                      : '';
 
                   return ListTile(
                     leading: CircleAvatar(
@@ -86,9 +89,7 @@ class MessagesScreen extends StatelessWidget {
                           lastMessage,
                           style: TextStyle(fontWeight: FontWeight.bold),
                         ),
-                        Text(
-                          DateFormat.Hm().format(lastMessageTimestamp.toDate()),
-                        ),
+                        Text(lastMessageTime),
                       ],
                     ),
                     onTap: () {

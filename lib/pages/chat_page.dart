@@ -49,17 +49,27 @@ class _ChatScreenState extends State<ChatScreen> {
     final message = _messageController.text.trim();
 
     if (message.isNotEmpty) {
-      final timestamp = FieldValue.serverTimestamp();
+      final timestamp = Timestamp.now();
+
+      final messageData = {
+        'senderId': currentUserId,
+        'receiverId': widget.propietariId,
+        'message': message,
+        'timestamp': timestamp,
+      };
 
       await FirebaseFirestore.instance
           .collection('chats')
           .doc(widget.chatId)
           .collection('messages')
-          .add({
-        'senderId': currentUserId,
-        'receiverId': widget.propietariId,
-        'message': message,
-        'timestamp': timestamp,
+          .add(messageData);
+
+      // Update chat document with last message details
+      final chatDoc =
+          FirebaseFirestore.instance.collection('chats').doc(widget.chatId);
+      await chatDoc.update({
+        'lastMessage': message,
+        'lastMessageTimestamp': timestamp,
       });
 
       _messageController.clear();
