@@ -60,6 +60,7 @@ class _TinderPageState extends State<Tinder> {
     String currentUserId = FirebaseAuth.instance.currentUser!.uid;
     QuerySnapshot querySnapshot = await usersCollection
         .where(FieldPath.documentId, isNotEqualTo: currentUserId)
+        .where('role', isEqualTo: 'Estudiant')
         .get();
 
     setState(() {

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
@@ -37,10 +39,13 @@ class _ProfileState extends State<Profile> {
   final ValueNotifier<List<String>> _selectedAficions =
       ValueNotifier<List<String>>([]);
 
+  Timer? _timer;
   @override
   void dispose() {
     print('dispose() called');
     _isDisposed = true;
+    _timer?.cancel();
+
     super.dispose();
   }
 
