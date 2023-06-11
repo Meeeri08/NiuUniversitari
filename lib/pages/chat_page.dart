@@ -18,8 +18,8 @@ class _ChatScreenState extends State<ChatScreen> {
   final ScrollController _scrollController = ScrollController();
 
   late String currentUserId;
-  String? receiverName;
-  String? receiverImageUrl;
+  String receiverName = '';
+  String receiverImageUrl = '';
 
   @override
   void initState() {
@@ -40,8 +40,8 @@ class _ChatScreenState extends State<ChatScreen> {
 
     if (receiverDoc.exists) {
       setState(() {
-        receiverName = receiverDoc.get('name');
-        receiverImageUrl = receiverDoc.get('imageUrl');
+        receiverName = receiverDoc.get('name') ?? '';
+        receiverImageUrl = receiverDoc.get('imageUrl') ?? '';
       });
     }
   }
@@ -88,9 +88,9 @@ class _ChatScreenState extends State<ChatScreen> {
       appBar: AppBar(
         title: Row(
           children: [
-            if (receiverImageUrl != null)
+            if (receiverImageUrl.isNotEmpty)
               CircleAvatar(
-                backgroundImage: NetworkImage(receiverImageUrl!),
+                backgroundImage: NetworkImage(receiverImageUrl),
               ),
             const SizedBox(width: 15),
             Text('$receiverName'),
@@ -114,13 +114,22 @@ class _ChatScreenState extends State<ChatScreen> {
                   );
                 }
 
-                if (!snapshot.hasData) {
+                if (!snapshot.hasData || snapshot.data == null) {
                   return const Center(
                     child: CircularProgressIndicator(),
                   );
                 }
 
                 final messageDocs = snapshot.data!.docs;
+                if (messageDocs == null || messageDocs.isEmpty) {
+                  return const Center(
+                    child: Text('No messages available.'),
+                  );
+                }
+
+                DateTime? currentDate;
+                DateTime? previousDate;
+                DateTime? firstMessageDate;
 
                 return ListView.builder(
                   reverse: true,
@@ -137,46 +146,79 @@ class _ChatScreenState extends State<ChatScreen> {
 
                     final messageTime =
                         DateFormat.Hm().format(timestamp.toDate());
+                    final messageDate =
+                        DateFormat.yMMMd().format(timestamp.toDate());
 
-                    return Container(
-                      margin: EdgeInsets.symmetric(
-                        vertical: 8.0,
-                        horizontal: 16.0,
-                      ),
-                      alignment:
-                          isMe ? Alignment.centerRight : Alignment.centerLeft,
-                      child: Card(
-                        elevation: 3.0,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16.0),
-                        ),
-                        color: isMe ? Colors.teal : Colors.grey.shade200,
-                        child: Padding(
-                          padding: EdgeInsets.symmetric(
+                    currentDate = timestamp.toDate();
+
+                    final showDate = firstMessageDate == null ||
+                        (currentDate!.day != previousDate!.day ||
+                            currentDate!.month != previousDate!.month ||
+                            currentDate!.year != previousDate!.year) ||
+                        index == messageDocs.length - 1;
+
+                    if (showDate) {
+                      firstMessageDate = currentDate;
+                      previousDate = currentDate;
+                    } else {
+                      previousDate = currentDate;
+                    }
+
+                    return Column(
+                      children: [
+                        if (showDate)
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text(
+                              messageDate,
+                              style: TextStyle(
+                                color: Colors.grey,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        Container(
+                          margin: EdgeInsets.symmetric(
                             vertical: 8.0,
                             horizontal: 16.0,
                           ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                message,
-                                style: TextStyle(
-                                  color: isMe ? Colors.white : Colors.black,
-                                ),
+                          alignment: isMe
+                              ? Alignment.centerRight
+                              : Alignment.centerLeft,
+                          child: Card(
+                            elevation: 3.0,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16.0),
+                            ),
+                            color: isMe ? Colors.teal : Colors.grey.shade200,
+                            child: Padding(
+                              padding: EdgeInsets.symmetric(
+                                vertical: 8.0,
+                                horizontal: 16.0,
                               ),
-                              SizedBox(height: 4.0),
-                              Text(
-                                messageTime,
-                                style: TextStyle(
-                                  fontSize: 12.0,
-                                  color: isMe ? Colors.white : Colors.black,
-                                ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    message,
+                                    style: TextStyle(
+                                      color: isMe ? Colors.white : Colors.black,
+                                    ),
+                                  ),
+                                  SizedBox(height: 4.0),
+                                  Text(
+                                    messageTime,
+                                    style: TextStyle(
+                                      fontSize: 12.0,
+                                      color: isMe ? Colors.white : Colors.black,
+                                    ),
+                                  ),
+                                ],
                               ),
-                            ],
+                            ),
                           ),
                         ),
-                      ),
+                      ],
                     );
                   },
                 );
