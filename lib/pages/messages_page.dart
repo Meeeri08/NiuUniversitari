@@ -104,8 +104,10 @@ class MessagesScreen extends StatelessWidget {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) =>
-                              ChatScreen(propietariId: otherUserId),
+                          builder: (context) => ChatScreen(
+                            propietariId: otherUserId,
+                            chatId: chatId,
+                          ),
                         ),
                       );
                     },

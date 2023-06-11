@@ -6,8 +6,8 @@ import 'package:intl/intl.dart';
 
 class ChatScreen extends StatefulWidget {
   final String propietariId;
-
-  ChatScreen({required this.propietariId});
+  final String chatId;
+  ChatScreen({required this.propietariId, required this.chatId});
 
   @override
   _ChatScreenState createState() => _ChatScreenState();
@@ -41,15 +41,14 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   void fetchUserNames() async {
-    final snapshot = await _firestore.collection('users').get();
+    final snapshot =
+        await _firestore.collection('users').doc(widget.propietariId).get();
 
-    if (snapshot.docs.isNotEmpty) {
-      final userNames = Map<String, dynamic>.fromEntries(
-        snapshot.docs.map((doc) => MapEntry(doc.id, doc.data()['name'])),
-      );
+    if (snapshot.exists) {
+      final userName = snapshot.data()!['name'] as String?;
 
       setState(() {
-        _userNames = userNames;
+        _userNames = {widget.propietariId: userName};
       });
     }
   }

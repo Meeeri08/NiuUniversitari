@@ -21,6 +21,8 @@ class HouseDetailScreen extends StatefulWidget {
 }
 
 class _HouseDetailScreenState extends State<HouseDetailScreen> {
+  final FirebaseFirestore firestore = FirebaseFirestore.instance;
+
   GoogleMapController? _mapController;
   LatLng? _initialLatLng;
   List<String> imageUrls = [];
@@ -78,13 +80,33 @@ class _HouseDetailScreenState extends State<HouseDetailScreen> {
     });
   }
 
-  void redirectToChatScreen(String propietariId) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => ChatScreen(propietariId: propietariId),
-      ),
-    );
+  void redirectToChatScreen(String propietariId) async {
+    try {
+      final QuerySnapshot snapshot = await FirebaseFirestore.instance
+          .collection('chats')
+          .where('receiverId', isEqualTo: propietariId)
+          .where('senderId', isEqualTo: FirebaseAuth.instance.currentUser!.uid)
+          .get();
+
+      if (snapshot.docs.isNotEmpty) {
+        final chatDoc = snapshot.docs.first;
+        final chatId = chatDoc.id;
+
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ChatScreen(
+              propietariId: propietariId,
+              chatId: chatId,
+            ),
+          ),
+        );
+      } else {
+        print('Failed to find the chat.');
+      }
+    } catch (e) {
+      print('Error retrieving chat ID: $e');
+    }
   }
 
   @override
