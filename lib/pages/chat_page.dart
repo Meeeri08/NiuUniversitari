@@ -123,7 +123,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 final messageDocs = snapshot.data!.docs;
                 if (messageDocs == null || messageDocs.isEmpty) {
                   return const Center(
-                    child: Text('No messages available.'),
+                    child: Text(''),
                   );
                 }
 

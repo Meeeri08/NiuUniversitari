@@ -56,52 +56,56 @@ class _TinderPageState extends State<Tinder> {
     }
   }
 
+  Future<List<String>> getSwipedUserIds() async {
+    List<String> swipedUserIds = [];
+
+    String currentUserId = FirebaseAuth.instance.currentUser!.uid;
+
+    final DocumentSnapshot swipeDocumentSnapshot =
+        await swipeDataCollection.doc(currentUserId).get();
+
+    if (swipeDocumentSnapshot.exists) {
+      final swipeData = swipeDocumentSnapshot.data();
+      if (swipeData != null && swipeData is Map<String, dynamic>) {
+        final List<dynamic> profiles = swipeData['profiles'] as List<dynamic>;
+        for (final dynamic profile in profiles) {
+          if (profile is Map<String, dynamic> &&
+              profile.containsKey('profileId')) {
+            final String profileId = profile['profileId'] as String;
+            swipedUserIds.add(profileId);
+          }
+        }
+      }
+    }
+
+    return swipedUserIds;
+  }
+
   Future<void> loadUsers() async {
     String currentUserId = FirebaseAuth.instance.currentUser!.uid;
-    QuerySnapshot querySnapshot = await usersCollection
+
+    List<String> swipedUserIds = await getSwipedUserIds();
+
+    Query query = usersCollection
         .where(FieldPath.documentId, isNotEqualTo: currentUserId)
-        .where('role', isEqualTo: 'Estudiant')
-        .get();
+        .where('role', isEqualTo: 'Estudiant');
+
+    QuerySnapshot querySnapshot = await query.get();
 
     setState(() {
       userList = querySnapshot.docs;
     });
-  }
 
-  void handleSwipeRight() async {
-    DocumentSnapshot currentUser = userList[currentIndex];
-    String direction = await usersCollection
-        .doc(currentUser.id)
-        .get()
-        .then((docSnapshot) => docSnapshot.get('direction'));
+    // Filter out already swiped profiles
+    userList.removeWhere((user) {
+      // Get the user's ID
+      String userId = user.id;
 
-    if (direction == 'left') {
-      // Update direction to 'right' if previously swiped left
-      await usersCollection.doc(currentUser.id).update({
-        'direction': 'right',
-      });
-    } else {
-      // Display message that no users have been swiped left
-      // ignore: use_build_context_synchronously
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: Text('No Users Swiped Left'),
-            content: Text('No users have been swiped left before.'),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(),
-                child: Text('OK'),
-              ),
-            ],
-          );
-        },
-      );
-    }
+      // Check if the user ID exists in the list of swiped user IDs
+      bool alreadySwiped = swipedUserIds.contains(userId);
 
-    setState(() {
-      currentIndex = (currentIndex + 1) % userList.length;
+      // If the user has already been swiped, remove them from the user list
+      return alreadySwiped;
     });
   }
 
@@ -146,61 +150,78 @@ class _TinderPageState extends State<Tinder> {
   }
 
   void handleSwipe(int index, AppinioSwiperDirection direction) async {
-    DocumentSnapshot currentUser = userList[index];
-    final currentUserId = FirebaseAuth.instance.currentUser!.uid;
-    String profileId = currentUser.id;
+    // Get the current user's document ID
+    String currentUserId = FirebaseAuth.instance.currentUser!.uid;
 
     if (index >= 0 && index < userList.length) {
       String directionString =
           direction == AppinioSwiperDirection.left ? 'left' : 'right';
 
-      // Get the current user's document
-      DocumentReference userDoc = swipeDataCollection.doc(profileId);
+      // Get the ID of the swiped user
+      String swipedUserId = userList[index].id;
 
-      // Get the current user's swipe data map
-      DocumentSnapshot userSnapshot = await userDoc.get();
+      // Create a document reference for the swipes collection
+      DocumentReference swipeDoc = swipeDataCollection.doc(currentUserId);
 
-      // Check if the "swipeData" field exists in the document
-      if (userSnapshot.exists &&
-          (userSnapshot.data() as Map).containsKey("swipeData")) {
-        List<Map<String, dynamic>>? swipeData =
-            List<Map<String, dynamic>>.from(userSnapshot.get("swipeData"));
+      // Get the current user's swipe data
+      DocumentSnapshot swipeSnapshot = await swipeDoc.get();
+      Map<String, dynamic>? swipeData =
+          swipeSnapshot.data() as Map<String, dynamic>?;
 
-        // Check if the swipe data already exists for the current user
-        bool existingData = swipeData.any((data) =>
-            data['profileId'] == profileId &&
+      // Check if swipeData exists and contains a list of swiped profiles
+      if (swipeData != null && swipeData.containsKey('profiles')) {
+        List<Map<String, dynamic>> profiles =
+            List<Map<String, dynamic>>.from(swipeData['profiles']);
+
+        // Check if the swiped user already exists in the profiles list
+        bool existingData = profiles.any((data) =>
+            data['profileId'] == swipedUserId &&
             data['direction'] == directionString);
-        // Create a new swipe data list if it doesn't exist
-        swipeData ??= [];
+
         if (!existingData) {
-          // Swipe data already exists, update the existing entry
-          swipeData.add({
-            'profileId': profileId,
+          // Add the swiped user to the profiles list
+          profiles.add({
+            'profileId': swipedUserId,
             'direction': directionString,
             'timestamp': DateTime.now(),
           });
-        }
-        // Add the new swipe data entry to the list
 
-        // Update the current user's document with the updated swipe data list
-        await userDoc.update({'swipeData': swipeData});
+          // Update the swipe data in Firestore
+          await swipeDoc.set({'profiles': profiles}, SetOptions(merge: true));
+
+          print('Swiped user added to profiles list:');
+          print('Profile ID: $swipedUserId');
+          print('Direction: $directionString');
+          print('Timestamp: ${DateTime.now()}');
+        } else {
+          print('Swiped user already exists in profiles list.');
+          print('Profile ID: $swipedUserId');
+          print('Direction: $directionString');
+        }
       } else {
-        // Create a new document with the initial swipe data entry
-        await userDoc.set({
-          'swipeData': [
+        // Create a new document with the initial swipe data
+        await swipeDoc.set({
+          'profiles': [
             {
-              'profileId': profileId,
+              'profileId': swipedUserId,
               'direction': directionString,
-              'timestamp': Timestamp.now(),
+              'timestamp': DateTime.now(),
             }
           ]
         });
+
+        print('Swipe data document created:');
+        print('Profile ID: $swipedUserId');
+        print('Direction: $directionString');
+        print('Timestamp: ${DateTime.now()}');
       }
 
+      // Update the current index
       setState(() {
         currentIndex = (currentIndex + 1) % userList.length;
       });
     } else {
+      // Reset the current index if it goes out of bounds
       setState(() {
         currentIndex = 0;
       });

@@ -66,6 +66,7 @@ dependencies:
   multiselect: ^0.1.0
   multi_select_flutter: ^4.1.3
   rxdart: ^0.27.7
+  logger: ^1.4.0
 
   
 flutter_icons:

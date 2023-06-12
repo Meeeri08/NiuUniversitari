@@ -1237,7 +1237,7 @@ class _AddHousePageState extends State<AddHousePage> {
                   context: context,
                   builder: (BuildContext context) {
                     return AlertDialog(
-                      title: Text('N\'estas Segur?'),
+                      title: Text('N\'estàs Segur?'),
                       content: Text('Perdràs tot el progrés.'),
                       actions: <Widget>[
                         TextButton(
