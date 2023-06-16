@@ -29,6 +29,9 @@ class _TinderPageState extends State<Tinder> {
       FirebaseFirestore.instance.collection('users');
   final CollectionReference swipeDataCollection =
       FirebaseFirestore.instance.collection('swipes');
+  final CollectionReference matchesCollection =
+      FirebaseFirestore.instance.collection('matches');
+
   List<DocumentSnapshot> userList = [];
   List<Map<String, dynamic>> swipedUsers = [];
   int currentIndex = 0;
@@ -149,6 +152,53 @@ class _TinderPageState extends State<Tinder> {
     } else {}
   }
 
+  Future<bool> checkMutualRightSwipe(
+      String currentUserID, String swipedUserID) async {
+    DocumentSnapshot currentUserSwipedData =
+        await swipeDataCollection.doc(currentUserID).get();
+    DocumentSnapshot swipedUserSwipedData =
+        await swipeDataCollection.doc(swipedUserID).get();
+
+    if (currentUserSwipedData.exists && swipedUserSwipedData.exists) {
+      Map<String, dynamic>? currentUserSwipeData =
+          currentUserSwipedData.data() as Map<String, dynamic>?;
+      Map<String, dynamic>? swipedUserSwipeData =
+          swipedUserSwipedData.data() as Map<String, dynamic>?;
+
+      if (currentUserSwipeData != null && swipedUserSwipeData != null) {
+        List<Map<String, dynamic>> currentUserProfiles =
+            List<Map<String, dynamic>>.from(currentUserSwipeData['profiles']);
+        List<Map<String, dynamic>> swipedUserProfiles =
+            List<Map<String, dynamic>>.from(swipedUserSwipeData['profiles']);
+
+        bool currentUserRightSwiped = currentUserProfiles.any((data) =>
+            data['profileId'] == swipedUserID && data['direction'] == 'right');
+        bool swipedUserRightSwiped = swipedUserProfiles.any((data) =>
+            data['profileId'] == currentUserID && data['direction'] == 'right');
+
+        return currentUserRightSwiped && swipedUserRightSwiped;
+      }
+    }
+
+    return false;
+  }
+
+  void createMatch(String currentUserID, String swipedUserID) async {
+    // Create a new match document
+    DocumentReference newMatchDocRef = matchesCollection.doc();
+
+    // Set the match data
+    await newMatchDocRef.set({
+      'users': [currentUserID, swipedUserID],
+      'timestamp': DateTime.now(),
+    });
+
+    print('Match created:');
+    print('User 1 ID: $currentUserID');
+    print('User 2 ID: $swipedUserID');
+    print('Timestamp: ${DateTime.now()}');
+  }
+
   void handleSwipe(int index, AppinioSwiperDirection direction) async {
     // Get the current user's document ID
     String currentUserId = FirebaseAuth.instance.currentUser!.uid;
@@ -189,10 +239,14 @@ class _TinderPageState extends State<Tinder> {
           // Update the swipe data in Firestore
           await swipeDoc.set({'profiles': profiles}, SetOptions(merge: true));
 
-          print('Swiped user added to profiles list:');
-          print('Profile ID: $swipedUserId');
-          print('Direction: $directionString');
-          print('Timestamp: ${DateTime.now()}');
+          // Check for mutual right swipe
+          if (directionString == 'right') {
+            bool isMutualRightSwipe =
+                await checkMutualRightSwipe(currentUserId, swipedUserId);
+            if (isMutualRightSwipe) {
+              createMatch(currentUserId, swipedUserId);
+            }
+          }
         } else {
           print('Swiped user already exists in profiles list.');
           print('Profile ID: $swipedUserId');
