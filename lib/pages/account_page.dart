@@ -347,11 +347,11 @@ class _AccountState extends State<Account> {
         final houseIds = savedHouses['houseIds'] as List<dynamic>;
         return Column(
           children: [
-            for (var houseId in houseIds)
+            for (var i = 0; i < houseIds.length; i++)
               FutureBuilder<DocumentSnapshot>(
                 future: FirebaseFirestore.instance
                     .collection('houses')
-                    .doc(houseId)
+                    .doc(houseIds[i])
                     .get(),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
@@ -361,7 +361,7 @@ class _AccountState extends State<Account> {
                           context,
                           MaterialPageRoute(
                             builder: (context) => HouseDetailScreen(
-                              houseId: houseId,
+                              houseId: houseIds[i],
                             ),
                           ),
                         );
@@ -379,35 +379,44 @@ class _AccountState extends State<Account> {
                   final houseData =
                       snapshot.data!.data() as Map<String, dynamic>;
                   final title = houseData['title'] as String?;
-                  return GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => HouseDetailScreen(
-                            houseId: houseId,
+                  return Column(
+                    children: [
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => HouseDetailScreen(
+                                houseId: houseIds[i],
+                              ),
+                            ),
+                          );
+                        },
+                        child: ListTile(
+                          contentPadding: EdgeInsets.zero,
+                          leading: Container(
+                            width: 50,
+                            height: 50,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: Colors.grey.shade200,
+                            ),
+                            child: Icon(
+                              Icons.favorite_border_outlined,
+                              color: Color(0xff25262b),
+                              size: 30,
+                            ),
                           ),
-                        ),
-                      );
-                    },
-                    child: ListTile(
-                      contentPadding: EdgeInsets.zero,
-                      leading: Container(
-                        width: 50,
-                        height: 50,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: Colors.grey.shade200,
-                        ),
-                        child: Icon(
-                          Icons.favorite_border_outlined,
-                          color: Color(0xff25262b),
-                          size: 30,
+                          title: Text(title ?? 'Untitled',
+                              style: GoogleFonts.dmSans(fontSize: 18)),
                         ),
                       ),
-                      title: Text(title ?? 'Untitled',
-                          style: GoogleFonts.dmSans(fontSize: 18)),
-                    ),
+                      if (i != houseIds.length - 1)
+                        Divider(
+                          color: Colors.grey.shade700,
+                          thickness: 0.1,
+                        ),
+                    ],
                   );
                 },
               ),
