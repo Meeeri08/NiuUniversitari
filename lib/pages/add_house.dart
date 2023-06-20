@@ -935,7 +935,7 @@ class _AddHousePageState extends State<AddHousePage> {
               ),
               child: TextFormField(
                 controller: _titleController,
-                maxLength: 30,
+                maxLength: 32,
                 decoration: InputDecoration(
                   border: OutlineInputBorder(
                     borderSide: BorderSide(color: Colors.grey.shade300),
@@ -1292,17 +1292,29 @@ class MapSelectionPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        elevation: 0.0,
-      ),
-      body: GoogleMap(
-        initialCameraPosition: CameraPosition(
-          target: LatLng(41.38859447609031, 2.1686747276829004),
-          zoom: 14,
-        ),
-        onTap: (LatLng location) {
-          Navigator.pop(context, location);
-        },
+      body: Stack(
+        children: [
+          GoogleMap(
+            initialCameraPosition: CameraPosition(
+              target: LatLng(41.38859447609031, 2.1686747276829004),
+              zoom: 14,
+            ),
+            myLocationButtonEnabled: false,
+            onTap: (LatLng location) {
+              Navigator.pop(context, location);
+            },
+          ),
+          Positioned(
+            top: 28,
+            left: 18,
+            child: IconButton(
+              icon: Icon(Icons.arrow_back_ios_new),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+            ),
+          ),
+        ],
       ),
     );
   }

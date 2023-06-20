@@ -260,10 +260,11 @@ class _ProfileState extends State<Profile> {
                   filled: true,
                   fillColor: Colors.white,
                   labelText: 'Cognom',
-                  hintStyle: TextStyle(
+                  labelStyle: TextStyle(
                     color: Colors.grey,
                   ),
                   contentPadding: EdgeInsets.all(10),
+                  floatingLabelBehavior: FloatingLabelBehavior.always,
                 ),
                 style: TextStyle(
                   color: Colors.black,

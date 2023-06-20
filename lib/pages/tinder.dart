@@ -338,7 +338,7 @@ class _TinderPageState extends State<Tinder> {
           Column(
             children: [
               const SizedBox(
-                height: 150,
+                height: 110,
               ),
               userList.length == 0
                   ? const Center(
@@ -519,34 +519,34 @@ class _TinderPageState extends State<Tinder> {
               ),
             ],
           ),
-          Positioned(
-            top: 59,
-            left: 334,
-            child: IconButton(
-              icon: const Icon(Icons.search),
-              color: Colors.grey.shade600,
-              iconSize: 30,
-              onPressed: () async {
-                List<DocumentSnapshot>? result = await Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) {
-                    return FilterMatching(
-                      onFilterApplied: (users) {
-                        setState(() {
-                          filteredMatches = users;
-                        });
-                      },
-                    );
-                  }),
-                );
-                if (result != null) {
-                  setState(() {
-                    filteredMatches = result;
-                  });
-                }
-              },
-            ),
-          ),
+          // Positioned(
+          //   top: 59,
+          //   left: 334,
+          //   child: IconButton(
+          //     icon: const Icon(Icons.search),
+          //     color: Colors.grey.shade600,
+          //     iconSize: 30,
+          //     onPressed: () async {
+          //       List<DocumentSnapshot>? result = await Navigator.push(
+          //         context,
+          //         MaterialPageRoute(builder: (context) {
+          //           return FilterMatching(
+          //             onFilterApplied: (users) {
+          //               setState(() {
+          //                 filteredMatches = users;
+          //               });
+          //             },
+          //           );
+          //         }),
+          //       );
+          //       if (result != null) {
+          //         setState(() {
+          //           filteredMatches = result;
+          //         });
+          //       }
+          //     },
+          //   ),
+          // ),
         ],
       ),
     );

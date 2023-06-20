@@ -63,32 +63,24 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        toolbarHeight: 70,
+        centerTitle: true,
+        title: Text(
+          'Iniciem la sessió',
+          style: GoogleFonts.dmSans(
+            fontSize: 18,
+            fontWeight: FontWeight.w500,
+            color: Color(0xff25262b),
+          ),
+        ),
+      ),
       backgroundColor: Color(0xFFF5F5F5),
       body: SafeArea(
           child:
               Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Row(
-          children: [
-            IconButton(
-              icon: Icon(Icons.arrow_back),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-            Expanded(
-              child: Center(
-                child: Text(
-                  'Iniciar Sessió',
-                  style: GoogleFonts.dmSans(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-              ),
-            ),
-            SizedBox(width: 48),
-          ],
-        ),
         SizedBox(height: 30),
 
         Padding(
