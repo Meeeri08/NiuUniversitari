@@ -1,10 +1,11 @@
+import 'dart:ui' as ui;
 import 'dart:ui';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:jobapp/pages/house_detail_screen.dart';
 import 'package:flutter/services.dart' show ByteData, Uint8List, rootBundle;
+import 'package:intl/intl.dart'; // Import the intl package
 
 class MapPage extends StatefulWidget {
   const MapPage({super.key});
@@ -66,10 +67,8 @@ class _MapPageState extends State<MapPage> {
       text: price,
       style: textStyle,
     );
-    final textPainter = TextPainter(
-      text: textSpan,
-      textDirection: TextDirection.ltr,
-    );
+    final textPainter =
+        TextPainter(text: textSpan, textDirection: ui.TextDirection.ltr);
     textPainter.layout();
     final textOffset = Offset(
       (markerSize.width - textPainter.width) / 2,
@@ -139,6 +138,12 @@ class _MapPageState extends State<MapPage> {
     final price = doc.get('price').toString();
     final markerIcon = await _createMarkerIcon(price);
 
+    final nBathrooms = doc.get('n_bathroom');
+    final nRooms = doc.get('n_rooms');
+
+    final timestamp = doc.get('datainici') as Timestamp;
+    final date = DateFormat('dd MMM').format(timestamp.toDate());
+
     return Marker(
       markerId: MarkerId(doc.id),
       icon: markerIcon,
@@ -169,7 +174,7 @@ class _MapPageState extends State<MapPage> {
                         Image.network(
                           doc['image_url'],
                           width: MediaQuery.of(context).size.width,
-                          height: 150,
+                          height: 160,
                           fit: BoxFit.cover,
                         ),
                       ],
@@ -188,6 +193,7 @@ class _MapPageState extends State<MapPage> {
                                   style: const TextStyle(
                                     fontWeight: FontWeight.bold,
                                     fontSize: 16,
+                                    color: Color(0xff25262b),
                                   ),
                                 ),
                                 Text(
@@ -195,6 +201,7 @@ class _MapPageState extends State<MapPage> {
                                   style: const TextStyle(
                                     fontWeight: FontWeight.bold,
                                     fontSize: 16,
+                                    color: Color(0xff25262b),
                                   ),
                                 ),
                               ],
@@ -204,20 +211,53 @@ class _MapPageState extends State<MapPage> {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Row(
-                                  children: const [
-                                    Icon(Icons.king_bed),
+                                  children: [
+                                    Icon(
+                                      Icons.king_bed,
+                                      color: Color(0xff25262b),
+                                    ),
                                     SizedBox(width: 5),
-                                    Text("3 bedrooms"),
+                                    Text(
+                                      "$nRooms room",
+                                      selectionColor: Color(0xff25262b),
+                                    ),
                                   ],
                                 ),
                                 Row(
-                                  children: const [
-                                    Icon(Icons.bathtub),
+                                  children: [
+                                    Icon(Icons.bathtub,
+                                        color: Color(0xff25262b)),
                                     SizedBox(width: 5),
-                                    Text("2 bathrooms"),
+                                    Text(
+                                      "$nBathrooms bathroom",
+                                      selectionColor: Color(0xff25262b),
+                                    ),
                                   ],
                                 ),
                               ],
+                            ),
+                            const SizedBox(height: 20),
+                            Center(
+                              child: Container(
+                                height: 30,
+                                width: 250,
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(15),
+                                  child: Container(
+                                    color: Colors.grey.shade300,
+                                    child: Center(
+                                      child: Text(
+                                        "Disponible a partir de: $date",
+                                        style: const TextStyle(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.teal,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
                             ),
                           ],
                         ),

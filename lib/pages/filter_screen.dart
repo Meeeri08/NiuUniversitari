@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_xlider/flutter_xlider.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:jobapp/components/zone_data.dart';
 
 class FilterScreen extends StatefulWidget {
   final Function(List<DocumentSnapshot>?) onFilterApplied;
@@ -23,23 +24,18 @@ class _FilterScreenState extends State<FilterScreen> {
   bool petPolicy = false;
 
   List<String> selectedBarris = [];
-  List<String> barriOptions = [
-    'Gràcia',
-    'Sants',
-    'Poble Sec',
-    'Les Corts',
-    'Provença'
-  ];
+
   late String selectedBarriOption;
 
   late String selectedEstatOption;
 
   List<String> selectedEstat = [];
   List<String> estatOptions = [
-    'Nou',
-    'Refomat',
     'Moblat',
-    'Sense moblar',
+    'Nou',
+    'Acabat de Reformar',
+    'Servei de Neteja',
+    'Parking',
   ];
 
   late String selectedTipusOption;
@@ -47,10 +43,28 @@ class _FilterScreenState extends State<FilterScreen> {
   List<String> selectedTipus = [];
   List<String> tipusOptions = [
     'Casa',
-    'Pis',
-    'Residència',
+    'Habitació',
+    'Apartament',
     'Estudi',
   ];
+
+  DateTime? _initialDate;
+
+  void _selectDate() async {
+    DateTime? selectedDate = await showDatePicker(
+      context: context,
+      initialDate: _initialDate ?? DateTime.now(),
+      firstDate: DateTime.now().subtract(const Duration(days: 365)),
+      lastDate: DateTime.now().add(const Duration(days: 365)),
+    );
+
+    if (selectedDate != null) {
+      setState(() {
+        _initialDate = selectedDate;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -59,8 +73,8 @@ class _FilterScreenState extends State<FilterScreen> {
           leading: Padding(
             padding: const EdgeInsets.only(left: 15, bottom: 15),
             child: IconButton(
-              icon: Icon(Icons.arrow_back_ios),
-              color: Color(0xff25262b),
+              icon: const Icon(Icons.arrow_back_ios),
+              color: const Color(0xff25262b),
               onPressed: () {
                 Navigator.pop(context);
               },
@@ -77,7 +91,7 @@ class _FilterScreenState extends State<FilterScreen> {
           backgroundColor: Colors.white,
         ),
         body: ListView(shrinkWrap: true, children: [
-          Align(
+          const Align(
             alignment: Alignment.centerLeft,
             child: Padding(
               padding: EdgeInsets.only(left: 30, top: 30),
@@ -92,7 +106,7 @@ class _FilterScreenState extends State<FilterScreen> {
               ),
             ),
           ),
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
           Padding(
             padding: const EdgeInsets.only(left: 20),
             child: Column(
@@ -116,7 +130,7 @@ class _FilterScreenState extends State<FilterScreen> {
                       padding: const EdgeInsets.symmetric(horizontal: 30),
                       child: Text(
                         '\ $minPrice -\ $maxPrice',
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontFamily: 'DM Sans',
                           fontSize: 16,
                           fontWeight: FontWeight.w500,
@@ -126,7 +140,7 @@ class _FilterScreenState extends State<FilterScreen> {
                     ),
                   ],
                 ),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 ListTile(
                   subtitle: FlutterSlider(
                     handlerHeight: 25,
@@ -135,7 +149,7 @@ class _FilterScreenState extends State<FilterScreen> {
                     rangeSlider: true,
                     min: 0,
                     max: 2000,
-                    step: FlutterSliderStep(
+                    step: const FlutterSliderStep(
                         step: 100), // Set the step size to 100
                     onDragging: (handlerIndex, lowerValue, upperValue) {
                       setState(() {
@@ -145,15 +159,16 @@ class _FilterScreenState extends State<FilterScreen> {
                       });
                     },
                     trackBar: FlutterSliderTrackBar(
-                      activeTrackBar: BoxDecoration(color: Color(0xFF1FA29E)),
+                      activeTrackBar:
+                          const BoxDecoration(color: Color(0xFF1FA29E)),
                       inactiveTrackBar:
                           BoxDecoration(color: Colors.grey.shade300),
                     ),
                     tooltip: FlutterSliderTooltip(
-                      textStyle: TextStyle(fontSize: 17),
+                      textStyle: const TextStyle(fontSize: 17),
                       custom: (value) {
                         return Text('${value.toInt().toString()}',
-                            style: TextStyle(fontSize: 17));
+                            style: const TextStyle(fontSize: 17));
                       },
                     ),
                     handler: FlutterSliderHandler(
@@ -165,7 +180,7 @@ class _FilterScreenState extends State<FilterScreen> {
                             color: Colors.grey.withOpacity(0.5),
                             spreadRadius: 1,
                             blurRadius: 2,
-                            offset: Offset(0, 3),
+                            offset: const Offset(0, 3),
                           ),
                         ],
                         shape: BoxShape.circle,
@@ -184,7 +199,7 @@ class _FilterScreenState extends State<FilterScreen> {
                             color: Colors.grey.withOpacity(0.5),
                             spreadRadius: 1,
                             blurRadius: 2,
-                            offset: Offset(0, 3),
+                            offset: const Offset(0, 3),
                           ),
                         ],
                         shape: BoxShape.circle,
@@ -196,7 +211,7 @@ class _FilterScreenState extends State<FilterScreen> {
                     ),
                   ),
                 ),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
               ],
             ),
           ),
@@ -222,7 +237,7 @@ class _FilterScreenState extends State<FilterScreen> {
                   padding: const EdgeInsets.symmetric(horizontal: 30),
                   child: Text(
                     '\ $minRooms -\ $maxRooms',
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontFamily: 'DM Sans',
                       fontSize: 16,
                       fontWeight: FontWeight.w500,
@@ -233,7 +248,7 @@ class _FilterScreenState extends State<FilterScreen> {
               ],
             ),
           ),
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
           ListTile(
             subtitle: Padding(
               padding: const EdgeInsets.only(left: 19),
@@ -244,7 +259,7 @@ class _FilterScreenState extends State<FilterScreen> {
                 rangeSlider: true,
                 min: 1,
                 max: 5,
-                step: FlutterSliderStep(step: 1),
+                step: const FlutterSliderStep(step: 1),
                 onDragging: (handlerIndex, lowerValue, upperValue) {
                   setState(() {
                     minRooms = (lowerValue / 1).round() * 1;
@@ -252,14 +267,14 @@ class _FilterScreenState extends State<FilterScreen> {
                   });
                 },
                 trackBar: FlutterSliderTrackBar(
-                  activeTrackBar: BoxDecoration(color: Color(0xFF1FA29E)),
+                  activeTrackBar: const BoxDecoration(color: Color(0xFF1FA29E)),
                   inactiveTrackBar: BoxDecoration(color: Colors.grey.shade300),
                 ),
                 tooltip: FlutterSliderTooltip(
-                  textStyle: TextStyle(fontSize: 17),
+                  textStyle: const TextStyle(fontSize: 17),
                   custom: (value) {
                     return Text('${value.toInt().toString()}',
-                        style: TextStyle(fontSize: 17));
+                        style: const TextStyle(fontSize: 17));
                   },
                 ),
                 handler: FlutterSliderHandler(
@@ -271,7 +286,8 @@ class _FilterScreenState extends State<FilterScreen> {
                         color: Colors.grey.withOpacity(0.5),
                         spreadRadius: 1,
                         blurRadius: 2,
-                        offset: Offset(0, 3), // changes position of shadow
+                        offset:
+                            const Offset(0, 3), // changes position of shadow
                       ),
                     ],
                     shape: BoxShape.circle,
@@ -290,7 +306,7 @@ class _FilterScreenState extends State<FilterScreen> {
                         color: Colors.grey.withOpacity(0.5),
                         spreadRadius: 1,
                         blurRadius: 2,
-                        offset: Offset(0, 3),
+                        offset: const Offset(0, 3),
                       ),
                     ],
                     shape: BoxShape.circle,
@@ -305,7 +321,7 @@ class _FilterScreenState extends State<FilterScreen> {
           ),
 
           //Create ListTile for min and max bathrooms
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
           Padding(
             padding: const EdgeInsets.only(left: 20),
             child: Row(
@@ -327,7 +343,7 @@ class _FilterScreenState extends State<FilterScreen> {
                   padding: const EdgeInsets.symmetric(horizontal: 30),
                   child: Text(
                     '\ $minBathrooms -\ $maxBathrooms',
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontFamily: 'DM Sans',
                       fontSize: 16,
                       fontWeight: FontWeight.w500,
@@ -338,7 +354,7 @@ class _FilterScreenState extends State<FilterScreen> {
               ],
             ),
           ),
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
 
           //create a dropdown button for min and max bathrooms
 
@@ -352,7 +368,7 @@ class _FilterScreenState extends State<FilterScreen> {
                 rangeSlider: true,
                 min: 1,
                 max: 5,
-                step: FlutterSliderStep(step: 1),
+                step: const FlutterSliderStep(step: 1),
                 onDragging: (handlerIndex, lowerValue, upperValue) {
                   setState(() {
                     minBathrooms = (lowerValue / 1).round() * 1;
@@ -360,14 +376,14 @@ class _FilterScreenState extends State<FilterScreen> {
                   });
                 },
                 trackBar: FlutterSliderTrackBar(
-                  activeTrackBar: BoxDecoration(color: Color(0xFF1FA29E)),
+                  activeTrackBar: const BoxDecoration(color: Color(0xFF1FA29E)),
                   inactiveTrackBar: BoxDecoration(color: Colors.grey.shade300),
                 ),
                 tooltip: FlutterSliderTooltip(
-                  textStyle: TextStyle(fontSize: 17),
+                  textStyle: const TextStyle(fontSize: 17),
                   custom: (value) {
                     return Text('${value.toInt().toString()}',
-                        style: TextStyle(fontSize: 17));
+                        style: const TextStyle(fontSize: 17));
                   },
                 ),
                 handler: FlutterSliderHandler(
@@ -379,7 +395,8 @@ class _FilterScreenState extends State<FilterScreen> {
                         color: Colors.grey.withOpacity(0.5),
                         spreadRadius: 1,
                         blurRadius: 2,
-                        offset: Offset(0, 3), // changes position of shadow
+                        offset:
+                            const Offset(0, 3), // changes position of shadow
                       ),
                     ],
                     shape: BoxShape.circle,
@@ -398,7 +415,8 @@ class _FilterScreenState extends State<FilterScreen> {
                         color: Colors.grey.withOpacity(0.5),
                         spreadRadius: 1,
                         blurRadius: 2,
-                        offset: Offset(0, 3), // changes position of shadow
+                        offset:
+                            const Offset(0, 3), // changes position of shadow
                       ),
                     ],
                     shape: BoxShape.circle,
@@ -411,7 +429,7 @@ class _FilterScreenState extends State<FilterScreen> {
               ),
             ),
           ),
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
           Padding(
             padding: const EdgeInsets.only(left: 20),
             child: Row(
@@ -438,18 +456,18 @@ class _FilterScreenState extends State<FilterScreen> {
                         petPolicy = value ?? false;
                       });
                     },
-                    activeColor: Color(0xFF1FA29E),
+                    activeColor: const Color(0xFF1FA29E),
                   ),
                 ),
               ],
             ),
           ),
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
 
           Padding(
             padding: const EdgeInsets.only(left: 20),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 15),
@@ -463,69 +481,77 @@ class _FilterScreenState extends State<FilterScreen> {
                     ),
                   ),
                 ),
-                SizedBox(
-                  width: 200, // Ancho deseado para el dropdown
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 10),
-                    child: DropdownButtonFormField<String>(
-                      value:
-                          selectedBarris.isNotEmpty ? selectedBarris[0] : null,
-                      items: barriOptions.map((String value) {
-                        return DropdownMenuItem<String>(
-                          value: value,
-                          child: Row(
-                            children: [
-                              Icon(
-                                Icons.check,
-                                color: selectedBarris.contains(value)
-                                    ? Colors.blue
-                                    : Colors.transparent,
-                              ),
-                              SizedBox(width: 10),
-                              Text(
-                                value,
-                                style: TextStyle(
+                const SizedBox(
+                  height: 10,
+                ),
+                Center(
+                  child: SizedBox(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 10),
+                      child: DropdownButtonFormField<String>(
+                        value: selectedBarris.isNotEmpty
+                            ? selectedBarris[0]
+                            : null,
+                        items: zoneList.map((String value) {
+                          return DropdownMenuItem<String>(
+                            value: value,
+                            child: Row(
+                              children: [
+                                Icon(
+                                  Icons.check,
                                   color: selectedBarris.contains(value)
                                       ? Colors.blue
-                                      : Colors.black,
+                                      : Colors.transparent,
                                 ),
-                              ),
-                            ],
-                          ),
-                        );
-                      }).toList(),
-                      onChanged: (String? newValue) {
-                        setState(() {
-                          if (newValue != null) {
-                            if (selectedBarris.contains(newValue)) {
-                              selectedBarris.remove(newValue);
-                            } else {
-                              selectedBarris.add(newValue);
+                                const SizedBox(width: 10),
+                                Center(
+                                  child: Text(
+                                    value,
+                                    style: TextStyle(
+                                      color: selectedBarris.contains(value)
+                                          ? Colors.blue
+                                          : Colors.black,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                        }).toList(),
+                        onChanged: (String? newValue) {
+                          setState(() {
+                            if (newValue != null) {
+                              if (selectedBarris.contains(newValue)) {
+                                selectedBarris.remove(newValue);
+                              } else {
+                                selectedBarris.add(newValue);
+                              }
                             }
-                          }
-                        });
-                      },
-                      isExpanded: true,
-                      hint: Text('Selecciona'),
-                      isDense: true,
+                          });
+                        },
+                        isExpanded: true,
+                        hint: const Text('Selecciona'),
+                        isDense: true,
+                      ),
                     ),
                   ),
                 ),
               ],
             ),
           ),
-          SizedBox(
+
+          const SizedBox(
             height: 20,
           ),
           Padding(
             padding: const EdgeInsets.only(left: 20),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 15),
                   child: Text(
-                    'Estat',
+                    'Característiques',
                     style: TextStyle(
                       fontFamily: 'DM Sans',
                       fontSize: 18,
@@ -534,57 +560,107 @@ class _FilterScreenState extends State<FilterScreen> {
                     ),
                   ),
                 ),
-                SizedBox(
-                  width: 200, // Ancho deseado para el dropdown
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 10),
-                    child: DropdownButtonFormField<String>(
-                      value: selectedEstat.isNotEmpty ? selectedEstat[0] : null,
-                      items: estatOptions.map((String value) {
-                        return DropdownMenuItem<String>(
-                          value: value,
-                          child: Row(
-                            children: [
-                              Icon(
-                                Icons.check,
-                                color: selectedEstat.contains(value)
-                                    ? Colors.blue
-                                    : Colors.transparent,
+                const SizedBox(height: 10),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 15),
+                        child: DropdownButtonFormField<String>(
+                          value: selectedEstat.isNotEmpty
+                              ? selectedEstat[0]
+                              : null,
+                          items: estatOptions.map((String value) {
+                            return DropdownMenuItem<String>(
+                              value: value,
+                              child: Row(
+                                children: [
+                                  Icon(
+                                    Icons.check,
+                                    color: selectedEstat.contains(value)
+                                        ? Colors.blue
+                                        : Colors.transparent,
+                                  ),
+                                  const SizedBox(width: 10),
+                                  Text(
+                                    value,
+                                    style: TextStyle(
+                                      color: selectedEstat.contains(value)
+                                          ? Colors.blue
+                                          : Colors.black,
+                                    ),
+                                  ),
+                                ],
                               ),
-                              SizedBox(width: 10),
-                              Text(
-                                value,
-                                style: TextStyle(
-                                  color: selectedEstat.contains(value)
-                                      ? Colors.blue
-                                      : Colors.black,
-                                ),
-                              ),
-                            ],
-                          ),
-                        );
-                      }).toList(),
-                      onChanged: (String? newValue) {
-                        setState(() {
-                          if (newValue != null) {
-                            if (selectedEstat.contains(newValue)) {
-                              selectedEstat.remove(newValue);
-                            } else {
-                              selectedEstat.add(newValue);
-                            }
-                          }
-                        });
-                      },
-                      isExpanded: true,
-                      hint: Text('Selecciona'),
-                      isDense: true,
+                            );
+                          }).toList(),
+                          onChanged: (String? newValue) {
+                            setState(() {
+                              if (newValue != null) {
+                                if (selectedEstat.contains(newValue)) {
+                                  selectedEstat.remove(newValue);
+                                } else {
+                                  selectedEstat.add(newValue);
+                                }
+                              }
+                            });
+                          },
+                          isExpanded: true,
+                          hint: const Text('Selecciona'),
+                          isDense: true,
+                        ),
+                      ),
                     ),
-                  ),
+                  ],
                 ),
               ],
             ),
           ),
-          SizedBox(height: 20),
+          const SizedBox(height: 30),
+          Padding(
+            padding: const EdgeInsets.only(left: 30, right: 15),
+            child: SizedBox(
+              width: 325,
+              child: TextFormField(
+                readOnly: true,
+                controller: TextEditingController(
+                  text: _initialDate != null
+                      ? '${_initialDate!.day}/${_initialDate!.month}/${_initialDate!.year}'
+                      : '',
+                ),
+                decoration: InputDecoration(
+                  prefixIcon:
+                      const Icon(Icons.calendar_today, color: Colors.grey),
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.grey.shade300),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: const BorderSide(color: Colors.blue),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  filled: true,
+                  fillColor: Colors.white,
+                  labelStyle: const TextStyle(
+                    color: Colors.grey,
+                  ),
+                  floatingLabelBehavior: FloatingLabelBehavior.always,
+                ),
+                onTap: _selectDate,
+                style: const TextStyle(
+                  color: Colors.black,
+                ),
+                onChanged: (value) {
+                  setState(() {
+                    _initialDate = DateTime.parse(value);
+                  });
+                },
+              ),
+            ),
+          ),
+
+          const SizedBox(height: 20),
 
           Padding(
             padding: const EdgeInsets.only(left: 20),
@@ -603,7 +679,7 @@ class _FilterScreenState extends State<FilterScreen> {
                     ),
                   ),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 20,
                 ),
                 SizedBox(
@@ -623,7 +699,7 @@ class _FilterScreenState extends State<FilterScreen> {
                                     ? Colors.blue
                                     : Colors.transparent,
                               ),
-                              SizedBox(width: 10),
+                              const SizedBox(width: 10),
                               Text(
                                 value,
                                 style: TextStyle(
@@ -648,7 +724,7 @@ class _FilterScreenState extends State<FilterScreen> {
                         });
                       },
                       isExpanded: true,
-                      hint: Text('Selecciona'),
+                      hint: const Text('Selecciona'),
                       isDense: true,
                     ),
                   ),
@@ -656,7 +732,7 @@ class _FilterScreenState extends State<FilterScreen> {
               ],
             ),
           ),
-          SizedBox(
+          const SizedBox(
             height: 50,
           ), //Create a button to apply the filters
           Padding(
@@ -686,7 +762,7 @@ class _FilterScreenState extends State<FilterScreen> {
               ),
             ),
           ),
-          SizedBox(height: 40),
+          const SizedBox(height: 40),
         ]));
   }
 
@@ -806,37 +882,56 @@ class _FilterScreenState extends State<FilterScreen> {
                   List<DocumentSnapshot> filteredTipus = tipusSnapshot.docs;
                   print('Filtered Houses (Tipus): ${filteredTipus.length}');
 
-                  List<DocumentSnapshot> finalFilteredHouses = [];
-
-                  for (var house in filteredHouses) {
-                    var roomId = house.id;
-                    var matchingRooms =
-                        filteredRooms.where((room) => room.id == roomId);
-                    var matchingBathrooms = filteredBathrooms
-                        .where((bathroom) => bathroom.id == roomId);
-                    var matchingPetPolicy = filteredPetPolicy
-                        .where((petPolicy) => petPolicy.id == roomId);
-                    var matchingBarris =
-                        filteredBarris.where((barri) => barri.id == roomId);
-                    var matchingEstat =
-                        filteredEstat.where((estat) => estat.id == roomId);
-                    var matchingTipus =
-                        filteredTipus.where((tipus) => tipus.id == roomId);
-                    if (matchingRooms.isNotEmpty &&
-                        matchingBathrooms.isNotEmpty &&
-                        matchingPetPolicy.isNotEmpty &&
-                        matchingBarris.isNotEmpty &&
-                        matchingEstat.isNotEmpty &&
-                        matchingTipus.isNotEmpty) {
-                      finalFilteredHouses.add(house);
-                    }
+                  //date query
+                  Query dateQuery = housesCollection;
+                  if (_initialDate != null) {
+                    DateTime selectedDate = DateTime(_initialDate!.year,
+                        _initialDate!.month, _initialDate!.day);
+                    dateQuery = dateQuery.where('datainici',
+                        isGreaterThanOrEqualTo:
+                            Timestamp.fromDate(selectedDate));
                   }
 
-                  print('Final Filtered Houses: ${finalFilteredHouses.length}');
+                  dateQuery.get().then((QuerySnapshot dateSnapshot) {
+                    List<DocumentSnapshot> filteredDate = dateSnapshot.docs;
+                    print('Filtered Houses (Date): ${filteredDate.length}');
 
-                  widget.onFilterApplied(finalFilteredHouses);
+                    List<DocumentSnapshot> finalFilteredHouses = [];
 
-                  Navigator.pop(context);
+                    for (var house in filteredHouses) {
+                      var roomId = house.id;
+                      var matchingRooms =
+                          filteredRooms.where((room) => room.id == roomId);
+                      var matchingBathrooms = filteredBathrooms
+                          .where((bathroom) => bathroom.id == roomId);
+                      var matchingPetPolicy = filteredPetPolicy
+                          .where((petPolicy) => petPolicy.id == roomId);
+                      var matchingBarris =
+                          filteredBarris.where((barri) => barri.id == roomId);
+                      var matchingEstat =
+                          filteredEstat.where((estat) => estat.id == roomId);
+                      var matchingTipus =
+                          filteredTipus.where((tipus) => tipus.id == roomId);
+                      var matchingDate = filteredDate
+                          .where((_initialDate) => _initialDate.id == roomId);
+                      if (matchingRooms.isNotEmpty &&
+                          matchingBathrooms.isNotEmpty &&
+                          matchingPetPolicy.isNotEmpty &&
+                          matchingBarris.isNotEmpty &&
+                          matchingEstat.isNotEmpty &&
+                          matchingTipus.isNotEmpty &&
+                          matchingDate.isNotEmpty) {
+                        finalFilteredHouses.add(house);
+                      }
+                    }
+
+                    print(
+                        'Final Filtered Houses: ${finalFilteredHouses.length}');
+
+                    widget.onFilterApplied(finalFilteredHouses);
+
+                    Navigator.pop(context);
+                  });
                 });
               });
             });
